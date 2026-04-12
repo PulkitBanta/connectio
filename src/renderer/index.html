@@ -40,18 +40,92 @@
         border-radius: 0.6rem;
         color: #e2e8f0;
       }
+
+      /* Expanded nav — widen buttons and reveal labels */
+      #nav.expanded #nav-toggle-wrap {
+        justify-content: flex-start;
+      }
+      #nav.expanded #nav-toggle {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 0.75rem;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+      }
+      #nav.expanded #nav-toggle-label {
+        display: inline;
+      }
+      #nav.expanded #add-proxy {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 0.75rem;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+      }
+      #nav.expanded #add-proxy-label {
+        display: inline;
+      }
     </style>
   </head>
 
   <body class="bg-[#0f1117] text-slate-200 h-screen flex overflow-hidden select-none">
+    <!-- Add proxy modal -->
+    <div
+      id="modal-overlay"
+      class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+    >
+      <div
+        class="bg-[#16181f] border border-white/10 rounded-xl p-6 w-80 flex flex-col gap-4 shadow-xl"
+      >
+        <p class="text-sm font-semibold text-slate-200">Add Proxy App</p>
+        <div class="flex flex-col gap-3">
+          <div class="flex flex-col gap-1">
+            <label class="text-xs text-slate-500">Name</label>
+            <input
+              id="modal-name"
+              type="text"
+              placeholder="e.g. Auth Service"
+              class="bg-white/5 border border-white/10 rounded px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-white/25 transition-colors"
+            />
+          </div>
+          <div class="flex flex-col gap-1">
+            <label class="text-xs text-slate-500">Target URL</label>
+            <input
+              id="modal-url"
+              type="text"
+              placeholder="http://localhost:3001"
+              class="bg-white/5 border border-white/10 rounded px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-white/25 transition-colors"
+            />
+          </div>
+        </div>
+        <div id="modal-error" class="hidden text-xs text-red-400"></div>
+        <div class="flex gap-2 justify-end">
+          <button
+            id="modal-cancel"
+            class="px-4 py-2 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            id="modal-add"
+            class="px-4 py-2 rounded-lg text-xs bg-emerald-700 hover:bg-emerald-600 text-white transition-colors"
+          >
+            Add
+          </button>
+        </div>
+      </div>
+    </div>
     <nav id="nav" class="w-16 flex flex-col bg-[#09090d] py-3 overflow-hidden shrink-0">
-      <div class="flex justify-center px-3 mb-2">
+      <div id="nav-toggle-wrap" class="flex justify-center px-3 mb-2">
         <button
           id="nav-toggle"
           title="Expand / collapse"
           class="squircle w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-white/10 text-slate-400 hover:text-slate-200 transition-colors"
         >
-          <i data-lucide="arrow-right-to-line" class="w-4 h-4"></i>
+          <i data-lucide="arrow-right-to-line" class="w-4 h-4 shrink-0"></i>
+          <span id="nav-toggle-label" class="hidden text-xs font-medium whitespace-nowrap"
+            >Collapse</span
+          >
         </button>
       </div>
 
@@ -61,9 +135,12 @@
         <button
           id="add-proxy"
           title="Add a proxy app"
-          class="squircle w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-emerald-600 text-slate-400 hover:text-white text-xl leading-none"
+          class="squircle w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-emerald-600 text-slate-400 hover:text-white transition-colors"
         >
-          +
+          <span class="text-xl leading-none shrink-0">+</span>
+          <span id="add-proxy-label" class="hidden text-xs font-medium whitespace-nowrap"
+            >Add App</span
+          >
         </button>
       </div>
     </nav>
@@ -145,10 +222,117 @@
         navExpanded = !navExpanded;
         nav.style.width = navExpanded ? "180px" : "64px";
         navToggle.classList.toggle("active", navExpanded);
+        nav.classList.toggle("expanded", navExpanded);
+        renderSidebar();
       });
 
-      // Add proxy (wired in Step 3)
-      function onAddProxy() {}
+      // ── App state ──────────────────────────────────────────────
+      const apps = [];
+      let selectedAppId = null;
+
+      // ── Modal ───────────────────────────────────────────────────
+      const modalOverlay = document.getElementById("modal-overlay");
+      const modalName = document.getElementById("modal-name");
+      const modalUrl = document.getElementById("modal-url");
+      const modalError = document.getElementById("modal-error");
+
+      function openModal() {
+        modalName.value = "";
+        modalUrl.value = "";
+        modalError.classList.add("hidden");
+        modalOverlay.classList.remove("hidden");
+        modalName.focus();
+      }
+
+      function closeModal() {
+        modalOverlay.classList.add("hidden");
+      }
+
+      function submitModal() {
+        const name = modalName.value.trim();
+        const targetUrl = modalUrl.value.trim();
+        if (!name || !targetUrl) {
+          modalError.textContent = "Both fields are required.";
+          modalError.classList.remove("hidden");
+          return;
+        }
+        const app = { id: crypto.randomUUID(), name, targetUrl, enabled: true };
+        apps.push(app);
+        renderSidebar();
+        selectApp(app.id);
+        closeModal();
+      }
+
+      document.getElementById("modal-cancel").addEventListener("click", closeModal);
+      document.getElementById("modal-add").addEventListener("click", submitModal);
+      modalOverlay.addEventListener("click", (e) => {
+        if (e.target === modalOverlay) closeModal();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeModal();
+        if (e.key === "Enter" && !modalOverlay.classList.contains("hidden")) submitModal();
+      });
+
+      // ── Sidebar rendering ────────────────────────────────────────
+      const proxyList = document.getElementById("proxy-list");
+      const emptyState = document.getElementById("empty-state");
+
+      function renderSidebar() {
+        proxyList.innerHTML = "";
+        apps.forEach((app) => {
+          const btn = document.createElement("button");
+          btn.title = app.name;
+          const isSelected = app.id === selectedAppId;
+
+          if (navExpanded) {
+            btn.className = `w-full h-10 rounded-lg flex items-center gap-3 px-2 transition-colors ${
+              isSelected
+                ? "bg-emerald-600/15 text-emerald-400"
+                : "hover:bg-white/5 text-slate-400 hover:text-slate-200"
+            }`;
+            const avatar = document.createElement("span");
+            avatar.className = `squircle w-7 h-7 flex items-center justify-center text-xs font-semibold shrink-0 ${
+              isSelected ? "bg-emerald-600 text-white" : "bg-white/10 text-slate-300"
+            }`;
+            avatar.textContent = app.name[0].toUpperCase();
+            const label = document.createElement("span");
+            label.className = "text-xs font-medium whitespace-nowrap overflow-hidden text-ellipsis";
+            label.textContent = app.name;
+            btn.appendChild(avatar);
+            btn.appendChild(label);
+          } else {
+            btn.className = `squircle w-10 h-10 flex items-center justify-center text-sm font-semibold transition-colors ${
+              isSelected
+                ? "bg-emerald-600 text-white"
+                : "bg-white/10 hover:bg-white/15 text-slate-300"
+            }`;
+            btn.textContent = app.name[0].toUpperCase();
+          }
+
+          btn.addEventListener("click", () => selectApp(app.id));
+          proxyList.appendChild(btn);
+        });
+      }
+
+      // ── App selection ────────────────────────────────────────────
+      const requestView = document.getElementById("request-view");
+
+      function selectApp(id) {
+        selectedAppId = id;
+        renderSidebar();
+        emptyState.classList.add("hidden");
+        requestView.classList.remove("hidden");
+        requestView.innerHTML = `
+          <div class="h-full flex flex-col items-center justify-center gap-2">
+            <p class="text-base font-semibold text-slate-400">No logs yet</p>
+            <p class="text-xs text-slate-600">Requests will appear here once the proxy receives traffic.</p>
+          </div>
+        `;
+      }
+
+      function onAddProxy() {
+        openModal();
+      }
       document.getElementById("add-proxy").addEventListener("click", onAddProxy);
       document.getElementById("add-proxy-cta").addEventListener("click", onAddProxy);
 
