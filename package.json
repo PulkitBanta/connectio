@@ -1,0 +1,13 @@
+{
+  "name": "connectio",
+  "version": "0.1.0",
+  "description": "A local proxy manager — connect and route between local servers with optional Cloudflare tunnel exposure",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev"
+  },
+  "devDependencies": {
+    "electron": "^30.0.0"
+  }
+}

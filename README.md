@@ -1,3 +1,3 @@
 # Connectio
 
-A simple application to connect your machine locally with other servers with proxy. Think of it as a load balancer for local machines
+A local proxy manager — connect and route between local servers with optional Cloudflare tunnel exposure
