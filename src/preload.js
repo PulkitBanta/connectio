@@ -1,5 +1,9 @@
-const { contextBridge, ipcRenderer } = require('electron')
+const { contextBridge, ipcRenderer } = require("electron");
 
-contextBridge.exposeInMainWorld('connectio', {
-  // placeholder — IPC bridge methods will be added per implementation step
-})
+contextBridge.exposeInMainWorld("connectio", {
+  proxy: {
+    start: (port) => ipcRenderer.invoke("proxy:start", port),
+    stop: () => ipcRenderer.invoke("proxy:stop"),
+    getStatus: () => ipcRenderer.invoke("proxy:getStatus"),
+  },
+});

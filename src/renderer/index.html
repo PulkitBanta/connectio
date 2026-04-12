@@ -1,32 +1,201 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline';" />
-  <title>Connectio</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #0f1117;
-      color: #e2e8f0;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .splash {
-      text-align: center;
-    }
-    h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; }
-    p  { margin-top: 0.5rem; color: #64748b; font-size: 0.95rem; }
-  </style>
-</head>
-<body>
-  <div class="splash">
-    <h1>Connectio</h1>
-    <p>Local proxy manager — implementation in progress</p>
-  </div>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="
+        default-src 'self';
+        script-src 'self' https://cdn.tailwindcss.com https://unpkg.com 'unsafe-inline' 'unsafe-eval';
+        style-src 'self' 'unsafe-inline';
+      "
+    />
+    <title>Connectio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <style>
+      .squircle {
+        border-radius: 1rem;
+        transition:
+          border-radius 0.15s ease,
+          background-color 0.15s ease;
+      }
+      .squircle:hover {
+        border-radius: 0.6rem;
+      }
+
+      #nav {
+        transition: width 0.2s ease;
+      }
+
+      #nav-toggle i {
+        transition: transform 0.2s ease;
+      }
+      #nav-toggle.active i {
+        transform: rotate(180deg);
+      }
+      #nav-toggle.active {
+        background-color: rgba(255, 255, 255, 0.12);
+        border-radius: 0.6rem;
+        color: #e2e8f0;
+      }
+    </style>
+  </head>
+
+  <body class="bg-[#0f1117] text-slate-200 h-screen flex overflow-hidden select-none">
+    <nav id="nav" class="w-16 flex flex-col bg-[#09090d] py-3 overflow-hidden shrink-0">
+      <div class="flex justify-center px-3 mb-2">
+        <button
+          id="nav-toggle"
+          title="Expand / collapse"
+          class="squircle w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-white/10 text-slate-400 hover:text-slate-200 transition-colors"
+        >
+          <i data-lucide="arrow-right-to-line" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div id="proxy-list" class="flex flex-col gap-2 px-3 flex-1"></div>
+
+      <div class="px-3">
+        <button
+          id="add-proxy"
+          title="Add a proxy app"
+          class="squircle w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-emerald-600 text-slate-400 hover:text-white text-xl leading-none"
+        >
+          +
+        </button>
+      </div>
+    </nav>
+
+    <div class="w-px bg-white/5 shrink-0"></div>
+
+    <main class="flex-1 flex flex-col overflow-hidden">
+      <div
+        id="empty-state"
+        class="flex-1 flex flex-col items-center justify-center gap-5 text-center px-8"
+      >
+        <div class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-2xl">
+          ⚡
+        </div>
+        <div>
+          <p class="text-slate-300 font-medium mb-1">No proxy apps yet</p>
+          <p class="text-slate-500 text-sm leading-relaxed max-w-xs">
+            Add a proxy app using the
+            <span class="text-slate-400">+</span> button on the left. Each app maps route rules to a
+            locally running server.
+          </p>
+        </div>
+        <button
+          id="add-proxy-cta"
+          class="px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-sm text-white transition-colors"
+        >
+          Add your first proxy
+        </button>
+      </div>
+
+      <div id="request-view" class="hidden flex-1"></div>
+    </main>
+
+    <div class="w-px bg-white/5 shrink-0"></div>
+
+    <aside class="w-52 shrink-0 flex flex-col bg-[#09090d]">
+      <div class="flex flex-col gap-6 px-4 py-4">
+        <section>
+          <p class="text-[10px] font-semibold uppercase tracking-widest text-slate-500 mb-3">
+            Proxy Server
+          </p>
+          <div class="flex flex-col gap-3">
+            <div class="flex items-center gap-2">
+              <span
+                id="dot"
+                class="w-2 h-2 rounded-full bg-slate-700 transition-colors duration-300"
+              ></span>
+              <span id="status" class="text-xs text-slate-400">Offline</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-slate-500 w-8 shrink-0">Port</span>
+              <input
+                id="port"
+                type="number"
+                value="8080"
+                min="1024"
+                max="65535"
+                class="flex-1 min-w-0 bg-white/5 border border-white/10 rounded px-2 py-1 text-xs text-slate-300 focus:outline-none focus:border-white/25 transition-colors"
+              />
+            </div>
+            <button
+              id="toggle"
+              class="w-full py-2 rounded-lg text-sm font-medium bg-emerald-700 hover:bg-emerald-600 text-white transition-colors"
+            >
+              Start Server
+            </button>
+          </div>
+        </section>
+      </div>
+    </aside>
+
+    <script>
+      // Nav expand / collapse
+      const nav = document.getElementById("nav");
+      const navToggle = document.getElementById("nav-toggle");
+      let navExpanded = false;
+
+      navToggle.addEventListener("click", () => {
+        navExpanded = !navExpanded;
+        nav.style.width = navExpanded ? "180px" : "64px";
+        navToggle.classList.toggle("active", navExpanded);
+      });
+
+      // Add proxy (wired in Step 3)
+      function onAddProxy() {}
+      document.getElementById("add-proxy").addEventListener("click", onAddProxy);
+      document.getElementById("add-proxy-cta").addEventListener("click", onAddProxy);
+
+      // Proxy server toggle
+      const dot = document.getElementById("dot");
+      const status = document.getElementById("status");
+      const portInput = document.getElementById("port");
+      const btn = document.getElementById("toggle");
+      let running = false;
+
+      btn.addEventListener("click", async () => {
+        btn.disabled = true;
+
+        if (!running) {
+          const result = await window.connectio.proxy.start(parseInt(portInput.value) || 8080);
+          if (result.ok) {
+            running = true;
+            dot.className = "w-2 h-2 rounded-full bg-emerald-400 transition-colors duration-300";
+            status.textContent = `Online — :${result.port}`;
+            btn.textContent = "Stop Server";
+            btn.className = btn.className.replace(
+              "bg-emerald-700 hover:bg-emerald-600",
+              "bg-red-800 hover:bg-red-700",
+            );
+            portInput.disabled = true;
+            portInput.className += " opacity-40 cursor-not-allowed";
+          } else {
+            status.textContent = `Error: ${result.error}`;
+          }
+        } else {
+          await window.connectio.proxy.stop();
+          running = false;
+          dot.className = "w-2 h-2 rounded-full bg-slate-700 transition-colors duration-300";
+          status.textContent = "Offline";
+          btn.textContent = "Start Server";
+          btn.className = btn.className.replace(
+            "bg-red-800 hover:bg-red-700",
+            "bg-emerald-700 hover:bg-emerald-600",
+          );
+          portInput.disabled = false;
+          portInput.className = portInput.className.replace(" opacity-40 cursor-not-allowed", "");
+        }
+
+        btn.disabled = false;
+      });
+
+      lucide.createIcons();
+    </script>
+  </body>
 </html>
