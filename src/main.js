@@ -2,6 +2,8 @@ const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
 const server = require("./server");
 
+let mainWindow = null;
+
 function createWindow() {
   const win = new BrowserWindow({
     width: 1200,
@@ -15,12 +17,15 @@ function createWindow() {
     title: "Connectio",
   });
 
+  mainWindow = win;
   win.loadFile(path.join(__dirname, "renderer", "index.html"));
 
   if (process.argv.includes("--dev")) {
     win.webContents.openDevTools();
   }
 }
+
+server.setLogHandler((entry) => mainWindow?.webContents.send("request:log", entry));
 
 ipcMain.handle("proxy:start", (_e, port) => server.start(port));
 ipcMain.handle("proxy:stop", () => server.stop());

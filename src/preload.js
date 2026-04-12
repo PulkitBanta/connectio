@@ -9,4 +9,5 @@ contextBridge.exposeInMainWorld("connectio", {
   rules: {
     update: (rules) => ipcRenderer.invoke("rules:update", rules),
   },
+  onLog: (cb) => ipcRenderer.on("request:log", (_e, entry) => cb(entry)),
 });

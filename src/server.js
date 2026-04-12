@@ -2,6 +2,11 @@ const express = require("express");
 const { createProxyMiddleware } = require("http-proxy-middleware");
 
 let rules = [];
+let logHandler = null;
+
+function setLogHandler(fn) {
+  logHandler = fn;
+}
 
 // Cache one proxy instance per target to avoid recreating it on every request
 const proxyCache = new Map();
@@ -41,8 +46,18 @@ function matchesRule(pattern, path) {
 }
 
 app.use((req, res, next) => {
+  const start = Date.now();
   const rule = rules.find((r) => matchesRule(r.matchPath, req.path));
   if (!rule) return res.status(404).json({ error: "No matching rule", path: req.path });
+  res.on("finish", () => {
+    logHandler?.({
+      method: req.method,
+      path: req.path,
+      status: res.statusCode,
+      ms: Date.now() - start,
+      targetUrl: rule.targetUrl,
+    });
+  });
   getProxy(rule.targetUrl)(req, res, next);
 });
 
@@ -78,4 +93,4 @@ function setRules(newRules) {
   proxyCache.clear();
 }
 
-module.exports = { start, stop, getStatus, setRules };
+module.exports = { start, stop, getStatus, setRules, setLogHandler };

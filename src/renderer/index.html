@@ -322,6 +322,39 @@
         });
       }
 
+      // ── Log listener (set up once) ───────────────────────────────
+      window.connectio.onLog((entry) => {
+        const app = apps.find((a) => a.targetUrl === entry.targetUrl);
+        if (!app) return;
+        app.logs = app.logs || [];
+        app.logs.unshift(entry);
+        if (app.id === selectedAppId) appendLogLine(entry);
+      });
+
+      function appendLogLine(entry) {
+        const list = document.getElementById("log-list");
+        if (!list) return;
+        const empty = list.querySelector(".log-empty");
+        if (empty) empty.remove();
+        const line = document.createElement("div");
+        line.className = "flex items-center gap-3 py-1.5 border-b border-white/3 font-mono text-xs";
+        const time = new Date(Date.now()).toTimeString().slice(0, 8);
+        const statusColor =
+          entry.status < 300
+            ? "text-emerald-400"
+            : entry.status < 500
+              ? "text-yellow-400"
+              : "text-red-400";
+        line.innerHTML = `
+          <span class="text-slate-600 shrink-0">${time}</span>
+          <span class="text-slate-400 shrink-0 w-10">${entry.method}</span>
+          <span class="text-slate-300 flex-1 truncate">${entry.path}</span>
+          <span class="${statusColor} shrink-0">${entry.status}</span>
+          <span class="text-slate-600 shrink-0">${entry.ms}ms</span>
+        `;
+        list.prepend(line);
+      }
+
       // ── Rules sync ───────────────────────────────────────────────
       function syncRules() {
         const flat = apps.flatMap((app) =>
@@ -366,6 +399,31 @@
 
         body.appendChild(rulesHeader);
         body.appendChild(rulesList);
+
+        const logsHeader = document.createElement("div");
+        logsHeader.className = "flex items-center justify-between mt-2";
+        const logsLabel = document.createElement("p");
+        logsLabel.className = "text-[10px] font-semibold uppercase tracking-widest text-slate-500";
+        logsLabel.textContent = "Recent Requests";
+        logsHeader.appendChild(logsLabel);
+
+        const logList = document.createElement("div");
+        logList.id = "log-list";
+        logList.className = "flex flex-col";
+
+        const logs = app.logs || [];
+        if (logs.length === 0) {
+          const empty = document.createElement("p");
+          empty.className = "log-empty text-xs text-slate-600";
+          empty.textContent = "No requests yet.";
+          logList.appendChild(empty);
+        } else {
+          logs.forEach((e) => appendLogLine(e));
+        }
+
+        body.appendChild(logsHeader);
+        body.appendChild(logList);
+
         requestView.appendChild(header);
         requestView.appendChild(body);
         lucide.createIcons();
