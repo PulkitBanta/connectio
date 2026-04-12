@@ -14,10 +14,14 @@ function getProxy(targetUrl) {
         target: targetUrl,
         changeOrigin: true,
         on: {
-          error: (err, req, res) => {
-            res
-              .status(502)
-              .json({ error: "Upstream unreachable", target: targetUrl, detail: err.message });
+          error: (err, _req, res) => {
+            const body = JSON.stringify({
+              error: "Upstream unreachable",
+              target: targetUrl,
+              detail: err.message,
+            });
+            res.writeHead(502, { "Content-Type": "application/json" });
+            res.end(body);
           },
         },
       }),
