@@ -8,7 +8,20 @@ const proxyCache = new Map();
 
 function getProxy(targetUrl) {
   if (!proxyCache.has(targetUrl)) {
-    proxyCache.set(targetUrl, createProxyMiddleware({ target: targetUrl, changeOrigin: true }));
+    proxyCache.set(
+      targetUrl,
+      createProxyMiddleware({
+        target: targetUrl,
+        changeOrigin: true,
+        on: {
+          error: (err, req, res) => {
+            res
+              .status(502)
+              .json({ error: "Upstream unreachable", target: targetUrl, detail: err.message });
+          },
+        },
+      }),
+    );
   }
   return proxyCache.get(targetUrl);
 }

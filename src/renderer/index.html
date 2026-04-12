@@ -122,7 +122,7 @@
           title="Expand / collapse"
           class="squircle w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-white/10 text-slate-400 hover:text-slate-200 transition-colors"
         >
-          <i data-lucide="arrow-right-to-line" class="w-4 h-4 shrink-0"></i>
+          <i data-lucide="chevron-right" class="w-4 h-4 shrink-0"></i>
           <span id="nav-toggle-label" class="hidden text-xs font-medium whitespace-nowrap"
             >Collapse</span
           >
@@ -179,6 +179,16 @@
     <aside class="w-52 shrink-0 flex flex-col bg-[#09090d]">
       <div class="flex flex-col gap-6 px-4 py-4">
         <section>
+          <div
+            class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-lg mb-3"
+          >
+            ⚡
+          </div>
+          <p class="text-sm font-semibold text-slate-300">Connectio</p>
+          <p class="text-xs text-slate-600 mt-0.5 leading-relaxed">Local proxy manager</p>
+        </section>
+
+        <section>
           <p class="text-[10px] font-semibold uppercase tracking-widest text-slate-500 mb-3">
             Proxy Server
           </p>
@@ -196,8 +206,6 @@
                 id="port"
                 type="number"
                 value="8080"
-                min="1024"
-                max="65535"
                 class="flex-1 min-w-0 bg-white/5 border border-white/10 rounded px-2 py-1 text-xs text-slate-300 focus:outline-none focus:border-white/25 transition-colors"
               />
             </div>
@@ -331,19 +339,11 @@
         const app = apps.find((a) => a.id === appId);
         requestView.innerHTML = "";
 
-        // Header
         const header = document.createElement("div");
-        header.className = "px-6 py-4 border-b border-white/5 shrink-0";
-        const headerName = document.createElement("p");
-        headerName.className = "text-sm font-semibold text-slate-300";
-        headerName.textContent = app.name;
-        const headerUrl = document.createElement("p");
-        headerUrl.className = "text-xs text-slate-500 mt-0.5";
-        headerUrl.textContent = app.targetUrl;
-        header.appendChild(headerName);
-        header.appendChild(headerUrl);
+        header.className =
+          "px-6 py-4 border-b border-white/5 shrink-0 flex items-start justify-between gap-4";
+        renderHeader(app, header);
 
-        // Rules section
         const body = document.createElement("div");
         body.className = "flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-4";
 
@@ -366,9 +366,121 @@
 
         body.appendChild(rulesHeader);
         body.appendChild(rulesList);
-
         requestView.appendChild(header);
         requestView.appendChild(body);
+        lucide.createIcons();
+      }
+
+      function renderHeader(app, header) {
+        header.innerHTML = "";
+
+        const info = document.createElement("div");
+        const nameEl = document.createElement("p");
+        nameEl.className = "text-sm font-semibold text-slate-300";
+        nameEl.textContent = app.name;
+        const urlEl = document.createElement("p");
+        urlEl.className = "text-xs text-slate-500 mt-0.5";
+        urlEl.textContent = app.targetUrl;
+        info.appendChild(nameEl);
+        info.appendChild(urlEl);
+
+        const actions = document.createElement("div");
+        actions.className = "flex items-center gap-1 shrink-0 mt-0.5";
+
+        const editBtn = document.createElement("button");
+        editBtn.title = "Edit app";
+        editBtn.className =
+          "p-1.5 rounded text-slate-500 hover:text-slate-200 hover:bg-white/8 transition-colors";
+        const editIcon = document.createElement("i");
+        editIcon.setAttribute("data-lucide", "pencil");
+        editIcon.className = "w-3.5 h-3.5";
+        editBtn.appendChild(editIcon);
+        editBtn.addEventListener("click", () => renderHeaderEdit(app, header));
+
+        const delBtn = document.createElement("button");
+        delBtn.title = "Delete app";
+        delBtn.className =
+          "p-1.5 rounded text-slate-600 hover:text-red-400 hover:bg-red-900/20 transition-colors";
+        const delIcon = document.createElement("i");
+        delIcon.setAttribute("data-lucide", "trash-2");
+        delIcon.className = "w-3.5 h-3.5";
+        delBtn.appendChild(delIcon);
+        delBtn.addEventListener("click", () => deleteApp(app.id));
+
+        actions.appendChild(editBtn);
+        actions.appendChild(delBtn);
+        header.appendChild(info);
+        header.appendChild(actions);
+      }
+
+      function renderHeaderEdit(app, header) {
+        header.innerHTML = "";
+
+        const fields = document.createElement("div");
+        fields.className = "flex flex-col gap-2 flex-1";
+
+        const nameInput = document.createElement("input");
+        nameInput.type = "text";
+        nameInput.value = app.name;
+        nameInput.className =
+          "bg-white/5 border border-white/10 rounded px-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-white/25 transition-colors";
+
+        const urlInput = document.createElement("input");
+        urlInput.type = "text";
+        urlInput.value = app.targetUrl;
+        urlInput.className =
+          "bg-white/5 border border-white/10 rounded px-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-white/25 font-mono transition-colors";
+
+        const btns = document.createElement("div");
+        btns.className = "flex gap-2";
+
+        const save = document.createElement("button");
+        save.className =
+          "px-3 py-1 rounded text-xs bg-emerald-700 hover:bg-emerald-600 text-white transition-colors";
+        save.textContent = "Save";
+
+        const cancel = document.createElement("button");
+        cancel.className =
+          "px-3 py-1 rounded text-xs text-slate-500 hover:text-slate-300 transition-colors";
+        cancel.textContent = "Cancel";
+
+        save.addEventListener("click", () => {
+          const name = nameInput.value.trim();
+          const targetUrl = urlInput.value.trim();
+          if (!name || !targetUrl) return;
+          app.name = name;
+          app.targetUrl = targetUrl;
+          syncRules();
+          renderSidebar();
+          renderHeader(app, header);
+          lucide.createIcons();
+        });
+        cancel.addEventListener("click", () => {
+          renderHeader(app, header);
+          lucide.createIcons();
+        });
+
+        btns.appendChild(save);
+        btns.appendChild(cancel);
+        fields.appendChild(nameInput);
+        fields.appendChild(urlInput);
+        fields.appendChild(btns);
+        header.appendChild(fields);
+        nameInput.focus();
+      }
+
+      function deleteApp(appId) {
+        const idx = apps.findIndex((a) => a.id === appId);
+        apps.splice(idx, 1);
+        syncRules();
+        selectedAppId = null;
+        renderSidebar();
+        if (apps.length > 0) {
+          selectApp(apps[apps.length - 1].id);
+        } else {
+          requestView.classList.add("hidden");
+          emptyState.classList.remove("hidden");
+        }
       }
 
       function renderRulesList(app, container) {
@@ -380,13 +492,46 @@
           container.appendChild(empty);
           return;
         }
-        app.rules.forEach((rule) => {
+        app.rules.forEach((rule, i) => {
           const row = document.createElement("div");
           row.className =
-            "flex items-center gap-3 px-3 py-2 rounded-lg bg-white/3 hover:bg-white/5 group transition-colors";
+            "flex items-center gap-2 px-3 py-2 rounded-lg bg-white/3 hover:bg-white/5 group transition-colors";
+
+          // Reorder buttons
+          const upBtn = document.createElement("button");
+          upBtn.textContent = "↑";
+          upBtn.title = "Move up";
+          upBtn.className = `text-xs transition-colors ${i === 0 ? "text-slate-700 pointer-events-none" : "text-slate-600 hover:text-slate-300"}`;
+          upBtn.addEventListener("click", () => {
+            [app.rules[i - 1], app.rules[i]] = [app.rules[i], app.rules[i - 1]];
+            syncRules();
+            renderRulesList(app, container);
+          });
+
+          const downBtn = document.createElement("button");
+          downBtn.textContent = "↓";
+          downBtn.title = "Move down";
+          downBtn.className = `text-xs transition-colors ${i === app.rules.length - 1 ? "text-slate-700 pointer-events-none" : "text-slate-600 hover:text-slate-300"}`;
+          downBtn.addEventListener("click", () => {
+            [app.rules[i], app.rules[i + 1]] = [app.rules[i + 1], app.rules[i]];
+            syncRules();
+            renderRulesList(app, container);
+          });
+
+          // Enable/disable dot
+          const dot = document.createElement("button");
+          dot.className = `w-2 h-2 rounded-full shrink-0 transition-colors ${rule.enabled ? "bg-emerald-500" : "bg-slate-600"}`;
+          dot.title = rule.enabled ? "Click to disable rule" : "Click to enable rule";
+          dot.addEventListener("click", () => {
+            rule.enabled = !rule.enabled;
+            syncRules();
+            renderRulesList(app, container);
+          });
+
           const path = document.createElement("span");
-          path.className = "text-xs text-slate-300 font-mono flex-1";
+          path.className = `text-xs font-mono flex-1 ${rule.enabled ? "text-slate-300" : "text-slate-600 line-through"}`;
           path.textContent = rule.matchPath;
+
           const del = document.createElement("button");
           del.className =
             "text-slate-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all text-xs";
@@ -394,9 +539,12 @@
           del.addEventListener("click", () => {
             app.rules = app.rules.filter((r) => r.id !== rule.id);
             syncRules();
-            const list = document.getElementById("rules-list");
-            renderRulesList(app, list);
+            renderRulesList(app, container);
           });
+
+          row.appendChild(upBtn);
+          row.appendChild(downBtn);
+          row.appendChild(dot);
           row.appendChild(path);
           row.appendChild(del);
           container.appendChild(row);
@@ -428,8 +576,7 @@
           syncRules();
           form.remove();
           addBtn.classList.remove("hidden");
-          const list = document.getElementById("rules-list");
-          renderRulesList(app, list);
+          renderRulesList(app, document.getElementById("rules-list"));
         }
 
         confirm.addEventListener("click", commit);
@@ -474,7 +621,13 @@
         btn.disabled = true;
 
         if (!running) {
-          const result = await window.connectio.proxy.start(parseInt(portInput.value) || 8080);
+          const port = parseInt(portInput.value);
+          if (isNaN(port) || port < 1024 || port > 65535) {
+            status.textContent = "Invalid port (1024–65535)";
+            btn.disabled = false;
+            return;
+          }
+          const result = await window.connectio.proxy.start(port);
           if (result.ok) {
             running = true;
             dot.className = "w-2 h-2 rounded-full bg-emerald-400 transition-colors duration-300";
