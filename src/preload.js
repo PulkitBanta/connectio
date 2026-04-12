@@ -6,4 +6,7 @@ contextBridge.exposeInMainWorld("connectio", {
     stop: () => ipcRenderer.invoke("proxy:stop"),
     getStatus: () => ipcRenderer.invoke("proxy:getStatus"),
   },
+  rules: {
+    update: (rules) => ipcRenderer.invoke("rules:update", rules),
+  },
 });

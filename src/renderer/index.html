@@ -256,7 +256,7 @@
           modalError.classList.remove("hidden");
           return;
         }
-        const app = { id: crypto.randomUUID(), name, targetUrl, enabled: true };
+        const app = { id: crypto.randomUUID(), name, targetUrl, enabled: true, rules: [] };
         apps.push(app);
         renderSidebar();
         selectApp(app.id);
@@ -314,20 +314,147 @@
         });
       }
 
-      // ── App selection ────────────────────────────────────────────
+      // ── Rules sync ───────────────────────────────────────────────
+      function syncRules() {
+        const flat = apps.flatMap((app) =>
+          app.rules
+            .filter((r) => r.enabled)
+            .map((r) => ({ matchPath: r.matchPath, targetUrl: app.targetUrl })),
+        );
+        window.connectio.rules.update(flat);
+      }
+
+      // ── App view ─────────────────────────────────────────────────
       const requestView = document.getElementById("request-view");
+
+      function renderAppView(appId) {
+        const app = apps.find((a) => a.id === appId);
+        requestView.innerHTML = "";
+
+        // Header
+        const header = document.createElement("div");
+        header.className = "px-6 py-4 border-b border-white/5 shrink-0";
+        const headerName = document.createElement("p");
+        headerName.className = "text-sm font-semibold text-slate-300";
+        headerName.textContent = app.name;
+        const headerUrl = document.createElement("p");
+        headerUrl.className = "text-xs text-slate-500 mt-0.5";
+        headerUrl.textContent = app.targetUrl;
+        header.appendChild(headerName);
+        header.appendChild(headerUrl);
+
+        // Rules section
+        const body = document.createElement("div");
+        body.className = "flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-4";
+
+        const rulesHeader = document.createElement("div");
+        rulesHeader.className = "flex items-center justify-between";
+        const rulesLabel = document.createElement("p");
+        rulesLabel.className = "text-[10px] font-semibold uppercase tracking-widest text-slate-500";
+        rulesLabel.textContent = "Route Rules";
+        const addRuleBtn = document.createElement("button");
+        addRuleBtn.className = "text-xs text-emerald-500 hover:text-emerald-400 transition-colors";
+        addRuleBtn.textContent = "+ Add Rule";
+        addRuleBtn.addEventListener("click", () => showRuleInput(app, body, addRuleBtn));
+        rulesHeader.appendChild(rulesLabel);
+        rulesHeader.appendChild(addRuleBtn);
+
+        const rulesList = document.createElement("div");
+        rulesList.id = "rules-list";
+        rulesList.className = "flex flex-col gap-1";
+        renderRulesList(app, rulesList);
+
+        body.appendChild(rulesHeader);
+        body.appendChild(rulesList);
+
+        requestView.appendChild(header);
+        requestView.appendChild(body);
+      }
+
+      function renderRulesList(app, container) {
+        container.innerHTML = "";
+        if (app.rules.length === 0) {
+          const empty = document.createElement("p");
+          empty.className = "text-xs text-slate-600";
+          empty.textContent = "No rules yet. Add one to start routing traffic.";
+          container.appendChild(empty);
+          return;
+        }
+        app.rules.forEach((rule) => {
+          const row = document.createElement("div");
+          row.className =
+            "flex items-center gap-3 px-3 py-2 rounded-lg bg-white/3 hover:bg-white/5 group transition-colors";
+          const path = document.createElement("span");
+          path.className = "text-xs text-slate-300 font-mono flex-1";
+          path.textContent = rule.matchPath;
+          const del = document.createElement("button");
+          del.className =
+            "text-slate-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all text-xs";
+          del.textContent = "✕";
+          del.addEventListener("click", () => {
+            app.rules = app.rules.filter((r) => r.id !== rule.id);
+            syncRules();
+            const list = document.getElementById("rules-list");
+            renderRulesList(app, list);
+          });
+          row.appendChild(path);
+          row.appendChild(del);
+          container.appendChild(row);
+        });
+      }
+
+      function showRuleInput(app, body, addBtn) {
+        addBtn.classList.add("hidden");
+        const form = document.createElement("div");
+        form.className = "flex items-center gap-2";
+        const input = document.createElement("input");
+        input.type = "text";
+        input.placeholder = "/api/v1";
+        input.className =
+          "flex-1 bg-white/5 border border-white/10 rounded px-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-white/25 font-mono transition-colors";
+        const confirm = document.createElement("button");
+        confirm.className =
+          "px-3 py-1.5 rounded text-xs bg-emerald-700 hover:bg-emerald-600 text-white transition-colors";
+        confirm.textContent = "Add";
+        const cancel = document.createElement("button");
+        cancel.className =
+          "px-3 py-1.5 rounded text-xs text-slate-500 hover:text-slate-300 transition-colors";
+        cancel.textContent = "Cancel";
+
+        function commit() {
+          const val = input.value.trim();
+          if (!val) return;
+          app.rules.push({ id: crypto.randomUUID(), matchPath: val, enabled: true });
+          syncRules();
+          form.remove();
+          addBtn.classList.remove("hidden");
+          const list = document.getElementById("rules-list");
+          renderRulesList(app, list);
+        }
+
+        confirm.addEventListener("click", commit);
+        cancel.addEventListener("click", () => {
+          form.remove();
+          addBtn.classList.remove("hidden");
+        });
+        input.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") commit();
+          if (e.key === "Escape") cancel.click();
+        });
+
+        form.appendChild(input);
+        form.appendChild(confirm);
+        form.appendChild(cancel);
+        body.appendChild(form);
+        input.focus();
+      }
 
       function selectApp(id) {
         selectedAppId = id;
         renderSidebar();
         emptyState.classList.add("hidden");
         requestView.classList.remove("hidden");
-        requestView.innerHTML = `
-          <div class="h-full flex flex-col items-center justify-center gap-2">
-            <p class="text-base font-semibold text-slate-400">No logs yet</p>
-            <p class="text-xs text-slate-600">Requests will appear here once the proxy receives traffic.</p>
-          </div>
-        `;
+        renderAppView(id);
       }
 
       function onAddProxy() {

@@ -1,7 +1,7 @@
 const express = require("express");
 const { createProxyMiddleware } = require("http-proxy-middleware");
 
-const rules = [{ id: "1", matchPath: "/api", targetUrl: "http://localhost:3001", enabled: true }];
+let rules = [];
 
 // Cache one proxy instance per target to avoid recreating it on every request
 const proxyCache = new Map();
@@ -48,4 +48,9 @@ function getStatus() {
   return { running: !!server, port: server?.address()?.port ?? null };
 }
 
-module.exports = { start, stop, getStatus };
+function setRules(newRules) {
+  rules = newRules;
+  proxyCache.clear();
+}
+
+module.exports = { start, stop, getStatus, setRules };

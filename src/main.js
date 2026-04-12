@@ -25,6 +25,7 @@ function createWindow() {
 ipcMain.handle("proxy:start", (_e, port) => server.start(port));
 ipcMain.handle("proxy:stop", () => server.stop());
 ipcMain.handle("proxy:getStatus", () => server.getStatus());
+ipcMain.handle("rules:update", (_e, rules) => server.setRules(rules));
 
 app.whenReady().then(() => {
   createWindow();
