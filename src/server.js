@@ -15,8 +15,16 @@ function getProxy(targetUrl) {
 
 const app = express();
 
+function matchesRule(pattern, path) {
+  if (!pattern.includes("*")) return path.startsWith(pattern);
+  // Escape all regex special chars except *, then replace * with .* for wildcard matching.
+  // e.g. "/api/*" becomes /^\/api\/.*/ and matches "/api/users", "/api/v1/orders", etc.
+  const escaped = pattern.replace(/[.+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp("^" + escaped.replace(/\*/g, ".*")).test(path);
+}
+
 app.use((req, res, next) => {
-  const rule = rules.find((r) => r.enabled && req.path.startsWith(r.matchPath));
+  const rule = rules.find((r) => matchesRule(r.matchPath, req.path));
   if (!rule) return res.status(404).json({ error: "No matching rule", path: req.path });
   getProxy(rule.targetUrl)(req, res, next);
 });
