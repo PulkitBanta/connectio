@@ -429,7 +429,7 @@
         const addRuleBtn = document.createElement("button");
         addRuleBtn.className = "text-xs text-emerald-500 hover:text-emerald-400 transition-colors";
         addRuleBtn.textContent = "+ Add Rule";
-        addRuleBtn.addEventListener("click", () => showRuleInput(app, body, addRuleBtn));
+        addRuleBtn.addEventListener("click", () => showRuleInput(app, rulesList, addRuleBtn));
         rulesHeader.appendChild(rulesLabel);
         rulesHeader.appendChild(addRuleBtn);
 
@@ -450,7 +450,7 @@
 
         const logList = document.createElement("div");
         logList.id = "log-list";
-        logList.className = "flex flex-col";
+        logList.className = "flex flex-col overflow-y-auto max-h-96";
 
         const logs = app.logs || [];
         if (logs.length === 0) {
@@ -650,7 +650,7 @@
         });
       }
 
-      function showRuleInput(app, body, addBtn) {
+      function showRuleInput(app, rulesList, addBtn) {
         addBtn.classList.add("hidden");
         const form = document.createElement("div");
         form.className = "flex items-center gap-2";
@@ -691,7 +691,7 @@
         form.appendChild(input);
         form.appendChild(confirm);
         form.appendChild(cancel);
-        body.appendChild(form);
+        rulesList.insertAdjacentElement("afterend", form);
         input.focus();
       }
 
