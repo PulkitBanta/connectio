@@ -290,11 +290,30 @@
           configListEl.appendChild(hint);
         }
         names.forEach((name) => {
+          const row = document.createElement("div");
+          row.className = "group flex items-center gap-2";
+
           const btn = document.createElement("button");
-          btn.className = "w-full text-left px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-xs text-slate-300 transition-colors";
+          btn.className = "flex-1 text-left px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-xs text-slate-300 transition-colors";
           btn.textContent = name;
           btn.addEventListener("click", () => loadConfigAndEnter(name));
-          configListEl.appendChild(btn);
+
+          const del = document.createElement("button");
+          del.className = "text-slate-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all text-xs px-1";
+          del.textContent = "✕";
+          del.title = "Delete config";
+          del.addEventListener("click", async () => {
+            await window.connectio.config.delete(name);
+            if (activeConfigName === name) {
+              activeConfigName = null;
+              document.getElementById("config-name-label").textContent = "";
+            }
+            await renderConfigList();
+          });
+
+          row.appendChild(btn);
+          row.appendChild(del);
+          configListEl.appendChild(row);
         });
       }
 

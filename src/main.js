@@ -57,6 +57,11 @@ ipcMain.handle("config:save", (_e, name, data) => {
   fs.writeFileSync(path.join(configDir, `${name}.json`), JSON.stringify(data, null, 2));
   return { ok: true };
 });
+ipcMain.handle("config:delete", (_e, name) => {
+  const file = path.join(configDir, `${name}.json`);
+  if (fs.existsSync(file)) fs.unlinkSync(file);
+  return { ok: true };
+});
 
 app.whenReady().then(() => {
   createWindow();

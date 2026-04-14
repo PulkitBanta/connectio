@@ -15,5 +15,6 @@ contextBridge.exposeInMainWorld("connectio", {
     list: () => ipcRenderer.invoke("config:list"),
     load: (name) => ipcRenderer.invoke("config:load", name),
     save: (name, data) => ipcRenderer.invoke("config:save", name, data),
+    delete: (name) => ipcRenderer.invoke("config:delete", name),
   },
 });
