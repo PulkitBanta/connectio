@@ -89,6 +89,22 @@
       </div>
     </div>
 
+    <!-- Save config dialog -->
+    <div id="save-config-overlay" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+      <div class="bg-[#16181f] border border-white/10 rounded-xl p-6 w-80 flex flex-col gap-4 shadow-xl">
+        <p class="text-sm font-semibold text-slate-200">Save Config</p>
+        <div class="flex flex-col gap-1">
+          <label class="text-xs text-slate-500">Config name</label>
+          <input id="save-config-name" type="text"
+            class="bg-white/5 border border-white/10 rounded px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-white/25 transition-colors" />
+        </div>
+        <div class="flex gap-2 justify-end">
+          <button id="save-config-cancel" class="px-4 py-2 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors">Cancel</button>
+          <button id="save-config-confirm" class="px-4 py-2 rounded-lg text-xs bg-emerald-700 hover:bg-emerald-600 text-white transition-colors">Save</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Add proxy modal -->
     <div
       id="modal-overlay"
@@ -340,14 +356,37 @@
 
       document.getElementById("load-config-btn").addEventListener("click", openConfigPicker);
 
-      document.getElementById("save-config-btn").addEventListener("click", async () => {
-        if (!activeConfigName) return;
+      const saveConfigOverlay = document.getElementById("save-config-overlay");
+      const saveConfigNameInput = document.getElementById("save-config-name");
+
+      function openSaveDialog() {
+        saveConfigNameInput.value = activeConfigName || "";
+        saveConfigOverlay.classList.remove("hidden");
+        saveConfigNameInput.focus();
+        saveConfigNameInput.select();
+      }
+
+      function closeSaveDialog() {
+        saveConfigOverlay.classList.add("hidden");
+      }
+
+      async function confirmSaveConfig() {
+        const name = saveConfigNameInput.value.trim();
+        if (!name) return;
         const port = parseInt(document.getElementById("port").value, 10) || 8080;
-        await window.connectio.config.save(activeConfigName, { apps, port });
-        const btn = document.getElementById("save-config-btn");
-        const orig = btn.textContent;
-        btn.textContent = "Saved!";
-        setTimeout(() => (btn.textContent = orig), 1500);
+        await window.connectio.config.save(name, { apps, port });
+        activeConfigName = name;
+        document.getElementById("config-name-label").textContent = name;
+        closeSaveDialog();
+      }
+
+      document.getElementById("save-config-btn").addEventListener("click", openSaveDialog);
+      document.getElementById("save-config-cancel").addEventListener("click", closeSaveDialog);
+      document.getElementById("save-config-confirm").addEventListener("click", confirmSaveConfig);
+      saveConfigOverlay.addEventListener("click", (e) => { if (e.target === saveConfigOverlay) closeSaveDialog(); });
+      saveConfigNameInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") confirmSaveConfig();
+        if (e.key === "Escape") closeSaveDialog();
       });
 
       // Nav expand / collapse
