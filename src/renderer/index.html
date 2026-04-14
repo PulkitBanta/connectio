@@ -171,7 +171,7 @@
         </button>
       </div>
 
-      <div id="request-view" class="hidden flex-1"></div>
+      <div id="request-view" class="hidden flex-1 flex flex-col"></div>
     </main>
 
     <div class="w-px bg-white/5 shrink-0"></div>
@@ -419,7 +419,7 @@
         renderHeader(app, header);
 
         const body = document.createElement("div");
-        body.className = "flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-4";
+        body.className = "flex-1 min-h-0 px-6 py-4 flex flex-col gap-4";
 
         const rulesHeader = document.createElement("div");
         rulesHeader.className = "flex items-center justify-between";
@@ -441,8 +441,11 @@
         body.appendChild(rulesHeader);
         body.appendChild(rulesList);
 
+        const logsSection = document.createElement("div");
+        logsSection.className = "flex-1 flex flex-col min-h-0 gap-2";
+
         const logsHeader = document.createElement("div");
-        logsHeader.className = "flex items-center justify-between mt-2";
+        logsHeader.className = "flex items-center justify-between shrink-0";
         const logsLabel = document.createElement("p");
         logsLabel.className = "text-[10px] font-semibold uppercase tracking-widest text-slate-500";
         logsLabel.textContent = "Recent Requests";
@@ -450,7 +453,7 @@
 
         const logList = document.createElement("div");
         logList.id = "log-list";
-        logList.className = "flex flex-col overflow-y-auto max-h-96";
+        logList.className = "flex-1 overflow-y-auto flex flex-col min-h-0";
 
         const logs = app.logs || [];
         if (logs.length === 0) {
@@ -462,8 +465,9 @@
           logs.forEach((e) => buildLogLine(e, logList));
         }
 
-        body.appendChild(logsHeader);
-        body.appendChild(logList);
+        logsSection.appendChild(logsHeader);
+        logsSection.appendChild(logList);
+        body.appendChild(logsSection);
 
         requestView.appendChild(header);
         requestView.appendChild(body);
