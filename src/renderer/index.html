@@ -316,6 +316,7 @@
       }
 
       async function loadConfigAndEnter(name) {
+        await stopServer();
         const data = await window.connectio.config.load(name);
         activeConfigName = name;
         document.getElementById("config-name-label").textContent = name;
@@ -910,6 +911,18 @@
       const btn = document.getElementById("toggle");
       let running = false;
 
+      async function stopServer() {
+        if (!running) return;
+        await window.connectio.proxy.stop();
+        running = false;
+        dot.className = "w-2 h-2 rounded-full bg-slate-700 transition-colors duration-300";
+        status.textContent = "Offline";
+        btn.textContent = "Start Server";
+        btn.className = btn.className.replace("bg-red-800 hover:bg-red-700", "bg-emerald-700 hover:bg-emerald-600");
+        portInput.disabled = false;
+        portInput.className = portInput.className.replace(" opacity-40 cursor-not-allowed", "");
+      }
+
       btn.addEventListener("click", async () => {
         btn.disabled = true;
 
@@ -936,17 +949,7 @@
             status.textContent = `Error: ${result.error}`;
           }
         } else {
-          await window.connectio.proxy.stop();
-          running = false;
-          dot.className = "w-2 h-2 rounded-full bg-slate-700 transition-colors duration-300";
-          status.textContent = "Offline";
-          btn.textContent = "Start Server";
-          btn.className = btn.className.replace(
-            "bg-red-800 hover:bg-red-700",
-            "bg-emerald-700 hover:bg-emerald-600",
-          );
-          portInput.disabled = false;
-          portInput.className = portInput.className.replace(" opacity-40 cursor-not-allowed", "");
+          await stopServer();
         }
 
         btn.disabled = false;
