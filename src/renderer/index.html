@@ -69,6 +69,26 @@
   </head>
 
   <body class="bg-[#0f1117] text-slate-200 h-screen flex overflow-hidden select-none">
+    <!-- Config picker -->
+    <div id="config-picker" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+      <div class="bg-[#16181f] border border-white/10 rounded-xl p-6 w-80 flex flex-col gap-4 shadow-xl">
+        <p class="text-sm font-semibold text-slate-200">Load Config</p>
+        <div id="config-list" class="flex flex-col gap-2"></div>
+        <div id="config-new-form" class="hidden flex flex-col gap-2">
+          <input id="config-new-name" type="text" placeholder="Config name (e.g. Local Dev)"
+            class="bg-white/5 border border-white/10 rounded px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-white/25 transition-colors" />
+          <div class="flex gap-2 justify-end">
+            <button id="config-new-cancel" class="px-4 py-2 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors">Cancel</button>
+            <button id="config-new-confirm" class="px-4 py-2 rounded-lg text-xs bg-emerald-700 hover:bg-emerald-600 text-white transition-colors">Create</button>
+          </div>
+        </div>
+        <div class="flex items-center justify-between">
+          <button id="config-new-btn" class="text-xs text-emerald-500 hover:text-emerald-400 transition-colors">+ New config</button>
+          <button id="config-picker-close" class="text-xs text-slate-500 hover:text-slate-300 transition-colors">Close</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Add proxy modal -->
     <div
       id="modal-overlay"
@@ -115,7 +135,7 @@
         </div>
       </div>
     </div>
-    <nav id="nav" class="w-16 flex flex-col bg-[#09090d] py-3 overflow-hidden shrink-0">
+    <nav id="nav" class="w-20 flex flex-col bg-[#09090d] py-3 overflow-hidden shrink-0">
       <div id="nav-toggle-wrap" class="flex justify-center px-3 mb-2">
         <button
           id="nav-toggle"
@@ -176,8 +196,8 @@
 
     <div class="w-px bg-white/5 shrink-0"></div>
 
-    <aside class="w-52 shrink-0 flex flex-col bg-[#09090d]">
-      <div class="flex flex-col gap-6 px-4 py-4">
+    <aside class="w-64 shrink-0 flex flex-col bg-[#09090d]">
+      <div class="flex-1 flex flex-col gap-6 px-4 py-4">
         <section>
           <div
             class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-lg mb-3"
@@ -218,9 +238,118 @@
           </div>
         </section>
       </div>
+
+      <div class="px-4 py-4 border-t border-white/5 flex flex-col gap-2">
+        <p id="config-name-label" class="text-xs text-slate-500 truncate"></p>
+        <div class="flex gap-2">
+          <button id="save-config-btn" class="flex-1 py-2 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-slate-300 transition-colors">
+            Save
+          </button>
+          <button id="load-config-btn" class="flex-1 py-2 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-slate-300 transition-colors">
+            Load
+          </button>
+        </div>
+      </div>
     </aside>
 
     <script>
+      // ── Config picker ──────────────────────────────────────────────
+      let activeConfigName = null;
+
+      const picker = document.getElementById("config-picker");
+      const configListEl = document.getElementById("config-list");
+      const configNewBtn = document.getElementById("config-new-btn");
+      const configNewForm = document.getElementById("config-new-form");
+      const configNewNameInput = document.getElementById("config-new-name");
+
+      async function renderConfigList() {
+        configListEl.innerHTML = "";
+        const names = await window.connectio.config.list();
+        if (names.length === 0) {
+          const hint = document.createElement("p");
+          hint.className = "text-xs text-slate-600";
+          hint.textContent = "No saved configs yet.";
+          configListEl.appendChild(hint);
+        }
+        names.forEach((name) => {
+          const btn = document.createElement("button");
+          btn.className = "w-full text-left px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-xs text-slate-300 transition-colors";
+          btn.textContent = name;
+          btn.addEventListener("click", () => loadConfigAndEnter(name));
+          configListEl.appendChild(btn);
+        });
+      }
+
+      async function loadConfigAndEnter(name) {
+        const data = await window.connectio.config.load(name);
+        activeConfigName = name;
+        document.getElementById("config-name-label").textContent = name;
+        if (data) {
+          apps.length = 0;
+          data.apps.forEach((a) => apps.push(a));
+          if (data.port) document.getElementById("port").value = data.port;
+          renderSidebar();
+          if (apps.length > 0) selectApp(apps[0].id);
+        }
+        picker.classList.add("hidden");
+      }
+
+      document.getElementById("config-picker-close").addEventListener("click", () => {
+        picker.classList.add("hidden");
+      });
+      picker.addEventListener("click", (e) => {
+        if (e.target === picker) picker.classList.add("hidden");
+      });
+
+      function showNewConfigForm() {
+        configNewBtn.classList.add("hidden");
+        configNewForm.classList.remove("hidden");
+        configNewNameInput.value = "";
+        configNewNameInput.focus();
+      }
+
+      async function confirmNewConfig() {
+        const name = configNewNameInput.value.trim();
+        if (!name) return;
+        await window.connectio.config.save(name, { apps: [], port: 8080 });
+        await loadConfigAndEnter(name);
+      }
+
+      configNewBtn.addEventListener("click", showNewConfigForm);
+      document.getElementById("config-new-cancel").addEventListener("click", () => {
+        configNewForm.classList.add("hidden");
+        configNewBtn.classList.remove("hidden");
+      });
+      document.getElementById("config-new-confirm").addEventListener("click", confirmNewConfig);
+      configNewNameInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") confirmNewConfig();
+        if (e.key === "Escape") document.getElementById("config-new-cancel").click();
+      });
+
+      async function openConfigPicker() {
+        configNewForm.classList.add("hidden");
+        configNewBtn.classList.remove("hidden");
+        await renderConfigList();
+        picker.classList.remove("hidden");
+      }
+
+      async function initConfigPicker() {
+        const configDir = await window.connectio.config.dir();
+        document.getElementById("config-name-label").title = configDir;
+      }
+
+      document.getElementById("load-config-btn").addEventListener("click", openConfigPicker);
+
+      document.getElementById("save-config-btn").addEventListener("click", async () => {
+        if (!activeConfigName) return;
+        const port = parseInt(document.getElementById("port").value, 10) || 8080;
+        await window.connectio.config.save(activeConfigName, { apps, port });
+        const btn = document.getElementById("save-config-btn");
+        const orig = btn.textContent;
+        btn.textContent = "Saved!";
+        setTimeout(() => (btn.textContent = orig), 1500);
+      });
+
       // Nav expand / collapse
       const nav = document.getElementById("nav");
       const navToggle = document.getElementById("nav-toggle");
@@ -228,7 +357,7 @@
 
       navToggle.addEventListener("click", () => {
         navExpanded = !navExpanded;
-        nav.style.width = navExpanded ? "180px" : "64px";
+        nav.style.width = navExpanded ? "210px" : "80px";
         navToggle.classList.toggle("active", navExpanded);
         nav.classList.toggle("expanded", navExpanded);
         renderSidebar();
@@ -763,6 +892,7 @@
       });
 
       lucide.createIcons();
+      initConfigPicker();
     </script>
   </body>
 </html>
