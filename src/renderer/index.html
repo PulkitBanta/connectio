@@ -416,12 +416,15 @@
 
       function renderSidebar() {
         proxyList.innerHTML = "";
+        proxyList.className = navExpanded
+          ? "flex flex-col gap-2 px-3 flex-1"
+          : "flex flex-col gap-2 px-3 flex-1 items-center";
         apps.forEach((app, i) => {
           const isSelected = app.id === selectedAppId;
 
           if (navExpanded) {
             const row = document.createElement("div");
-            row.className = "group relative flex items-center gap-1";
+            row.className = "group relative flex items-center gap-1 w-full";
 
             const btn = document.createElement("button");
             btn.title = app.name;
