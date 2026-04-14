@@ -1,6 +1,11 @@
 {
   "name": "connectio",
   "version": "0.1.0",
+  "license": "MIT",
+  "author": {
+    "name": "Pulkit Banta",
+    "email": "pulkitbanta@gmail.com"
+  },
   "description": "A local proxy manager — connect and route between local servers with optional Cloudflare tunnel exposure",
   "main": "src/main.js",
   "devDependencies": {
@@ -34,7 +39,8 @@
     },
     "linux": {
       "target": ["AppImage", "deb"],
-      "category": "Network"
+      "category": "Network",
+      "maintainer": "Pulkit Banta <pulkitbanta@gmail.com>"
     }
   },
   "dependencies": {
