@@ -1,6 +1,6 @@
 # Connectio
 
-A local proxy manager — connect and route between local servers with optional Cloudflare tunnel exposure
+A local proxy manager - Connect your applications with a simple config based server to proxy servers and combine those under a single umbrella.
 
 ## Development
 
