@@ -1,7 +1,10 @@
-name: Build & Release
+name: Build
 
 on:
   push:
+    branches:
+      - main
+  pull_request:
     branches:
       - main
 
@@ -31,6 +34,4 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Build
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: yarn build --publish always
+        run: npx electron-builder --publish never
