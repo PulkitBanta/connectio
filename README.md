@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/icon.png" alt="Connectio" width="128" />
+  <img src="icons/icon.png" alt="Connectio" width="128" />
 </p>
 
 <h1 align="center">Connectio</h1>

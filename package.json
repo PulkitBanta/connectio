@@ -30,11 +30,14 @@
     "directories": {
       "output": "dist"
     },
+    "icon": "icons",
     "mac": {
       "category": "public.app-category.developer-tools",
+      "icon": "icons/icon.icns",
       "target": ["dmg", "zip"]
     },
     "win": {
+      "icon": "icons/icon.ico",
       "target": ["nsis", "zip"]
     },
     "linux": {
