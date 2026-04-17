@@ -3,16 +3,60 @@ name: Release
 on:
   workflow_dispatch:
     inputs:
-      version:
-        description: "Release version (e.g. 0.2.0)"
+      bump:
+        description: "Version bump type"
         required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+        default: patch
+      version:
+        description: "Override version (leave empty to auto-increment)"
+        required: false
         type: string
 
 permissions:
   contents: write
 
 jobs:
+  resolve-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine version
+        id: version
+        run: |
+          if [ -n "${{ inputs.version }}" ]; then
+            echo "version=${{ inputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            # Get latest tag or default to 0.0.0
+            LATEST=$(git tag -l 'v*' --sort=-v:refname | head -n1 | sed 's/^v//')
+            if [ -z "$LATEST" ]; then
+              LATEST="0.0.0"
+            fi
+
+            IFS='.' read -r MAJOR MINOR PATCH <<< "$LATEST"
+            case "${{ inputs.bump }}" in
+              major) MAJOR=$((MAJOR + 1)); MINOR=0; PATCH=0 ;;
+              minor) MINOR=$((MINOR + 1)); PATCH=0 ;;
+              patch) PATCH=$((PATCH + 1)) ;;
+            esac
+
+            echo "version=${MAJOR}.${MINOR}.${PATCH}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Print version
+        run: echo "Releasing v${{ steps.version.outputs.version }}"
+
   build:
+    needs: resolve-version
     strategy:
       matrix:
         include:
@@ -52,7 +96,7 @@ jobs:
           if-no-files-found: ignore
 
   release:
-    needs: build
+    needs: [resolve-version, build]
     runs-on: ubuntu-latest
 
     steps:
@@ -67,7 +111,7 @@ jobs:
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v${{ inputs.version }}
-          name: v${{ inputs.version }}
+          tag_name: v${{ needs.resolve-version.outputs.version }}
+          name: v${{ needs.resolve-version.outputs.version }}
           generate_release_notes: true
           files: artifacts/*
