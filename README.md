@@ -50,17 +50,17 @@
 Connectio runs an Express proxy server on a port you choose (default `8080`). When a request comes in, it walks your route rules in order, finds the first match, and proxies the request to the target server using `http-proxy-middleware`. Each response is logged back to the UI in real time.
 
 ```
-Browser / cURL                         Your local servers
-       │                                      ▲
-       │  GET /api/users                      │
-       ▼                                      │
-  ┌──────────┐    match: /api/*    ┌──────────────────┐
-  │ Connectio │ ─────────────────► │ localhost:3001    │
-  │ :8080     │                    │ (API server)      │
-  │           │    match: /*       ├──────────────────┤
-  │           │ ─────────────────► │ localhost:3000    │
-  └──────────┘                    │ (Frontend)        │
-                                   └──────────────────┘
+Browser / cURL                      Your local servers
+       │                                   ▲
+       │  GET /api/users                   │
+       ▼                                   │
+  ┌──────────┐   match: /api/*   ┌─────────────────┐
+  │ Connectio│ ───────────────►  │ localhost:3001  │
+  │ :8080    │                   │ (API server)    │
+  │          │   match: /*       ├─────────────────┤
+  │          │ ───────────────►  │ localhost:3000  │
+  └──────────┘                   │ (Frontend)      │
+                                 └─────────────────┘
 ```
 
 ## Getting Started
