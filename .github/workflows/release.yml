@@ -57,8 +57,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Download all artifacts
         uses: actions/download-artifact@v4
@@ -66,64 +64,10 @@ jobs:
           path: artifacts
           merge-multiple: true
 
-      - name: Generate changelog
-        id: changelog
-        run: |
-          # Get the previous tag, or use the initial commit if no tags exist
-          PREV_TAG=$(git describe --tags --abbrev=0 2>/dev/null || git rev-list --max-parents=0 HEAD)
-          echo "Previous reference: $PREV_TAG"
-
-          {
-            echo 'body<<CHANGELOG_EOF'
-
-            # Features
-            FEATS=$(git log "$PREV_TAG"..HEAD --pretty=format:"- %s" --grep="^feat" --no-merges)
-            if [ -n "$FEATS" ]; then
-              echo "### Features"
-              echo "$FEATS"
-              echo ""
-            fi
-
-            # Fixes
-            FIXES=$(git log "$PREV_TAG"..HEAD --pretty=format:"- %s" --grep="^fix" --no-merges)
-            if [ -n "$FIXES" ]; then
-              echo "### Bug Fixes"
-              echo "$FIXES"
-              echo ""
-            fi
-
-            # Docs
-            DOCS=$(git log "$PREV_TAG"..HEAD --pretty=format:"- %s" --grep="^docs" --no-merges)
-            if [ -n "$DOCS" ]; then
-              echo "### Documentation"
-              echo "$DOCS"
-              echo ""
-            fi
-
-            # CI / Chore
-            OTHER=$(git log "$PREV_TAG"..HEAD --pretty=format:"- %s" --grep="^ci\|^chore\|^build" --no-merges)
-            if [ -n "$OTHER" ]; then
-              echo "### Other Changes"
-              echo "$OTHER"
-              echo ""
-            fi
-
-            # Fallback: if no conventional commits matched, list all
-            ALL=$(git log "$PREV_TAG"..HEAD --pretty=format:"- %s" --no-merges)
-            if [ -z "$FEATS" ] && [ -z "$FIXES" ] && [ -z "$DOCS" ] && [ -z "$OTHER" ]; then
-              echo "### Changes"
-              echo "$ALL"
-              echo ""
-            fi
-
-            echo 'CHANGELOG_EOF'
-          } >> "$GITHUB_OUTPUT"
-
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ inputs.version }}
           name: v${{ inputs.version }}
-          body: ${{ steps.changelog.outputs.body }}
-          draft: false
+          generate_release_notes: true
           files: artifacts/*
