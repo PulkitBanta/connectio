@@ -50,17 +50,17 @@
 Connectio runs an Express proxy server on a port you choose (default `8080`). When a request comes in, it walks your route rules in order, finds the first match, and proxies the request to the target server using `http-proxy-middleware`. Each response is logged back to the UI in real time.
 
 ```
-Browser / cURL                         Your local servers
-       │                                      ▲
-       │  GET /api/users                      │
-       ▼                                      │
-  ┌──────────┐    match: /api/*    ┌──────────────────┐
-  │ Connectio │ ─────────────────► │ localhost:3001    │
-  │ :8080     │                    │ (API server)      │
-  │           │    match: /*       ├──────────────────┤
-  │           │ ─────────────────► │ localhost:3000    │
-  └──────────┘                    │ (Frontend)        │
-                                   └──────────────────┘
+Browser / cURL                      Your local servers
+       │                                   ▲
+       │  GET /api/users                   │
+       ▼                                   │
+  ┌──────────┐   match: /api/*   ┌─────────────────┐
+  │ Connectio│ ───────────────►  │ localhost:3001  │
+  │ :8080    │                   │ (API server)    │
+  │          │   match: /*       ├─────────────────┤
+  │          │ ───────────────►  │ localhost:3000  │
+  └──────────┘                   │ (Frontend)      │
+                                 └─────────────────┘
 ```
 
 ## Getting Started
@@ -105,12 +105,8 @@ Produces platform-specific distributables in the `dist/` directory:
 
 ### CI / CD
 
-Every push to `main` triggers a [GitHub Actions workflow](.github/workflows/release.yml) that builds for all three platforms and publishes a GitHub Release automatically.
-
-The workflow uses:
-- Node.js 24
-- `electron-builder` with `--publish always`
-- `GITHUB_TOKEN` for release uploads
+- **Build** — Every push to `main` and every PR triggers a [build workflow](.github/workflows/build.yml) that compiles for all three platforms.
+- **Release** — Trigger the [release workflow](.github/workflows/release.yml) manually via GitHub Actions, provide a version number, and it builds all platforms, generates a changelog, and creates a GitHub Release with artifacts attached.
 
 ## Development
 
