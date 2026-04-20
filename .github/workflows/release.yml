@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Existing release tag to upload/overwrite assets (for example: v1.0.0)"
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -16,14 +22,15 @@ jobs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
     steps:
-      - uses: googleapis/release-please-action@v4
+      - if: ${{ github.event_name == 'push' }}
+        uses: googleapis/release-please-action@v4
         id: release
         with:
           release-type: node
 
   build:
     needs: release-please
-    if: ${{ needs.release-please.outputs.release_created }}
+    if: ${{ always() && (github.event_name == 'workflow_dispatch' || needs.release-please.outputs.release_created == 'true') }}
     strategy:
       matrix:
         include:
@@ -55,9 +62,23 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: pwsh
         run: |
-          $tag = "${{ needs.release-please.outputs.tag_name }}"
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            $tag = "${{ inputs.tag_name }}"
+          } else {
+            $tag = "${{ needs.release-please.outputs.tag_name }}"
+          }
+
+          if ([string]::IsNullOrWhiteSpace($tag)) {
+            Write-Error "Release tag is empty. Provide workflow_dispatch input tag_name or ensure release-please created a tag."
+            exit 1
+          }
+
+          $allowedExtensions = @(".dmg", ".zip", ".exe", ".AppImage", ".deb", ".blockmap", ".yml", ".yaml")
           $files = Get-ChildItem -Path dist -File -ErrorAction SilentlyContinue |
-            Where-Object { $_.Extension -in @(".dmg", ".zip", ".exe", ".AppImage", ".deb") }
+            Where-Object {
+              $allowedExtensions -contains $_.Extension -and
+              $_.Name -notin @("builder-debug.yml", "builder-effective-config.yaml")
+            }
 
           if (-not $files) {
             Write-Host "No release artifacts found in dist/, skipping upload."
