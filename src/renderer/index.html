@@ -268,6 +268,34 @@
         </div>
         <div id="configs-list-container" class="flex-1 overflow-y-auto px-6 py-4"></div>
 
+        <!-- Full-page Paste JSON view (hidden by default, shown inside configs view) -->
+        <div id="paste-json-view" class="hidden flex-1 flex flex-col min-h-0">
+          <div class="px-6 py-4 border-b border-white/5 shrink-0 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <button id="paste-json-back" class="p-1.5 rounded text-slate-500 hover:text-slate-200 hover:bg-white/8 transition-colors">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+              </button>
+              <p class="text-sm font-semibold text-slate-300">Import Config from JSON</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span id="paste-json-hint" class="text-[10px] text-slate-600">Validate before importing</span>
+              <button id="paste-json-import" class="px-3 py-1.5 rounded-lg text-xs bg-emerald-700 hover:bg-emerald-600 text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed" disabled>Import</button>
+            </div>
+          </div>
+          <div class="flex-1 p-6 min-h-0 flex flex-col gap-4">
+            <div class="flex flex-col gap-1">
+              <label class="text-xs text-slate-500">Config name</label>
+              <input id="paste-json-name" type="text" placeholder="e.g. Local Dev"
+                class="bg-white/5 border border-white/10 rounded px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-white/25 transition-colors max-w-xs" />
+            </div>
+            <div class="flex-1 flex flex-col min-h-0">
+              <textarea id="paste-json-textarea" class="w-full h-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-xs font-mono text-slate-300 focus:outline-none focus:border-white/25 transition-colors resize-none" placeholder='{ "apps": [...], "port": 8080 }'></textarea>
+              <div id="paste-json-error" class="hidden text-xs text-red-400 mt-2"></div>
+              <div id="paste-json-preview" class="hidden text-xs text-slate-400 mt-2"></div>
+            </div>
+          </div>
+        </div>
+
         <!-- Full-page JSON editor (hidden by default, shown inside configs view) -->
         <div id="json-editor-view" class="hidden flex-1 flex flex-col min-h-0">
           <div class="px-6 py-4 border-b border-white/5 shrink-0 flex items-center justify-between">
@@ -605,7 +633,7 @@
 
             const btn = document.createElement("button");
             btn.title = app.name;
-            btn.className = `flex-1 h-9 rounded-lg flex items-center gap-2 px-2 transition-colors ${
+            btn.className = `flex-1 h-10 rounded-xl flex items-center gap-3 px-3 transition-colors ${
               isSelected
                 ? "bg-emerald-600/15 text-emerald-400"
                 : "hover:bg-white/5 text-slate-400 hover:text-slate-200"
@@ -623,7 +651,7 @@
             btn.addEventListener("click", () => selectApp(app.id));
 
             const reorderWrap = document.createElement("div");
-            reorderWrap.className = "flex flex-col opacity-0 group-hover:opacity-100 transition-opacity shrink-0";
+            reorderWrap.className = "flex flex-col opacity-30 group-hover:opacity-100 transition-opacity shrink-0";
 
             const upBtn = document.createElement("button");
             upBtn.textContent = "↑";
@@ -1317,22 +1345,130 @@
         if (e.key === "Escape") closeImportOverlay();
       });
 
+      // ── Full-page Paste JSON view ────────────────────────────────────
+      const pasteJsonView = document.getElementById("paste-json-view");
+      const pasteJsonTextarea = document.getElementById("paste-json-textarea");
+      const pasteJsonName = document.getElementById("paste-json-name");
+      const pasteJsonError = document.getElementById("paste-json-error");
+      const pasteJsonPreview = document.getElementById("paste-json-preview");
+      const pasteJsonImport = document.getElementById("paste-json-import");
+      const pasteJsonBack = document.getElementById("paste-json-back");
+      let pasteJsonValidData = null;
+
+      function openPasteJsonView(name, json) {
+        pasteJsonName.value = name || "";
+        pasteJsonTextarea.value = json || "";
+        pasteJsonError.classList.add("hidden");
+        pasteJsonPreview.classList.add("hidden");
+        pasteJsonValidData = null;
+        pasteJsonImport.disabled = true;
+        configsListContainer.classList.add("hidden");
+        pasteJsonView.classList.remove("hidden");
+        if (!json) pasteJsonTextarea.focus();
+        else pasteJsonName.focus();
+      }
+
+      function closePasteJsonView() {
+        pasteJsonView.classList.add("hidden");
+        configsListContainer.classList.remove("hidden");
+        pasteJsonValidData = null;
+        renderConfigsList();
+      }
+
+      pasteJsonTextarea.addEventListener("input", () => {
+        pasteJsonValidData = null;
+        pasteJsonImport.disabled = true;
+        pasteJsonError.classList.add("hidden");
+        pasteJsonPreview.classList.add("hidden");
+      });
+
+      pasteJsonTextarea.addEventListener("keydown", (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+          e.preventDefault();
+          if (!pasteJsonImport.disabled) pasteJsonImport.click();
+          else validatePasteJson();
+        }
+        if (e.key === "Escape") closePasteJsonView();
+      });
+
+      pasteJsonName.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") pasteJsonTextarea.focus();
+        if (e.key === "Escape") closePasteJsonView();
+      });
+
+      function validatePasteJson() {
+        const jsonStr = pasteJsonTextarea.value.trim();
+        pasteJsonError.classList.add("hidden");
+        pasteJsonPreview.classList.add("hidden");
+        pasteJsonValidData = null;
+        pasteJsonImport.disabled = true;
+
+        if (!jsonStr) {
+          pasteJsonError.textContent = "Please paste JSON first.";
+          pasteJsonError.classList.remove("hidden");
+          return;
+        }
+
+        let data;
+        try {
+          data = JSON.parse(jsonStr);
+        } catch (err) {
+          pasteJsonError.textContent = `Invalid JSON: ${err.message}`;
+          pasteJsonError.classList.remove("hidden");
+          return;
+        }
+
+        if (!data || typeof data !== "object" || !Array.isArray(data.apps) || typeof data.port !== "number") {
+          pasteJsonError.textContent = 'Invalid config format: expected { "apps": [...], "port": number }';
+          pasteJsonError.classList.remove("hidden");
+          return;
+        }
+
+        pasteJsonValidData = data;
+        pasteJsonImport.disabled = false;
+        pasteJsonPreview.textContent = `Valid: ${data.apps.length} app(s), port ${data.port}`;
+        pasteJsonPreview.classList.remove("hidden");
+      }
+
+      pasteJsonImport.addEventListener("click", async () => {
+        if (!pasteJsonValidData) {
+          showToast("Please validate the JSON first", "info");
+          return;
+        }
+        const name = pasteJsonName.value.trim();
+        if (!name) {
+          showToast("Please enter a config name", "error");
+          pasteJsonName.focus();
+          return;
+        }
+        try {
+          await window.connectio.config.save(name, pasteJsonValidData);
+          showToast(`Imported "${name}"`, "success");
+          closePasteJsonView();
+        } catch (err) {
+          pasteJsonError.textContent = err.message;
+          pasteJsonError.classList.remove("hidden");
+        }
+      });
+
+      pasteJsonBack.addEventListener("click", closePasteJsonView);
+
       document.getElementById("import-paste-btn").addEventListener("click", () => {
-        openImportOverlay("", "");
+        openPasteJsonView("", "");
       });
 
       document.getElementById("import-file-btn").addEventListener("click", async () => {
         try {
           const result = await window.connectio.config.importFile();
           if (!result) return;
-          openImportOverlay(result.name, result.json);
+          openPasteJsonView(result.name, result.json);
         } catch (err) {
           showToast(err.message || "Failed to import file", "error");
         }
       });
 
       document.getElementById("new-config-btn").addEventListener("click", () => {
-        openImportOverlay("", JSON.stringify({ apps: [], port: 8080 }, null, 2));
+        openPasteJsonView("", JSON.stringify({ apps: [], port: 8080 }, null, 2));
       });
 
       // ── Full-page JSON Editor ─────────────────────────────────────
