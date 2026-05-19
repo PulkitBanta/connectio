@@ -1256,6 +1256,50 @@
         }
       });
 
+      // ── Delete confirmation ───────────────────────────────────────
+      let deleteTimer = null;
+
+      function confirmDelete(cfg, row) {
+        if (deleteTimer) {
+          clearTimeout(deleteTimer);
+          deleteTimer = null;
+          doDelete(cfg, row);
+          return;
+        }
+
+        const delBtn = row.querySelector('button[title="Delete"]');
+        if (delBtn) {
+          delBtn.classList.add("text-red-400", "bg-red-900/20");
+          delBtn.innerHTML = '<i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i>';
+          lucide.createIcons();
+        }
+
+        showToast("Click Delete again to confirm", "info", 4000);
+
+        deleteTimer = setTimeout(() => {
+          if (delBtn) {
+            delBtn.classList.remove("text-red-400", "bg-red-900/20");
+            delBtn.innerHTML = '<i data-lucide="trash-2" class="w-3.5 h-3.5"></i>';
+            lucide.createIcons();
+          }
+          deleteTimer = null;
+        }, 4000);
+      }
+
+      async function doDelete(cfg, row) {
+        try {
+          await window.connectio.config.delete(cfg.name);
+          if (activeConfigName === cfg.name) {
+            activeConfigName = null;
+            document.getElementById("config-name-label").textContent = "";
+          }
+          showToast(`Deleted "${cfg.name}"`, "success");
+          await renderConfigsList();
+        } catch (err) {
+          showToast(err.message || "Delete failed", "error");
+        }
+      }
+
       // ── Rename ────────────────────────────────────────────────────
       function startRename(cfg, row, nameEl) {
         const origName = cfg.name;
