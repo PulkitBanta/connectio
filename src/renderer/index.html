@@ -56,6 +56,20 @@
       #nav.expanded #nav-toggle-label {
         display: inline;
       }
+
+      #nav.expanded #add-proxy-wrap {
+        justify-content: flex-start;
+        width: 100%;
+      }
+      #nav.expanded #add-proxy {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 0.75rem;
+        padding-inline: 0.75rem;
+      }
+      #nav.expanded #add-proxy-label {
+        display: inline;
+      }
     </style>
   </head>
 
@@ -191,7 +205,7 @@
           title="Add a proxy app"
           class="squircle w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-white/10 text-slate-400 hover:text-slate-200 transition-colors"
         >
-          <span class="text-xl leading-none shrink-0">+</span>
+          <i data-lucide="plus" class="w-4 h-4 shrink-0"></i>
           <span id="add-proxy-label" class="hidden text-xs font-medium whitespace-nowrap"
             >Add App</span
           >
@@ -239,19 +253,16 @@
           </div>
           <div class="flex items-center gap-1.5 self-end sm:self-auto">
             <button id="new-config-btn" title="New config"
-              class="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-slate-200 transition-colors">
-              <i data-lucide="plus" class="w-4 h-4"></i>
-              <span class="hidden md:inline text-xs ml-1.5">New</span>
+              class="p-1.5 rounded text-slate-600 hover:text-slate-200 hover:bg-white/8 transition-colors">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i>
             </button>
             <button id="import-file-btn" title="Import from file"
-              class="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-slate-200 transition-colors">
-              <i data-lucide="file-up" class="w-4 h-4"></i>
-              <span class="hidden md:inline text-xs ml-1.5">Import</span>
+              class="p-1.5 rounded text-slate-600 hover:text-slate-200 hover:bg-white/8 transition-colors">
+              <i data-lucide="file-up" class="w-3.5 h-3.5"></i>
             </button>
             <button id="import-paste-btn" title="Paste JSON"
-              class="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-slate-200 transition-colors">
-              <i data-lucide="clipboard-paste" class="w-4 h-4"></i>
-              <span class="hidden md:inline text-xs ml-1.5">Paste</span>
+              class="p-1.5 rounded text-slate-600 hover:text-slate-200 hover:bg-white/8 transition-colors">
+              <i data-lucide="clipboard" class="w-3.5 h-3.5"></i>
             </button>
           </div>
         </div>
