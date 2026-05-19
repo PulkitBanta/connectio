@@ -85,7 +85,7 @@ ipcMain.handle("config:import", (_e, jsonString, name) => {
   try {
     data = JSON.parse(jsonString);
   } catch (err) {
-    throw new Error(`Invalid JSON: ${err.message}`);
+    throw new Error(`Invalid JSON: ${err.message}`, { cause: err });
   }
   if (!data || typeof data !== "object" || !Array.isArray(data.apps) || typeof data.port !== "number") {
     throw new Error('Invalid config format: expected { apps: [], port: number }');
@@ -119,7 +119,7 @@ ipcMain.handle("config:importFile", async () => {
   try {
     data = JSON.parse(jsonString);
   } catch (err) {
-    throw new Error(`Invalid JSON: ${err.message}`);
+    throw new Error(`Invalid JSON: ${err.message}`, { cause: err });
   }
   if (!data || typeof data !== "object" || !Array.isArray(data.apps) || typeof data.port !== "number") {
     throw new Error('Invalid config format: expected { apps: [], port: number }');

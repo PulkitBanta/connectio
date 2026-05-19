@@ -58,6 +58,7 @@
         display: inline;
       }
       #nav.expanded #configs-nav-btn-wrap {
+        width: 100%;
         justify-content: flex-start;
       }
       #nav.expanded #configs-nav-btn {
@@ -147,6 +148,22 @@
       </div>
     </div>
 
+    <!-- Edit JSON overlay -->
+    <div id="edit-json-overlay" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+      <div class="bg-[#16181f] border border-white/10 rounded-xl p-6 w-[520px] flex flex-col gap-4 shadow-xl">
+        <div class="flex items-center justify-between">
+          <p class="text-sm font-semibold text-slate-200">Edit Config: <span id="edit-json-name" class="text-emerald-400"></span></p>
+        </div>
+        <textarea id="edit-json-textarea" rows="16"
+          class="bg-white/5 border border-white/10 rounded px-3 py-2 text-xs font-mono text-slate-300 focus:outline-none focus:border-white/25 transition-colors resize-none"></textarea>
+        <div id="edit-json-error" class="hidden text-xs text-red-400"></div>
+        <div class="flex gap-2 justify-end">
+          <button id="edit-json-cancel" class="px-4 py-2 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors">Cancel</button>
+          <button id="edit-json-save" class="px-4 py-2 rounded-lg text-xs bg-emerald-700 hover:bg-emerald-600 text-white transition-colors">Save</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Add proxy modal -->
     <div
       id="modal-overlay"
@@ -209,7 +226,10 @@
 
       <div id="proxy-list" class="flex flex-col gap-2 px-3 flex-1"></div>
 
-      <div id="configs-nav-btn-wrap" class="flex justify-center px-3 mb-1">
+      <div class="px-3 mb-2">
+        <div class="w-full h-px bg-white/5"></div>
+      </div>
+      <div id="configs-nav-btn-wrap" class="flex justify-center px-3 mb-2">
         <button
           id="configs-nav-btn"
           title="Manage configs"
@@ -266,6 +286,9 @@
         <div class="px-6 py-4 border-b border-white/5 shrink-0 flex items-center justify-between">
           <p class="text-sm font-semibold text-slate-300">Configs</p>
           <div class="flex items-center gap-2">
+            <button id="new-config-btn" class="px-3 py-1.5 rounded-lg text-xs bg-white/5 hover:bg-white/10 text-slate-300 transition-colors">
+              + New
+            </button>
             <button id="import-file-btn" class="px-3 py-1.5 rounded-lg text-xs bg-white/5 hover:bg-white/10 text-slate-300 transition-colors">
               Import File
             </button>
@@ -395,6 +418,13 @@
           if (apps.length > 0) selectApp(apps[0].id);
         }
         picker.classList.add("hidden");
+        configsView.classList.add("hidden");
+        showingConfigs = false;
+        if (apps.length === 0) {
+          emptyState.classList.remove("hidden");
+        } else {
+          requestView.classList.remove("hidden");
+        }
       }
 
       document.getElementById("config-picker-close").addEventListener("click", () => {
@@ -441,7 +471,16 @@
         document.getElementById("config-name-label").title = configDir;
       }
 
-      document.getElementById("load-config-btn").addEventListener("click", openConfigPicker);
+      document.getElementById("load-config-btn").addEventListener("click", async () => {
+        if (showingConfigs) return;
+        showingConfigs = true;
+        configsView.classList.remove("hidden");
+        requestView.classList.add("hidden");
+        emptyState.classList.add("hidden");
+        selectedAppId = null;
+        await stopServer();
+        await renderConfigsList();
+      });
 
       const saveConfigOverlay = document.getElementById("save-config-overlay");
       const saveConfigNameInput = document.getElementById("save-config-name");
@@ -1123,10 +1162,12 @@
           actions.className = "flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0";
 
           const renameBtn = createActionBtn("Rename", "pencil", () => startRename(cfg, row, nameEl));
+          const editBtn = createActionBtn("Edit JSON", "file-code", () => openJsonEditor(cfg));
           const shareBtn = createActionBtn("Share", "share-2", null, true, cfg);
           const deleteBtn = createActionBtn("Delete", "trash-2", () => confirmDelete(cfg, row));
 
           actions.appendChild(renameBtn);
+          actions.appendChild(editBtn);
           actions.appendChild(shareBtn);
           actions.appendChild(deleteBtn);
 
@@ -1254,6 +1295,78 @@
         } catch (err) {
           showToast(err.message || "Failed to import file", "error");
         }
+      });
+
+      document.getElementById("new-config-btn").addEventListener("click", () => {
+        openImportOverlay("", JSON.stringify({ apps: [], port: 8080 }, null, 2));
+      });
+
+      // ── Edit JSON ─────────────────────────────────────────────────
+      const editOverlay = document.getElementById("edit-json-overlay");
+      const editTextarea = document.getElementById("edit-json-textarea");
+      const editNameSpan = document.getElementById("edit-json-name");
+      const editError = document.getElementById("edit-json-error");
+      const editCancelBtn = document.getElementById("edit-json-cancel");
+      const editSaveBtn = document.getElementById("edit-json-save");
+      let editConfigName = null;
+
+      async function openJsonEditor(cfg) {
+        try {
+          const result = await window.connectio.config.export(cfg.name);
+          editConfigName = cfg.name;
+          editNameSpan.textContent = cfg.name;
+          editTextarea.value = result.json;
+          editError.classList.add("hidden");
+          editOverlay.classList.remove("hidden");
+          editTextarea.focus();
+        } catch (err) {
+          showToast(err.message || "Failed to load config", "error");
+        }
+      }
+
+      function closeJsonEditor() {
+        editOverlay.classList.add("hidden");
+        editConfigName = null;
+      }
+
+      editSaveBtn.addEventListener("click", async () => {
+        const jsonStr = editTextarea.value.trim();
+        editError.classList.add("hidden");
+        if (!jsonStr) {
+          editError.textContent = "JSON cannot be empty.";
+          editError.classList.remove("hidden");
+          return;
+        }
+        let data;
+        try {
+          data = JSON.parse(jsonStr);
+        } catch (err) {
+          editError.textContent = `Invalid JSON: ${err.message}`;
+          editError.classList.remove("hidden");
+          return;
+        }
+        if (!data || typeof data !== "object" || !Array.isArray(data.apps) || typeof data.port !== "number") {
+          editError.textContent = 'Invalid config format: expected { "apps": [...], "port": number }';
+          editError.classList.remove("hidden");
+          return;
+        }
+        try {
+          const name = editConfigName;
+          await window.connectio.config.save(name, data);
+          showToast(`Saved "${name}"`, "success");
+          closeJsonEditor();
+          await renderConfigsList();
+        } catch (err) {
+          editError.textContent = err.message;
+          editError.classList.remove("hidden");
+        }
+      });
+
+      editCancelBtn.addEventListener("click", closeJsonEditor);
+      editOverlay.addEventListener("click", (e) => { if (e.target === editOverlay) closeJsonEditor(); });
+      editTextarea.addEventListener("keydown", (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === "Enter") editSaveBtn.click();
+        if (e.key === "Escape") closeJsonEditor();
       });
 
       // ── Delete confirmation ───────────────────────────────────────
