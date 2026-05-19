@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, dialog } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const server = require("./server");
@@ -62,6 +62,95 @@ ipcMain.handle("config:delete", (_e, name) => {
   const file = path.join(configDir, `${name}.json`);
   if (fs.existsSync(file)) fs.unlinkSync(file);
   return { ok: true };
+});
+
+ipcMain.handle("config:rename", (_e, oldName, newName) => {
+  if (oldName === newName) return { ok: true };
+  const oldFile = path.join(configDir, `${oldName}.json`);
+  const newFile = path.join(configDir, `${newName}.json`);
+  if (!fs.existsSync(oldFile)) throw new Error(`Config "${oldName}" not found`);
+  if (fs.existsSync(newFile)) throw new Error(`Config "${newName}" already exists`);
+  fs.renameSync(oldFile, newFile);
+  return { ok: true };
+});
+
+ipcMain.handle("config:export", (_e, name) => {
+  const file = path.join(configDir, `${name}.json`);
+  if (!fs.existsSync(file)) throw new Error(`Config "${name}" not found`);
+  return { name, json: fs.readFileSync(file, "utf8") };
+});
+
+ipcMain.handle("config:import", (_e, jsonString, name) => {
+  let data;
+  try {
+    data = JSON.parse(jsonString);
+  } catch (err) {
+    throw new Error(`Invalid JSON: ${err.message}`);
+  }
+  if (!data || typeof data !== "object" || !Array.isArray(data.apps) || typeof data.port !== "number") {
+    throw new Error('Invalid config format: expected { apps: [], port: number }');
+  }
+  ensureConfigDir();
+  const file = path.join(configDir, `${name}.json`);
+  if (fs.existsSync(file)) throw new Error(`Config "${name}" already exists`);
+  fs.writeFileSync(file, JSON.stringify(data, null, 2));
+  return { ok: true };
+});
+
+ipcMain.handle("config:exportFile", async (_e, name, jsonString) => {
+  const result = await dialog.showSaveDialog({
+    defaultPath: `${name}.json`,
+    filters: [{ name: "JSON", extensions: ["json"] }],
+  });
+  if (result.canceled) return { ok: false };
+  fs.writeFileSync(result.filePath, jsonString, "utf8");
+  return { ok: true, filePath: result.filePath };
+});
+
+ipcMain.handle("config:importFile", async () => {
+  const result = await dialog.showOpenDialog({
+    filters: [{ name: "JSON", extensions: ["json"] }],
+    properties: ["openFile"],
+  });
+  if (result.canceled || result.filePaths.length === 0) return null;
+  const filePath = result.filePaths[0];
+  const jsonString = fs.readFileSync(filePath, "utf8");
+  let data;
+  try {
+    data = JSON.parse(jsonString);
+  } catch (err) {
+    throw new Error(`Invalid JSON: ${err.message}`);
+  }
+  if (!data || typeof data !== "object" || !Array.isArray(data.apps) || typeof data.port !== "number") {
+    throw new Error('Invalid config format: expected { apps: [], port: number }');
+  }
+  const name = path.basename(filePath, ".json");
+  return { name, json: jsonString };
+});
+
+ipcMain.handle("config:listDetailed", () => {
+  ensureConfigDir();
+  return fs
+    .readdirSync(configDir)
+    .filter((f) => f.endsWith(".json"))
+    .map((f) => {
+      const filePath = path.join(configDir, f);
+      const stat = fs.statSync(filePath);
+      const raw = fs.readFileSync(filePath, "utf8");
+      let data;
+      try { data = JSON.parse(raw); } catch { data = { apps: [], port: 8080 }; }
+      const appCount = (data.apps || []).length;
+      const routeCount = (data.apps || []).reduce((sum, a) => sum + (a.rules || []).length, 0);
+      return {
+        name: f.slice(0, -5),
+        appCount,
+        routeCount,
+        lastModified: stat.mtimeMs,
+        size: stat.size,
+        port: data.port || 8080,
+      };
+    })
+    .sort((a, b) => b.lastModified - a.lastModified);
 });
 
 app.whenReady().then(() => {
