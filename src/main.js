@@ -51,12 +51,13 @@ ipcMain.handle("config:list", () => {
 ipcMain.handle("config:load", (_e, name) => {
   const file = path.join(configDir, `${name}.json`);
   if (!fs.existsSync(file)) return null;
-  return JSON.parse(fs.readFileSync(file, "utf8"));
-});
-ipcMain.handle("config:save", (_e, name, data) => {
-  ensureConfigDir();
-  fs.writeFileSync(path.join(configDir, `${name}.json`), JSON.stringify(data, null, 2));
-  return { ok: true };
+  try {
+    const data = JSON.parse(fs.readFileSync(file, "utf8"));
+    if (isValidConfigShape(data)) return data;
+    return null;
+  } catch {
+    return null;
+  }
 });
 ipcMain.handle("config:delete", (_e, name) => {
   const file = path.join(configDir, `${name}.json`);
@@ -80,6 +81,10 @@ ipcMain.handle("config:export", (_e, name) => {
   return { name, json: fs.readFileSync(file, "utf8") };
 });
 
+function isValidConfigShape(data) {
+  return data && typeof data === "object" && Array.isArray(data.apps) && typeof data.port === "number";
+}
+
 ipcMain.handle("config:import", (_e, jsonString, name) => {
   let data;
   try {
@@ -87,13 +92,22 @@ ipcMain.handle("config:import", (_e, jsonString, name) => {
   } catch (err) {
     throw new Error(`Invalid JSON: ${err.message}`, { cause: err });
   }
-  if (!data || typeof data !== "object" || !Array.isArray(data.apps) || typeof data.port !== "number") {
+  if (!isValidConfigShape(data)) {
     throw new Error('Invalid config format: expected { apps: [], port: number }');
   }
   ensureConfigDir();
   const file = path.join(configDir, `${name}.json`);
   if (fs.existsSync(file)) throw new Error(`Config "${name}" already exists`);
   fs.writeFileSync(file, JSON.stringify(data, null, 2));
+  return { ok: true };
+});
+
+ipcMain.handle("config:save", (_e, name, data) => {
+  ensureConfigDir();
+  if (!isValidConfigShape(data)) {
+    throw new Error('Invalid config format: expected { apps: [], port: number }');
+  }
+  fs.writeFileSync(path.join(configDir, `${name}.json`), JSON.stringify(data, null, 2));
   return { ok: true };
 });
 
@@ -121,7 +135,7 @@ ipcMain.handle("config:importFile", async () => {
   } catch (err) {
     throw new Error(`Invalid JSON: ${err.message}`, { cause: err });
   }
-  if (!data || typeof data !== "object" || !Array.isArray(data.apps) || typeof data.port !== "number") {
+  if (!isValidConfigShape(data)) {
     throw new Error('Invalid config format: expected { apps: [], port: number }');
   }
   const name = path.basename(filePath, ".json");
@@ -148,6 +162,7 @@ ipcMain.handle("config:listDetailed", () => {
         lastModified: stat.mtimeMs,
         size: stat.size,
         port: data.port || 8080,
+        note: data.note || "",
       };
     })
     .sort((a, b) => b.lastModified - a.lastModified);
