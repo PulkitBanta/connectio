@@ -1256,6 +1256,47 @@
         }
       });
 
+      // ── Rename ────────────────────────────────────────────────────
+      function startRename(cfg, row, nameEl) {
+        const origName = cfg.name;
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = origName;
+        input.className = "bg-white/5 border border-white/10 rounded px-2 py-0.5 text-sm text-slate-300 focus:outline-none focus:border-white/25 transition-colors w-40";
+        input.dataset.orig = origName;
+
+        nameEl.replaceWith(input);
+        input.focus();
+        input.select();
+
+        async function commit() {
+          const newName = input.value.trim();
+          if (!newName || newName === origName) {
+            input.replaceWith(nameEl);
+            return;
+          }
+          try {
+            await window.connectio.config.rename(origName, newName);
+            cfg.name = newName;
+            nameEl.textContent = newName;
+            showToast(`Renamed to "${newName}"`, "success");
+          } catch (err) {
+            showToast(err.message || "Rename failed", "error");
+          }
+          input.replaceWith(nameEl);
+        }
+
+        function cancel() {
+          input.replaceWith(nameEl);
+        }
+
+        input.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") { e.preventDefault(); commit(); }
+          if (e.key === "Escape") { e.preventDefault(); cancel(); }
+        });
+        input.addEventListener("blur", commit);
+      }
+
       // ── Share / Export ────────────────────────────────────────────
       let activeShareMenu = null;
 
