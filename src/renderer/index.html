@@ -57,6 +57,19 @@
       #nav.expanded #nav-toggle-label {
         display: inline;
       }
+      #nav.expanded #configs-nav-btn-wrap {
+        justify-content: flex-start;
+      }
+      #nav.expanded #configs-nav-btn {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 0.75rem;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+      }
+      #nav.expanded #configs-nav-label {
+        display: inline;
+      }
       #nav.expanded #add-proxy {
         width: 100%;
         justify-content: flex-start;
@@ -172,6 +185,17 @@
 
       <div id="proxy-list" class="flex flex-col gap-2 px-3 flex-1"></div>
 
+      <div id="configs-nav-btn-wrap" class="flex justify-center px-3 mb-1">
+        <button
+          id="configs-nav-btn"
+          title="Manage configs"
+          class="squircle w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-white/10 text-slate-400 hover:text-slate-200 transition-colors"
+        >
+          <i data-lucide="file-json" class="w-4 h-4 shrink-0"></i>
+          <span id="configs-nav-label" class="hidden text-xs font-medium whitespace-nowrap">Configs</span>
+        </button>
+      </div>
+
       <div class="px-3">
         <button
           id="add-proxy"
@@ -213,6 +237,21 @@
       </div>
 
       <div id="request-view" class="hidden flex-1 flex flex-col min-h-0"></div>
+
+      <div id="configs-view" class="hidden flex-1 flex flex-col min-h-0">
+        <div class="px-6 py-4 border-b border-white/5 shrink-0 flex items-center justify-between">
+          <p class="text-sm font-semibold text-slate-300">Configs</p>
+          <div class="flex items-center gap-2">
+            <button id="import-file-btn" class="px-3 py-1.5 rounded-lg text-xs bg-white/5 hover:bg-white/10 text-slate-300 transition-colors">
+              Import File
+            </button>
+            <button id="import-paste-btn" class="px-3 py-1.5 rounded-lg text-xs bg-white/5 hover:bg-white/10 text-slate-300 transition-colors">
+              Paste JSON
+            </button>
+          </div>
+        </div>
+        <div id="configs-list-container" class="flex-1 overflow-y-auto px-6 py-4"></div>
+      </div>
     </main>
 
     <div class="w-px bg-white/5 shrink-0"></div>
@@ -959,6 +998,153 @@
 
         btn.disabled = false;
       });
+
+      // ── Configs view state ────────────────────────────────────────
+      let showingConfigs = false;
+
+      const configsNavBtn = document.getElementById("configs-nav-btn");
+      const configsView = document.getElementById("configs-view");
+      const configsListContainer = document.getElementById("configs-list-container");
+
+      configsNavBtn.addEventListener("click", async () => {
+        await stopServer();
+        showingConfigs = !showingConfigs;
+        if (showingConfigs) {
+          configsView.classList.remove("hidden");
+          requestView.classList.add("hidden");
+          emptyState.classList.add("hidden");
+          selectedAppId = null;
+          await renderConfigsList();
+        } else {
+          configsView.classList.add("hidden");
+          if (apps.length === 0) {
+            emptyState.classList.remove("hidden");
+          } else {
+            requestView.classList.remove("hidden");
+            if (apps.length > 0) selectApp(apps[0].id);
+          }
+        }
+      });
+
+      function getRelativeTime(ms) {
+        const diff = Date.now() - ms;
+        const mins = Math.floor(diff / 60000);
+        if (mins < 1) return 'just now';
+        if (mins < 60) return `${mins}m ago`;
+        const hours = Math.floor(mins / 60);
+        if (hours < 24) return `${hours}h ago`;
+        const days = Math.floor(hours / 24);
+        return `${days}d ago`;
+      }
+
+      function formatSize(bytes) {
+        if (bytes < 1024) return `${bytes} B`;
+        if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+        return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+      }
+
+      async function renderConfigsList() {
+        configsListContainer.innerHTML = "";
+        const configs = await window.connectio.config.listDetailed();
+        if (configs.length === 0) {
+          const empty = document.createElement("div");
+          empty.className = "flex flex-col items-center justify-center h-full text-center gap-4";
+          empty.innerHTML = `
+            <div class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-slate-500">
+              <i data-lucide="file-json" class="w-7 h-7"></i>
+            </div>
+            <p class="text-slate-400 font-medium">No configs yet</p>
+            <p class="text-slate-600 text-sm max-w-xs">Create a new config, paste JSON, or import a file to get started.</p>
+          `;
+          configsListContainer.appendChild(empty);
+          lucide.createIcons();
+          return;
+        }
+
+        const list = document.createElement("div");
+        list.className = "flex flex-col gap-2 max-w-2xl";
+
+        configs.forEach((cfg) => {
+          const row = document.createElement("div");
+          row.className = "group flex items-center gap-3 px-4 py-3 rounded-xl bg-white/3 hover:bg-white/5 transition-colors cursor-pointer border border-transparent hover:border-white/10";
+
+          const dot = document.createElement("div");
+          dot.className = "w-2 h-2 rounded-full bg-emerald-500 shrink-0";
+
+          const info = document.createElement("div");
+          info.className = "flex-1 min-w-0";
+
+          const nameRow = document.createElement("div");
+          nameRow.className = "flex items-center gap-2";
+
+          const nameEl = document.createElement("span");
+          nameEl.className = "text-sm font-medium text-slate-300";
+          nameEl.textContent = cfg.name;
+
+          const meta = document.createElement("span");
+          meta.className = "text-[10px] text-slate-600";
+          const relTime = getRelativeTime(cfg.lastModified);
+          meta.textContent = `${cfg.appCount} app${cfg.appCount !== 1 ? 's' : ''} · ${cfg.routeCount} route${cfg.routeCount !== 1 ? 's' : ''} · port ${cfg.port} · ${relTime}`;
+
+          const sizeEl = document.createElement("span");
+          sizeEl.className = "text-[10px] text-slate-600";
+          sizeEl.textContent = formatSize(cfg.size);
+
+          nameRow.appendChild(nameEl);
+          nameRow.appendChild(meta);
+          info.appendChild(nameRow);
+          info.appendChild(sizeEl);
+
+          const actions = document.createElement("div");
+          actions.className = "flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0";
+
+          const renameBtn = createActionBtn("Rename", "pencil", () => startRename(cfg, row, nameEl));
+          const shareBtn = createActionBtn("Share", "share-2", null, true, cfg);
+          const deleteBtn = createActionBtn("Delete", "trash-2", () => confirmDelete(cfg, row));
+
+          actions.appendChild(renameBtn);
+          actions.appendChild(shareBtn);
+          actions.appendChild(deleteBtn);
+
+          row.appendChild(dot);
+          row.appendChild(info);
+          row.appendChild(actions);
+
+          row.addEventListener("click", (e) => {
+            if (e.target.closest("button")) return;
+            loadConfigAndEnter(cfg.name);
+          });
+
+          list.appendChild(row);
+        });
+
+        configsListContainer.appendChild(list);
+        lucide.createIcons();
+      }
+
+      function createActionBtn(label, icon, onClick, isShare, cfg) {
+        const btn = document.createElement("button");
+        btn.title = label;
+        btn.className = "p-1.5 rounded text-slate-600 hover:text-slate-200 hover:bg-white/8 transition-colors";
+        const i = document.createElement("i");
+        i.setAttribute("data-lucide", icon);
+        i.className = "w-3.5 h-3.5";
+        btn.appendChild(i);
+
+        if (isShare) {
+          btn.addEventListener("click", async (e) => {
+            e.stopPropagation();
+            openShareMenu(btn, cfg);
+          });
+        } else if (onClick) {
+          btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            onClick();
+          });
+        }
+
+        return btn;
+      }
 
       // ── Toast system ──────────────────────────────────────────────
       function showToast(message, type, duration) {
