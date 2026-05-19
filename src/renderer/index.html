@@ -185,16 +185,18 @@
 
       <div id="proxy-list" class="flex flex-col gap-2 px-3 flex-1"></div>
 
-      <button
-        id="add-proxy"
-        title="Add a proxy app"
-        class="squircle w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-white/10 text-slate-400 hover:text-slate-200 transition-colors mx-auto"
-      >
-        <span class="text-xl leading-none shrink-0">+</span>
-        <span id="add-proxy-label" class="hidden text-xs font-medium whitespace-nowrap"
-          >Add App</span
+      <div id="add-proxy-wrap" class="flex justify-center px-3">
+        <button
+          id="add-proxy"
+          title="Add a proxy app"
+          class="squircle w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-white/10 text-slate-400 hover:text-slate-200 transition-colors"
         >
-      </button>
+          <span class="text-xl leading-none shrink-0">+</span>
+          <span id="add-proxy-label" class="hidden text-xs font-medium whitespace-nowrap"
+            >Add App</span
+          >
+        </button>
+      </div>
     </nav>
 
     <div class="w-px bg-white/5 shrink-0"></div>
@@ -492,6 +494,7 @@
       const navToggle = document.getElementById("nav-toggle");
       const navToggleWrap = document.getElementById("nav-toggle-wrap");
       const addProxyBtn = document.getElementById("add-proxy");
+      const addProxyWrap = document.getElementById("add-proxy-wrap");
       const addProxyLabel = document.getElementById("add-proxy-label");
       let navExpanded = false;
 
@@ -508,11 +511,12 @@
         navToggle.classList.toggle("px-3", navExpanded);
         document.getElementById("nav-toggle-label").classList.toggle("hidden", !navExpanded);
 
+        addProxyWrap.classList.toggle("justify-start", navExpanded);
+        addProxyWrap.classList.toggle("justify-center", !navExpanded);
         addProxyBtn.classList.toggle("w-full", navExpanded);
         addProxyBtn.classList.toggle("justify-start", navExpanded);
         addProxyBtn.classList.toggle("justify-center", !navExpanded);
         addProxyBtn.classList.toggle("px-3", navExpanded);
-        addProxyBtn.classList.toggle("mx-auto", !navExpanded);
         addProxyBtn.classList.toggle("w-10", !navExpanded);
         addProxyBtn.classList.toggle("h-10", !navExpanded);
         addProxyLabel.classList.toggle("hidden", !navExpanded);
