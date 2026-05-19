@@ -1256,6 +1256,70 @@
         }
       });
 
+      // ── Share / Export ────────────────────────────────────────────
+      let activeShareMenu = null;
+
+      function openShareMenu(anchorEl, cfg) {
+        if (activeShareMenu) activeShareMenu.remove();
+
+        const menu = document.createElement("div");
+        menu.className = "bg-[#1a1d26] border border-white/10 rounded-lg py-1 shadow-xl flex flex-col min-w-[140px]";
+
+        const copyBtn = document.createElement("button");
+        copyBtn.className = "flex items-center gap-2 px-3 py-1.5 text-xs text-slate-300 hover:bg-white/5 transition-colors text-left";
+        copyBtn.innerHTML = '<i data-lucide="clipboard" class="w-3.5 h-3.5 shrink-0"></i> Copy JSON';
+        copyBtn.addEventListener("click", async (e) => {
+          e.stopPropagation();
+          try {
+            const result = await window.connectio.config.export(cfg.name);
+            await navigator.clipboard.writeText(result.json);
+            showToast("Copied to clipboard", "success");
+          } catch (err) {
+            showToast(err.message || "Failed to copy", "error");
+          }
+          menu.remove();
+          activeShareMenu = null;
+        });
+
+        const saveBtn = document.createElement("button");
+        saveBtn.className = "flex items-center gap-2 px-3 py-1.5 text-xs text-slate-300 hover:bg-white/5 transition-colors text-left";
+        saveBtn.innerHTML = '<i data-lucide="download" class="w-3.5 h-3.5 shrink-0"></i> Save as file';
+        saveBtn.addEventListener("click", async (e) => {
+          e.stopPropagation();
+          try {
+            const result = await window.connectio.config.export(cfg.name);
+            const saveResult = await window.connectio.config.exportFile(cfg.name, result.json);
+            if (saveResult.ok) {
+              showToast("File saved", "success");
+            }
+          } catch (err) {
+            showToast(err.message || "Failed to export", "error");
+          }
+          menu.remove();
+          activeShareMenu = null;
+        });
+
+        menu.appendChild(copyBtn);
+        menu.appendChild(saveBtn);
+
+        const rect = anchorEl.getBoundingClientRect();
+        menu.style.position = 'fixed';
+        menu.style.top = rect.top + 'px';
+        menu.style.left = (rect.left - 148) + 'px';
+
+        document.body.appendChild(menu);
+        activeShareMenu = menu;
+
+        function closeMenu(e) {
+          if (!menu.contains(e.target) && e.target !== anchorEl) {
+            menu.remove();
+            activeShareMenu = null;
+            document.removeEventListener('click', closeMenu);
+          }
+        }
+        setTimeout(() => document.addEventListener('click', closeMenu), 0);
+      }
+
       function createActionBtn(label, icon, onClick, isShare, cfg) {
         const btn = document.createElement("button");
         btn.title = label;
