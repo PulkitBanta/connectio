@@ -188,7 +188,7 @@
       <button
         id="add-proxy"
         title="Add a proxy app"
-        class="squircle w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-emerald-600 text-slate-400 hover:text-white transition-colors mx-auto"
+        class="squircle w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-white/10 text-slate-400 hover:text-slate-200 transition-colors mx-auto"
       >
         <span class="text-xl leading-none shrink-0">+</span>
         <span id="add-proxy-label" class="hidden text-xs font-medium whitespace-nowrap"
@@ -226,24 +226,30 @@
       <div id="request-view" class="hidden flex-1 flex flex-col min-h-0"></div>
 
       <div id="configs-view" class="hidden flex-1 flex flex-col min-h-0">
-        <div class="px-4 lg:px-6 py-3 lg:py-4 border-b border-white/5 shrink-0 flex flex-wrap items-center justify-between gap-2">
-          <div class="flex items-center gap-2 lg:gap-3 flex-1 min-w-0">
-            <p class="text-xs lg:text-sm font-semibold text-slate-300 shrink-0">Configs</p>
-            <div class="relative flex-1 min-w-[120px] max-w-xs">
-              <i data-lucide="search" class="w-3 h-3 lg:w-3.5 lg:h-3.5 absolute left-2 top-1/2 -translate-y-1/2 text-slate-600 pointer-events-none"></i>
+        <div class="px-3 md:px-6 py-2 md:py-4 border-b border-white/5 shrink-0 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
+          <div class="flex items-center gap-2 flex-1 min-w-0">
+            <p class="text-xs md:text-sm font-semibold text-slate-300 shrink-0">Configs</p>
+            <div class="relative flex-1 min-w-0 max-w-xs">
+              <i data-lucide="search" class="w-3 h-3 absolute left-2 top-1/2 -translate-y-1/2 text-slate-600 pointer-events-none"></i>
               <input id="configs-search" type="text" placeholder="Search..."
-                class="w-full bg-white/5 border border-white/10 rounded pl-6 lg:pl-7 pr-2 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-white/25 transition-colors" />
+                class="w-full bg-white/5 border border-white/10 rounded pl-7 pr-2 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-white/25 transition-colors" />
             </div>
           </div>
-          <div class="flex items-center gap-1.5 lg:gap-2">
-            <button id="new-config-btn" class="px-2 lg:px-3 py-1.5 rounded-lg text-xs bg-white/5 hover:bg-white/10 text-slate-300 transition-colors whitespace-nowrap">
-              + New
+          <div class="flex items-center gap-1.5 self-end sm:self-auto">
+            <button id="new-config-btn" title="New config"
+              class="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-slate-200 transition-colors">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+              <span class="hidden md:inline text-xs ml-1.5">New</span>
             </button>
-            <button id="import-file-btn" class="hidden sm:inline-flex px-2 lg:px-3 py-1.5 rounded-lg text-xs bg-white/5 hover:bg-white/10 text-slate-300 transition-colors whitespace-nowrap">
-              Import
+            <button id="import-file-btn" title="Import from file"
+              class="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-slate-200 transition-colors">
+              <i data-lucide="file-up" class="w-4 h-4"></i>
+              <span class="hidden md:inline text-xs ml-1.5">Import</span>
             </button>
-            <button id="import-paste-btn" class="px-2 lg:px-3 py-1.5 rounded-lg text-xs bg-white/5 hover:bg-white/10 text-slate-300 transition-colors whitespace-nowrap">
-              Paste
+            <button id="import-paste-btn" title="Paste JSON"
+              class="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-slate-200 transition-colors">
+              <i data-lucide="clipboard-paste" class="w-4 h-4"></i>
+              <span class="hidden md:inline text-xs ml-1.5">Paste</span>
             </button>
           </div>
         </div>
