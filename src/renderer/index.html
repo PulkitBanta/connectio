@@ -123,6 +123,30 @@
     <!-- Toast container -->
     <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
+    <!-- Import JSON overlay -->
+    <div id="import-json-overlay" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+      <div class="bg-[#16181f] border border-white/10 rounded-xl p-6 w-[480px] flex flex-col gap-4 shadow-xl">
+        <p class="text-sm font-semibold text-slate-200">Import Config from JSON</p>
+        <div class="flex flex-col gap-1">
+          <label class="text-xs text-slate-500">Config name</label>
+          <input id="import-config-name" type="text" placeholder="e.g. Local Dev"
+            class="bg-white/5 border border-white/10 rounded px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-white/25 transition-colors" />
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="text-xs text-slate-500">Paste JSON</label>
+          <textarea id="import-json-textarea" rows="8" placeholder='{ "apps": [...], "port": 8080 }'
+            class="bg-white/5 border border-white/10 rounded px-3 py-2 text-xs font-mono text-slate-300 focus:outline-none focus:border-white/25 transition-colors resize-none"></textarea>
+        </div>
+        <div id="import-preview" class="hidden text-xs text-slate-400"></div>
+        <div id="import-error" class="hidden text-xs text-red-400"></div>
+        <div class="flex gap-2 justify-end">
+          <button id="import-json-cancel" class="px-4 py-2 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors">Cancel</button>
+          <button id="import-json-validate" class="px-4 py-2 rounded-lg text-xs bg-white/10 hover:bg-white/15 text-slate-300 transition-colors">Validate</button>
+          <button id="import-json-confirm" class="px-4 py-2 rounded-lg text-xs bg-emerald-700 hover:bg-emerald-600 text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed" disabled>Import</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Add proxy modal -->
     <div
       id="modal-overlay"
@@ -1121,6 +1145,116 @@
         configsListContainer.appendChild(list);
         lucide.createIcons();
       }
+
+      // ── Import flows ──────────────────────────────────────────────
+      const importOverlay = document.getElementById("import-json-overlay");
+      const importNameInput = document.getElementById("import-config-name");
+      const importTextarea = document.getElementById("import-json-textarea");
+      const importPreview = document.getElementById("import-preview");
+      const importError = document.getElementById("import-error");
+      const importValidateBtn = document.getElementById("import-json-validate");
+      const importConfirmBtn = document.getElementById("import-json-confirm");
+      const importCancelBtn = document.getElementById("import-json-cancel");
+      let importValidData = null;
+
+      function openImportOverlay(prefilledName, prefilledJson) {
+        importNameInput.value = prefilledName || "";
+        importTextarea.value = prefilledJson || "";
+        importPreview.classList.add("hidden");
+        importError.classList.add("hidden");
+        importValidData = null;
+        importConfirmBtn.disabled = true;
+        importOverlay.classList.remove("hidden");
+        if (!prefilledJson) importTextarea.focus();
+        else importNameInput.focus();
+      }
+
+      function closeImportOverlay() {
+        importOverlay.classList.add("hidden");
+      }
+
+      importValidateBtn.addEventListener("click", () => {
+        const jsonStr = importTextarea.value.trim();
+        importError.classList.add("hidden");
+        importPreview.classList.add("hidden");
+        importValidData = null;
+        importConfirmBtn.disabled = true;
+
+        if (!jsonStr) {
+          importError.textContent = "Please paste JSON first.";
+          importError.classList.remove("hidden");
+          return;
+        }
+
+        let data;
+        try {
+          data = JSON.parse(jsonStr);
+        } catch (err) {
+          importError.textContent = `Invalid JSON: ${err.message}`;
+          importError.classList.remove("hidden");
+          return;
+        }
+
+        if (!data || typeof data !== "object" || !Array.isArray(data.apps) || typeof data.port !== "number") {
+          importError.textContent = 'Invalid config format: expected { "apps": [...], "port": number }';
+          importError.classList.remove("hidden");
+          return;
+        }
+
+        importValidData = data;
+        const appCount = data.apps.length;
+        const routeCount = data.apps.reduce((sum, a) => sum + (a.rules || []).length, 0);
+        importPreview.classList.remove("hidden");
+        importPreview.innerHTML = `<span class="text-slate-500">Preview:</span> <span class="text-slate-300">${appCount} app${appCount !== 1 ? 's' : ''}, ${routeCount} route${routeCount !== 1 ? 's' : ''}, port ${data.port}</span>`;
+        importConfirmBtn.disabled = false;
+      });
+
+      importConfirmBtn.addEventListener("click", async () => {
+        const name = importNameInput.value.trim();
+        if (!name) {
+          importError.textContent = "Please enter a config name.";
+          importError.classList.remove("hidden");
+          return;
+        }
+        if (!importValidData) {
+          importError.textContent = "Please validate the JSON first.";
+          importError.classList.remove("hidden");
+          return;
+        }
+        try {
+          const jsonStr = JSON.stringify(importValidData);
+          await window.connectio.config.import(jsonStr, name);
+          showToast(`Imported "${name}"`, "success");
+          closeImportOverlay();
+          await loadConfigAndEnter(name);
+          showingConfigs = false;
+          configsView.classList.add("hidden");
+        } catch (err) {
+          importError.textContent = err.message;
+          importError.classList.remove("hidden");
+        }
+      });
+
+      importCancelBtn.addEventListener("click", closeImportOverlay);
+      importOverlay.addEventListener("click", (e) => { if (e.target === importOverlay) closeImportOverlay(); });
+      importNameInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") importConfirmBtn.click();
+        if (e.key === "Escape") closeImportOverlay();
+      });
+
+      document.getElementById("import-paste-btn").addEventListener("click", () => {
+        openImportOverlay("", "");
+      });
+
+      document.getElementById("import-file-btn").addEventListener("click", async () => {
+        try {
+          const result = await window.connectio.config.importFile();
+          if (!result) return;
+          openImportOverlay(result.name, result.json);
+        } catch (err) {
+          showToast(err.message || "Failed to import file", "error");
+        }
+      });
 
       function createActionBtn(label, icon, onClick, isShare, cfg) {
         const btn = document.createElement("button");
