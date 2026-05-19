@@ -43,42 +43,17 @@
         color: #e2e8f0;
       }
 
-      /* Expanded nav — widen buttons and reveal labels */
       #nav.expanded #nav-toggle-wrap {
         justify-content: flex-start;
+        width: 100%;
       }
       #nav.expanded #nav-toggle {
         width: 100%;
         justify-content: flex-start;
         gap: 0.75rem;
-        padding-left: 0.75rem;
-        padding-right: 0.75rem;
+        padding-inline: 0.75rem;
       }
       #nav.expanded #nav-toggle-label {
-        display: inline;
-      }
-      #nav.expanded #configs-nav-btn {
-        width: 100%;
-        justify-content: flex-start;
-        gap: 0.75rem;
-        padding-left: 0.75rem;
-        padding-right: 0.75rem;
-        margin-left: 0;
-        margin-right: 0;
-      }
-      #nav.expanded #configs-nav-label {
-        display: inline;
-      }
-      #nav.expanded #add-proxy {
-        width: 100%;
-        justify-content: flex-start;
-        gap: 0.75rem;
-        padding-left: 0.75rem;
-        padding-right: 0.75rem;
-        margin-left: 0;
-        margin-right: 0;
-      }
-      #nav.expanded #add-proxy-label {
         display: inline;
       }
     </style>
@@ -264,24 +239,24 @@
       <div id="request-view" class="hidden flex-1 flex flex-col min-h-0"></div>
 
       <div id="configs-view" class="hidden flex-1 flex flex-col min-h-0">
-        <div class="px-6 py-4 border-b border-white/5 shrink-0 flex items-center justify-between gap-4">
-          <div class="flex items-center gap-3 flex-1">
-            <p class="text-sm font-semibold text-slate-300 shrink-0">Configs</p>
-            <div class="relative flex-1 max-w-xs">
-              <i data-lucide="search" class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-600 pointer-events-none"></i>
-              <input id="configs-search" type="text" placeholder="Search configs..."
-                class="w-full bg-white/5 border border-white/10 rounded pl-7 pr-2 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-white/25 transition-colors" />
+        <div class="px-4 lg:px-6 py-3 lg:py-4 border-b border-white/5 shrink-0 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2 lg:gap-3 flex-1 min-w-0">
+            <p class="text-xs lg:text-sm font-semibold text-slate-300 shrink-0">Configs</p>
+            <div class="relative flex-1 min-w-[120px] max-w-xs">
+              <i data-lucide="search" class="w-3 h-3 lg:w-3.5 lg:h-3.5 absolute left-2 top-1/2 -translate-y-1/2 text-slate-600 pointer-events-none"></i>
+              <input id="configs-search" type="text" placeholder="Search..."
+                class="w-full bg-white/5 border border-white/10 rounded pl-6 lg:pl-7 pr-2 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-white/25 transition-colors" />
             </div>
           </div>
-          <div class="flex items-center gap-2">
-            <button id="new-config-btn" class="px-3 py-1.5 rounded-lg text-xs bg-white/5 hover:bg-white/10 text-slate-300 transition-colors">
+          <div class="flex items-center gap-1.5 lg:gap-2">
+            <button id="new-config-btn" class="px-2 lg:px-3 py-1.5 rounded-lg text-xs bg-white/5 hover:bg-white/10 text-slate-300 transition-colors whitespace-nowrap">
               + New
             </button>
-            <button id="import-file-btn" class="px-3 py-1.5 rounded-lg text-xs bg-white/5 hover:bg-white/10 text-slate-300 transition-colors">
-              Import File
+            <button id="import-file-btn" class="hidden sm:inline-flex px-2 lg:px-3 py-1.5 rounded-lg text-xs bg-white/5 hover:bg-white/10 text-slate-300 transition-colors whitespace-nowrap">
+              Import
             </button>
-            <button id="import-paste-btn" class="px-3 py-1.5 rounded-lg text-xs bg-white/5 hover:bg-white/10 text-slate-300 transition-colors">
-              Paste JSON
+            <button id="import-paste-btn" class="px-2 lg:px-3 py-1.5 rounded-lg text-xs bg-white/5 hover:bg-white/10 text-slate-300 transition-colors whitespace-nowrap">
+              Paste
             </button>
           </div>
         </div>
@@ -309,10 +284,15 @@
       </div>
     </main>
 
-    <div class="w-px bg-white/5 shrink-0"></div>
+    <div id="aside-divider" class="w-px bg-white/5 shrink-0"></div>
 
-    <aside class="w-64 shrink-0 flex flex-col bg-[#09090d]">
+    <aside id="aside-panel" class="w-64 shrink-0 flex flex-col bg-[#09090d] transition-all duration-200">
       <div class="flex-1 flex flex-col gap-6 px-4 py-4">
+        <div class="flex justify-end -mt-2 -mr-2">
+          <button id="aside-toggle" title="Collapse panel" class="p-1.5 rounded text-slate-600 hover:text-slate-200 hover:bg-white/8 transition-colors">
+            <i data-lucide="panel-right-close" class="w-4 h-4"></i>
+          </button>
+        </div>
         <section>
           <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-emerald-400 mb-3">
             <i data-lucide="zap" class="w-5 h-5"></i>
@@ -527,14 +507,44 @@
       // Nav expand / collapse
       const nav = document.getElementById("nav");
       const navToggle = document.getElementById("nav-toggle");
+      const navToggleWrap = document.getElementById("nav-toggle-wrap");
+      const configsNavBtn = document.getElementById("configs-nav-btn");
+      const configsNavLabel = document.getElementById("configs-nav-label");
+      const addProxyBtn = document.getElementById("add-proxy");
+      const addProxyLabel = document.getElementById("add-proxy-label");
       let navExpanded = false;
+
+      function syncNavExpanded() {
+        nav.style.width = navExpanded ? "210px" : "80px";
+        nav.classList.toggle("expanded", navExpanded);
+
+        navToggle.classList.toggle("active", navExpanded);
+        navToggleWrap.classList.toggle("justify-start", navExpanded);
+        navToggleWrap.classList.toggle("justify-center", !navExpanded);
+        navToggle.classList.toggle("w-full", navExpanded);
+        navToggle.classList.toggle("justify-start", navExpanded);
+        navToggle.classList.toggle("justify-center", !navExpanded);
+        navToggle.classList.toggle("px-3", navExpanded);
+        document.getElementById("nav-toggle-label").classList.toggle("hidden", !navExpanded);
+
+        [configsNavBtn, addProxyBtn].forEach((btn) => {
+          btn.classList.toggle("w-full", navExpanded);
+          btn.classList.toggle("justify-start", navExpanded);
+          btn.classList.toggle("justify-center", !navExpanded);
+          btn.classList.toggle("px-3", navExpanded);
+          btn.classList.toggle("mx-auto", !navExpanded);
+          btn.classList.toggle("w-10", !navExpanded);
+          btn.classList.toggle("h-10", !navExpanded);
+        });
+        configsNavLabel.classList.toggle("hidden", !navExpanded);
+        addProxyLabel.classList.toggle("hidden", !navExpanded);
+
+        renderSidebar();
+      }
 
       navToggle.addEventListener("click", () => {
         navExpanded = !navExpanded;
-        nav.style.width = navExpanded ? "210px" : "80px";
-        navToggle.classList.toggle("active", navExpanded);
-        nav.classList.toggle("expanded", navExpanded);
-        renderSidebar();
+        syncNavExpanded();
       });
 
       // ── App state ──────────────────────────────────────────────
@@ -1070,6 +1080,15 @@
         btn.disabled = false;
       });
 
+      // ── Debounce ──────────────────────────────────────────────────
+      function debounce(fn, ms) {
+        let timer;
+        return (...args) => {
+          clearTimeout(timer);
+          timer = setTimeout(() => fn(...args), ms);
+        };
+      }
+
       // ── Configs view state ────────────────────────────────────────
       let showingConfigs = false;
 
@@ -1160,11 +1179,21 @@
           const nameRow = document.createElement("div");
           nameRow.className = "flex items-center gap-2";
 
+          const nameWrap = document.createElement("div");
+          nameWrap.className = "flex items-center gap-1.5 cursor-text hover:bg-white/5 rounded px-1 -ml-1 transition-colors";
+          nameWrap.title = "Click to rename";
+
           const nameEl = document.createElement("span");
-          nameEl.className = "text-sm font-medium text-slate-300 hover:text-emerald-400 transition-colors";
+          nameEl.className = "text-sm font-medium text-slate-300";
           nameEl.textContent = cfg.name;
-          nameEl.title = "Click to rename";
-          nameEl.addEventListener("click", (e) => {
+
+          const pencilIcon = document.createElement("i");
+          pencilIcon.setAttribute("data-lucide", "pencil");
+          pencilIcon.className = "w-3 h-3 text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity";
+
+          nameWrap.appendChild(nameEl);
+          nameWrap.appendChild(pencilIcon);
+          nameWrap.addEventListener("click", (e) => {
             e.stopPropagation();
             startRename(cfg, row, nameEl);
           });
@@ -1397,9 +1426,9 @@
       });
 
       // ── Config search ─────────────────────────────────────────────
-      document.getElementById("configs-search").addEventListener("input", () => {
+      document.getElementById("configs-search").addEventListener("input", debounce(() => {
         if (!configsView.classList.contains("hidden")) renderConfigsList();
-      });
+      }, 150));
 
       // ── Delete confirmation ───────────────────────────────────────
       let deleteTimer = null;
@@ -1596,6 +1625,27 @@
           setTimeout(() => toast.remove(), 300);
         }, duration);
       }
+
+      // ── Aside panel collapse ──────────────────────────────────────
+      const asidePanel = document.getElementById("aside-panel");
+      const asideDivider = document.getElementById("aside-divider");
+      const asideToggle = document.getElementById("aside-toggle");
+      let asideCollapsed = false;
+
+      asideToggle.addEventListener("click", () => {
+        asideCollapsed = !asideCollapsed;
+        asidePanel.style.width = asideCollapsed ? "0px" : "256px";
+        asidePanel.classList.toggle("overflow-hidden", asideCollapsed);
+        asideDivider.classList.toggle("hidden", asideCollapsed);
+        const icon = asideToggle.querySelector("i");
+        icon.setAttribute("data-lucide", asideCollapsed ? "panel-right-open" : "panel-right-close");
+        lucide.createIcons();
+        if (asideCollapsed) {
+          asideToggle.title = "Expand panel";
+        } else {
+          asideToggle.title = "Collapse panel";
+        }
+      });
 
       lucide.createIcons();
       initConfigPicker();
