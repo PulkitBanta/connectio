@@ -13,8 +13,14 @@ contextBridge.exposeInMainWorld("connectio", {
   config: {
     dir: () => ipcRenderer.invoke("config:dir"),
     list: () => ipcRenderer.invoke("config:list"),
+    listDetailed: () => ipcRenderer.invoke("config:listDetailed"),
     load: (name) => ipcRenderer.invoke("config:load", name),
     save: (name, data) => ipcRenderer.invoke("config:save", name, data),
     delete: (name) => ipcRenderer.invoke("config:delete", name),
+    rename: (oldName, newName) => ipcRenderer.invoke("config:rename", oldName, newName),
+    import: (jsonString, name) => ipcRenderer.invoke("config:import", jsonString, name),
+    export: (name) => ipcRenderer.invoke("config:export", name),
+    exportFile: (name, jsonString) => ipcRenderer.invoke("config:exportFile", name, jsonString),
+    importFile: () => ipcRenderer.invoke("config:importFile"),
   },
 });

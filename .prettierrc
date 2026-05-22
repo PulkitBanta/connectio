@@ -3,5 +3,13 @@
   "singleQuote": false,
   "trailingComma": "all",
   "printWidth": 100,
-  "tabWidth": 2
+  "tabWidth": 2,
+  "overrides": [
+    {
+      "files": "*.html",
+      "options": {
+        "parser": "html"
+      }
+    }
+  ]
 }
