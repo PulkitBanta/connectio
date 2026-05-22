@@ -30,10 +30,7 @@ interface ConfigAPI {
   rename: (oldName: string, newName: string) => Promise<{ ok: boolean }>;
   import: (jsonString: string, name: string) => Promise<{ ok: boolean }>;
   export: (name: string) => Promise<{ name: string; json: string }>;
-  exportFile: (
-    name: string,
-    jsonString: string,
-  ) => Promise<{ ok: boolean; filePath?: string }>;
+  exportFile: (name: string, jsonString: string) => Promise<{ ok: boolean; filePath?: string }>;
   importFile: () => Promise<{ name: string; json: string } | null>;
 }
 

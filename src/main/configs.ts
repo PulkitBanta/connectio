@@ -132,10 +132,7 @@ function registerConfigHandlers() {
           data = { apps: [], port: 8080 };
         }
         const appCount = (data.apps || []).length;
-        const routeCount = (data.apps || []).reduce(
-          (sum, a) => sum + (a.rules || []).length,
-          0,
-        );
+        const routeCount = (data.apps || []).reduce((sum, a) => sum + (a.rules || []).length, 0);
         return {
           name: f.slice(0, -5),
           appCount,
