@@ -6,6 +6,9 @@ module.exports = [
   js.configs.recommended,
   prettier,
   {
+    ignores: ["**/*.d.ts"],
+  },
+  {
     files: ["src/server.js", "src/main/**/*.js", "src/main/**/*.ts"],
     languageOptions: {
       ecmaVersion: 2022,
