@@ -15,7 +15,7 @@ export default defineConfig({
     build: {
       lib: {
         entry: {
-          index: "src/preload.js",
+          index: "src/preload/index.ts",
         },
         formats: ["cjs"],
       },
