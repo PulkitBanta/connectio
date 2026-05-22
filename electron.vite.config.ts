@@ -5,7 +5,7 @@ export default defineConfig({
     build: {
       lib: {
         entry: {
-          index: "src/main.js",
+          index: "src/main/index.ts",
         },
         formats: ["cjs"],
       },
