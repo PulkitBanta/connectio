@@ -5,7 +5,6 @@ import {
   activeConfigName,
   setActiveConfigName,
   setCurrentView,
-  port,
   setPort,
   setEditingConfigName,
   syncRules,
@@ -18,7 +17,15 @@ import { ShareMenu } from "./ShareMenu";
 
 export function ConfigsView() {
   const [configs, setConfigs] = createSignal<
-    { name: string; appCount: number; routeCount: number; lastModified: number; size: number; port: number; note: string }[]
+    {
+      name: string;
+      appCount: number;
+      routeCount: number;
+      lastModified: number;
+      size: number;
+      port: number;
+      note: string;
+    }[]
   >([]);
   const [search, setSearch] = createSignal("");
   const [shareMenu, setShareMenu] = createSignal<{ name: string; el: HTMLElement } | null>(null);
@@ -88,7 +95,10 @@ export function ConfigsView() {
         <div class="flex items-center gap-2 flex-1 min-w-0">
           <p class="text-xs md:text-sm font-semibold text-slate-300 shrink-0">Configs</p>
           <div class="relative flex-1 min-w-0 max-w-xs">
-            <i data-lucide="search" class="w-3 h-3 absolute left-2 top-1/2 -translate-y-1/2 text-slate-600 pointer-events-none" />
+            <i
+              data-lucide="search"
+              class="w-3 h-3 absolute left-2 top-1/2 -translate-y-1/2 text-slate-600 pointer-events-none"
+            />
             <input
               type="text"
               placeholder="Search..."
@@ -241,7 +251,10 @@ function ConfigNameCell(props: {
           }}
         >
           <span class="text-sm font-medium text-slate-300">{props.cfg.name}</span>
-          <i data-lucide="pencil" class="w-3 h-3 text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <i
+            data-lucide="pencil"
+            class="w-3 h-3 text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity"
+          />
         </div>
       }
     >

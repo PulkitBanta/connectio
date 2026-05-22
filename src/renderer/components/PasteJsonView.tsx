@@ -1,5 +1,5 @@
 import { createSignal } from "solid-js";
-import { editingConfigName, setEditingConfigName, setCurrentView, syncRules } from "../lib/state";
+import { editingConfigName, setEditingConfigName, setCurrentView } from "../lib/state";
 import * as ipc from "../lib/ipc";
 import { showToast } from "./Toast";
 
@@ -29,7 +29,12 @@ export function PasteJsonView() {
       return;
     }
 
-    if (!data || typeof data !== "object" || !Array.isArray(data.apps) || typeof data.port !== "number") {
+    if (
+      !data ||
+      typeof data !== "object" ||
+      !Array.isArray(data.apps) ||
+      typeof data.port !== "number"
+    ) {
       setError('Invalid config format: expected { "apps": [...], "port": number }');
       return;
     }
@@ -49,7 +54,19 @@ export function PasteJsonView() {
       return;
     }
     try {
-      await ipc.config.save(n, validData() as { apps: { id: string; name: string; targetUrl: string; enabled: boolean; rules: unknown[] }[]; port: number });
+      await ipc.config.save(
+        n,
+        validData() as {
+          apps: {
+            id: string;
+            name: string;
+            targetUrl: string;
+            enabled: boolean;
+            rules: unknown[];
+          }[];
+          port: number;
+        },
+      );
       showToast(`Imported "${n}"`, "success");
       setEditingConfigName(null);
       setCurrentView("configs");

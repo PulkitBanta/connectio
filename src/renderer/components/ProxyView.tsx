@@ -1,11 +1,13 @@
-import { createSignal, For, Index } from "solid-js";
+import { createSignal, For } from "solid-js";
 import { apps, setApps, selectedAppId, setSelectedAppId } from "../lib/state";
 import { formatTime, getStatusColor } from "../lib/utils";
 import * as ipc from "../lib/ipc";
 
 function syncRules() {
   const flat = apps.flatMap((app) =>
-    app.rules.filter((r) => r.enabled).map((r) => ({ matchPath: r.matchPath, targetUrl: app.targetUrl })),
+    app.rules
+      .filter((r) => r.enabled)
+      .map((r) => ({ matchPath: r.matchPath, targetUrl: app.targetUrl })),
   );
   ipc.rules.update(flat);
 }
@@ -130,7 +132,9 @@ export function ProxyView() {
               <For each={logs()}>
                 {(entry) => (
                   <div class="flex items-center gap-3 py-1.5 border-b border-white/3 font-mono text-xs">
-                    <span class="text-slate-600 shrink-0">{formatTime(entry.ts || Date.now())}</span>
+                    <span class="text-slate-600 shrink-0">
+                      {formatTime(entry.ts || Date.now())}
+                    </span>
                     <span class="text-slate-400 shrink-0 w-10">{entry.method}</span>
                     <span class="text-slate-300 flex-1 truncate">{entry.path}</span>
                     <span class={`${getStatusColor(entry.status)} shrink-0`}>{entry.status}</span>
@@ -146,7 +150,9 @@ export function ProxyView() {
   );
 }
 
-function RuleSection(props: { app: { id: string; rules: { id: string; matchPath: string; enabled: boolean }[] } }) {
+function RuleSection(props: {
+  app: { id: string; rules: { id: string; matchPath: string; enabled: boolean }[] };
+}) {
   const [adding, setAdding] = createSignal(false);
   const [newPath, setNewPath] = createSignal("");
 
@@ -157,7 +163,10 @@ function RuleSection(props: { app: { id: string; rules: { id: string; matchPath:
     if (!path) return;
     const idx = appIdx();
     if (idx === -1) return;
-    setApps(idx, "rules", (rules) => [...rules, { id: crypto.randomUUID(), matchPath: path, enabled: true }]);
+    setApps(idx, "rules", (rules) => [
+      ...rules,
+      { id: crypto.randomUUID(), matchPath: path, enabled: true },
+    ]);
     setNewPath("");
     setAdding(false);
     syncRules();
