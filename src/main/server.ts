@@ -1,5 +1,5 @@
 const { ipcMain } = require("electron");
-const proxyServer = require("../../server");
+const proxyServer = require("../server");
 
 function registerProxyHandlers() {
   ipcMain.handle("proxy:start", (_e, port) => proxyServer.start(port));
