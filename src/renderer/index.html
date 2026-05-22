@@ -75,64 +75,143 @@
 
   <body class="bg-[#0f1117] text-slate-200 h-screen flex overflow-hidden select-none">
     <!-- Config picker -->
-    <div id="config-picker" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-      <div class="bg-[#16181f] border border-white/10 rounded-xl p-6 w-96 flex flex-col gap-4 shadow-xl">
+    <div
+      id="config-picker"
+      class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+    >
+      <div
+        class="bg-[#16181f] border border-white/10 rounded-xl p-6 w-96 flex flex-col gap-4 shadow-xl"
+      >
         <p class="text-sm font-semibold text-slate-200">Load Config</p>
         <div id="config-list" class="flex flex-col gap-2"></div>
         <div id="config-new-form" class="hidden flex flex-col gap-2">
-          <input id="config-new-name" type="text" placeholder="Config name (e.g. Local Dev)"
-            class="bg-white/5 border border-white/10 rounded px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-white/25 transition-colors" />
+          <input
+            id="config-new-name"
+            type="text"
+            placeholder="Config name (e.g. Local Dev)"
+            class="bg-white/5 border border-white/10 rounded px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-white/25 transition-colors"
+          />
           <div class="flex gap-2 justify-end">
-            <button id="config-new-cancel" class="px-4 py-2 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors">Cancel</button>
-            <button id="config-new-confirm" class="px-4 py-2 rounded-lg text-xs bg-emerald-700 hover:bg-emerald-600 text-white transition-colors">Create</button>
+            <button
+              id="config-new-cancel"
+              class="px-4 py-2 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              id="config-new-confirm"
+              class="px-4 py-2 rounded-lg text-xs bg-emerald-700 hover:bg-emerald-600 text-white transition-colors"
+            >
+              Create
+            </button>
           </div>
         </div>
         <div class="flex items-center justify-between">
-          <button id="config-new-btn" class="text-xs text-emerald-500 hover:text-emerald-400 transition-colors">+ New config</button>
-          <button id="config-picker-close" class="text-xs text-slate-500 hover:text-slate-300 transition-colors">Close</button>
+          <button
+            id="config-new-btn"
+            class="text-xs text-emerald-500 hover:text-emerald-400 transition-colors"
+          >
+            + New config
+          </button>
+          <button
+            id="config-picker-close"
+            class="text-xs text-slate-500 hover:text-slate-300 transition-colors"
+          >
+            Close
+          </button>
         </div>
       </div>
     </div>
 
     <!-- Save config dialog -->
-    <div id="save-config-overlay" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-      <div class="bg-[#16181f] border border-white/10 rounded-xl p-6 w-96 flex flex-col gap-4 shadow-xl">
+    <div
+      id="save-config-overlay"
+      class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+    >
+      <div
+        class="bg-[#16181f] border border-white/10 rounded-xl p-6 w-96 flex flex-col gap-4 shadow-xl"
+      >
         <p class="text-sm font-semibold text-slate-200">Save Config</p>
         <div class="flex flex-col gap-1">
           <label class="text-xs text-slate-500">Config name</label>
-          <input id="save-config-name" type="text"
-            class="bg-white/5 border border-white/10 rounded px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-white/25 transition-colors" />
+          <input
+            id="save-config-name"
+            type="text"
+            class="bg-white/5 border border-white/10 rounded px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-white/25 transition-colors"
+          />
         </div>
         <div class="flex gap-2 justify-end">
-          <button id="save-config-cancel" class="px-4 py-2 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors">Cancel</button>
-          <button id="save-config-confirm" class="px-4 py-2 rounded-lg text-xs bg-emerald-700 hover:bg-emerald-600 text-white transition-colors">Save</button>
+          <button
+            id="save-config-cancel"
+            class="px-4 py-2 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            id="save-config-confirm"
+            class="px-4 py-2 rounded-lg text-xs bg-emerald-700 hover:bg-emerald-600 text-white transition-colors"
+          >
+            Save
+          </button>
         </div>
       </div>
     </div>
 
     <!-- Toast container -->
-    <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+    <div
+      id="toast-container"
+      class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"
+    ></div>
 
     <!-- Import JSON overlay -->
-    <div id="import-json-overlay" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-      <div class="bg-[#16181f] border border-white/10 rounded-xl p-6 w-[480px] flex flex-col gap-4 shadow-xl">
+    <div
+      id="import-json-overlay"
+      class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+    >
+      <div
+        class="bg-[#16181f] border border-white/10 rounded-xl p-6 w-[480px] flex flex-col gap-4 shadow-xl"
+      >
         <p class="text-sm font-semibold text-slate-200">Import Config from JSON</p>
         <div class="flex flex-col gap-1">
           <label class="text-xs text-slate-500">Config name</label>
-          <input id="import-config-name" type="text" placeholder="e.g. Local Dev"
-            class="bg-white/5 border border-white/10 rounded px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-white/25 transition-colors" />
+          <input
+            id="import-config-name"
+            type="text"
+            placeholder="e.g. Local Dev"
+            class="bg-white/5 border border-white/10 rounded px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-white/25 transition-colors"
+          />
         </div>
         <div class="flex flex-col gap-1">
           <label class="text-xs text-slate-500">Paste JSON</label>
-          <textarea id="import-json-textarea" rows="8" placeholder='{ "apps": [...], "port": 8080 }'
-            class="bg-white/5 border border-white/10 rounded px-3 py-2 text-xs font-mono text-slate-300 focus:outline-none focus:border-white/25 transition-colors resize-none"></textarea>
+          <textarea
+            id="import-json-textarea"
+            rows="8"
+            placeholder='{ "apps": [...], "port": 8080 }'
+            class="bg-white/5 border border-white/10 rounded px-3 py-2 text-xs font-mono text-slate-300 focus:outline-none focus:border-white/25 transition-colors resize-none"
+          ></textarea>
         </div>
         <div id="import-preview" class="hidden text-xs text-slate-400"></div>
         <div id="import-error" class="hidden text-xs text-red-400"></div>
         <div class="flex gap-2 justify-end">
-          <button id="import-json-cancel" class="px-4 py-2 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors">Cancel</button>
-          <button id="import-json-validate" class="px-4 py-2 rounded-lg text-xs bg-white/10 hover:bg-white/15 text-slate-300 transition-colors">Validate</button>
-          <button id="import-json-confirm" class="px-4 py-2 rounded-lg text-xs bg-emerald-700 hover:bg-emerald-600 text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed" disabled>Import</button>
+          <button
+            id="import-json-cancel"
+            class="px-4 py-2 rounded-lg text-xs text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            id="import-json-validate"
+            class="px-4 py-2 rounded-lg text-xs bg-white/10 hover:bg-white/15 text-slate-300 transition-colors"
+          >
+            Validate
+          </button>
+          <button
+            id="import-json-confirm"
+            class="px-4 py-2 rounded-lg text-xs bg-emerald-700 hover:bg-emerald-600 text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            disabled
+          >
+            Import
+          </button>
         </div>
       </div>
     </div>
@@ -220,7 +299,9 @@
         id="empty-state"
         class="flex-1 flex flex-col items-center justify-center gap-5 text-center px-8"
       >
-        <div class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-emerald-400">
+        <div
+          class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-emerald-400"
+        >
           <i data-lucide="zap" class="w-7 h-7"></i>
         </div>
         <div>
@@ -242,26 +323,44 @@
       <div id="request-view" class="hidden flex-1 flex flex-col min-h-0"></div>
 
       <div id="configs-view" class="hidden flex-1 flex flex-col min-h-0">
-        <div class="px-3 md:px-6 py-2 md:py-4 border-b border-white/5 shrink-0 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
+        <div
+          class="px-3 md:px-6 py-2 md:py-4 border-b border-white/5 shrink-0 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2"
+        >
           <div class="flex items-center gap-2 flex-1 min-w-0">
             <p class="text-xs md:text-sm font-semibold text-slate-300 shrink-0">Configs</p>
             <div class="relative flex-1 min-w-0 max-w-xs">
-              <i data-lucide="search" class="w-3 h-3 absolute left-2 top-1/2 -translate-y-1/2 text-slate-600 pointer-events-none"></i>
-              <input id="configs-search" type="text" placeholder="Search..."
-                class="w-full bg-white/5 border border-white/10 rounded pl-7 pr-2 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-white/25 transition-colors" />
+              <i
+                data-lucide="search"
+                class="w-3 h-3 absolute left-2 top-1/2 -translate-y-1/2 text-slate-600 pointer-events-none"
+              ></i>
+              <input
+                id="configs-search"
+                type="text"
+                placeholder="Search..."
+                class="w-full bg-white/5 border border-white/10 rounded pl-7 pr-2 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-white/25 transition-colors"
+              />
             </div>
           </div>
           <div class="flex items-center gap-1.5 self-end sm:self-auto">
-            <button id="new-config-btn" title="New config"
-              class="p-1.5 rounded text-slate-600 hover:text-slate-200 hover:bg-white/8 transition-colors">
+            <button
+              id="new-config-btn"
+              title="New config"
+              class="p-1.5 rounded text-slate-600 hover:text-slate-200 hover:bg-white/8 transition-colors"
+            >
               <i data-lucide="plus" class="w-3.5 h-3.5"></i>
             </button>
-            <button id="import-file-btn" title="Import from file"
-              class="p-1.5 rounded text-slate-600 hover:text-slate-200 hover:bg-white/8 transition-colors">
+            <button
+              id="import-file-btn"
+              title="Import from file"
+              class="p-1.5 rounded text-slate-600 hover:text-slate-200 hover:bg-white/8 transition-colors"
+            >
               <i data-lucide="file-up" class="w-3.5 h-3.5"></i>
             </button>
-            <button id="import-paste-btn" title="Paste JSON"
-              class="p-1.5 rounded text-slate-600 hover:text-slate-200 hover:bg-white/8 transition-colors">
+            <button
+              id="import-paste-btn"
+              title="Paste JSON"
+              class="p-1.5 rounded text-slate-600 hover:text-slate-200 hover:bg-white/8 transition-colors"
+            >
               <i data-lucide="clipboard" class="w-3.5 h-3.5"></i>
             </button>
           </div>
@@ -272,24 +371,43 @@
         <div id="paste-json-view" class="hidden flex-1 flex flex-col min-h-0">
           <div class="px-6 py-4 border-b border-white/5 shrink-0 flex items-center justify-between">
             <div class="flex items-center gap-3">
-              <button id="paste-json-back" class="p-1.5 rounded text-slate-500 hover:text-slate-200 hover:bg-white/8 transition-colors">
+              <button
+                id="paste-json-back"
+                class="p-1.5 rounded text-slate-500 hover:text-slate-200 hover:bg-white/8 transition-colors"
+              >
                 <i data-lucide="arrow-left" class="w-4 h-4"></i>
               </button>
               <p class="text-sm font-semibold text-slate-300">Import Config from JSON</p>
             </div>
             <div class="flex items-center gap-2">
-              <span id="paste-json-hint" class="text-[10px] text-slate-600">Validate before importing</span>
-              <button id="paste-json-import" class="px-3 py-1.5 rounded-lg text-xs bg-emerald-700 hover:bg-emerald-600 text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed" disabled>Import</button>
+              <span id="paste-json-hint" class="text-[10px] text-slate-600"
+                >Validate before importing</span
+              >
+              <button
+                id="paste-json-import"
+                class="px-3 py-1.5 rounded-lg text-xs bg-emerald-700 hover:bg-emerald-600 text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                disabled
+              >
+                Import
+              </button>
             </div>
           </div>
           <div class="flex-1 p-6 min-h-0 flex flex-col gap-4">
             <div class="flex flex-col gap-1">
               <label class="text-xs text-slate-500">Config name</label>
-              <input id="paste-json-name" type="text" placeholder="e.g. Local Dev"
-                class="bg-white/5 border border-white/10 rounded px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-white/25 transition-colors max-w-xs" />
+              <input
+                id="paste-json-name"
+                type="text"
+                placeholder="e.g. Local Dev"
+                class="bg-white/5 border border-white/10 rounded px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-white/25 transition-colors max-w-xs"
+              />
             </div>
             <div class="flex-1 flex flex-col min-h-0">
-              <textarea id="paste-json-textarea" class="w-full h-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-xs font-mono text-slate-300 focus:outline-none focus:border-white/25 transition-colors resize-none" placeholder='{ "apps": [...], "port": 8080 }'></textarea>
+              <textarea
+                id="paste-json-textarea"
+                class="w-full h-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-xs font-mono text-slate-300 focus:outline-none focus:border-white/25 transition-colors resize-none"
+                placeholder='{ "apps": [...], "port": 8080 }'
+              ></textarea>
               <div id="paste-json-error" class="hidden text-xs text-red-400 mt-2"></div>
               <div id="paste-json-preview" class="hidden text-xs text-slate-400 mt-2"></div>
             </div>
@@ -300,18 +418,33 @@
         <div id="json-editor-view" class="hidden flex-1 flex flex-col min-h-0">
           <div class="px-6 py-4 border-b border-white/5 shrink-0 flex items-center justify-between">
             <div class="flex items-center gap-3">
-              <button id="json-editor-back" class="p-1.5 rounded text-slate-500 hover:text-slate-200 hover:bg-white/8 transition-colors">
+              <button
+                id="json-editor-back"
+                class="p-1.5 rounded text-slate-500 hover:text-slate-200 hover:bg-white/8 transition-colors"
+              >
                 <i data-lucide="arrow-left" class="w-4 h-4"></i>
               </button>
-              <p class="text-sm font-semibold text-slate-300">Edit: <span id="json-editor-name" class="text-emerald-400"></span></p>
+              <p class="text-sm font-semibold text-slate-300">
+                Edit: <span id="json-editor-name" class="text-emerald-400"></span>
+              </p>
             </div>
             <div class="flex items-center gap-2">
-              <span id="json-editor-hint" class="text-[10px] text-slate-600">Cmd+Enter to save</span>
-              <button id="json-editor-save" class="px-3 py-1.5 rounded-lg text-xs bg-emerald-700 hover:bg-emerald-600 text-white transition-colors">Save</button>
+              <span id="json-editor-hint" class="text-[10px] text-slate-600"
+                >Cmd+Enter to save</span
+              >
+              <button
+                id="json-editor-save"
+                class="px-3 py-1.5 rounded-lg text-xs bg-emerald-700 hover:bg-emerald-600 text-white transition-colors"
+              >
+                Save
+              </button>
             </div>
           </div>
           <div class="flex-1 p-6 min-h-0">
-            <textarea id="json-editor-textarea" class="w-full h-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-xs font-mono text-slate-300 focus:outline-none focus:border-white/25 transition-colors resize-none"></textarea>
+            <textarea
+              id="json-editor-textarea"
+              class="w-full h-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-xs font-mono text-slate-300 focus:outline-none focus:border-white/25 transition-colors resize-none"
+            ></textarea>
             <div id="json-editor-error" class="hidden text-xs text-red-400 mt-2"></div>
           </div>
         </div>
@@ -319,16 +452,24 @@
     </main>
 
     <div id="aside-divider" class="w-px bg-white/5 shrink-0 relative">
-      <button id="aside-toggle" title="Collapse panel"
-        class="absolute -left-3 top-4 w-6 h-6 rounded-full bg-[#16181f] border border-white/10 flex items-center justify-center text-slate-500 hover:text-slate-200 hover:bg-white/10 transition-colors z-10 shadow-lg">
+      <button
+        id="aside-toggle"
+        title="Collapse panel"
+        class="absolute -left-3 top-4 w-6 h-6 rounded-full bg-[#16181f] border border-white/10 flex items-center justify-center text-slate-500 hover:text-slate-200 hover:bg-white/10 transition-colors z-10 shadow-lg"
+      >
         <i data-lucide="panel-right-close" class="w-3 h-3"></i>
       </button>
     </div>
 
-    <aside id="aside-panel" class="w-64 shrink-0 flex flex-col bg-[#09090d] transition-all duration-200">
+    <aside
+      id="aside-panel"
+      class="w-64 shrink-0 flex flex-col bg-[#09090d] transition-all duration-200"
+    >
       <div class="flex-1 flex flex-col gap-6 px-4 py-4">
         <section>
-          <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-emerald-400 mb-3">
+          <div
+            class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-emerald-400 mb-3"
+          >
             <i data-lucide="zap" class="w-5 h-5"></i>
           </div>
           <p class="text-sm font-semibold text-slate-300">Connectio</p>
@@ -369,10 +510,16 @@
       <div class="px-4 py-4 border-t border-white/5 flex flex-col gap-2">
         <p id="config-name-label" class="text-xs text-slate-500 truncate"></p>
         <div class="flex gap-2">
-          <button id="save-config-btn" class="flex-1 py-2 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-slate-300 transition-colors">
+          <button
+            id="save-config-btn"
+            class="flex-1 py-2 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-slate-300 transition-colors"
+          >
             Save
           </button>
-          <button id="load-config-btn" class="flex-1 py-2 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-slate-300 transition-colors">
+          <button
+            id="load-config-btn"
+            class="flex-1 py-2 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-slate-300 transition-colors"
+          >
             Load
           </button>
         </div>
@@ -403,12 +550,14 @@
           row.className = "group flex items-center gap-2";
 
           const btn = document.createElement("button");
-          btn.className = "flex-1 text-left px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-xs text-slate-300 transition-colors";
+          btn.className =
+            "flex-1 text-left px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 text-xs text-slate-300 transition-colors";
           btn.textContent = name;
           btn.addEventListener("click", () => loadConfigAndEnter(name));
 
           const del = document.createElement("button");
-          del.className = "text-slate-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all text-xs px-1";
+          del.className =
+            "text-slate-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-all text-xs px-1";
           del.textContent = "✕";
           del.title = "Delete config";
           del.addEventListener("click", async () => {
@@ -522,7 +671,9 @@
       document.getElementById("save-config-btn").addEventListener("click", openSaveDialog);
       document.getElementById("save-config-cancel").addEventListener("click", closeSaveDialog);
       document.getElementById("save-config-confirm").addEventListener("click", confirmSaveConfig);
-      saveConfigOverlay.addEventListener("click", (e) => { if (e.target === saveConfigOverlay) closeSaveDialog(); });
+      saveConfigOverlay.addEventListener("click", (e) => {
+        if (e.target === saveConfigOverlay) closeSaveDialog();
+      });
       saveConfigNameInput.addEventListener("keydown", (e) => {
         if (e.key === "Enter") confirmSaveConfig();
         if (e.key === "Escape") closeSaveDialog();
@@ -651,7 +802,8 @@
             btn.addEventListener("click", () => selectApp(app.id));
 
             const reorderWrap = document.createElement("div");
-            reorderWrap.className = "flex flex-col opacity-30 group-hover:opacity-100 transition-opacity shrink-0";
+            reorderWrap.className =
+              "flex flex-col opacity-30 group-hover:opacity-100 transition-opacity shrink-0";
 
             const upBtn = document.createElement("button");
             upBtn.textContent = "↑";
@@ -1064,7 +1216,10 @@
         dot.className = "w-2 h-2 rounded-full bg-slate-700 transition-colors duration-300";
         status.textContent = "Offline";
         btn.textContent = "Start Server";
-        btn.className = btn.className.replace("bg-red-800 hover:bg-red-700", "bg-emerald-700 hover:bg-emerald-600");
+        btn.className = btn.className.replace(
+          "bg-red-800 hover:bg-red-700",
+          "bg-emerald-700 hover:bg-emerald-600",
+        );
         portInput.disabled = false;
         portInput.className = portInput.className.replace(" opacity-40 cursor-not-allowed", "");
       }
@@ -1126,7 +1281,7 @@
       function getRelativeTime(ms) {
         const diff = Date.now() - ms;
         const mins = Math.floor(diff / 60000);
-        if (mins < 1) return 'just now';
+        if (mins < 1) return "just now";
         if (mins < 60) return `${mins}m ago`;
         const hours = Math.floor(mins / 60);
         if (hours < 24) return `${hours}h ago`;
@@ -1159,7 +1314,9 @@
         }
 
         const searchTerm = (document.getElementById("configs-search").value || "").toLowerCase();
-        const filtered = searchTerm ? configs.filter((c) => c.name.toLowerCase().includes(searchTerm)) : configs;
+        const filtered = searchTerm
+          ? configs.filter((c) => c.name.toLowerCase().includes(searchTerm))
+          : configs;
 
         const list = document.createElement("div");
         list.className = "flex flex-col gap-2 w-full";
@@ -1175,7 +1332,8 @@
 
         filtered.forEach((cfg) => {
           const row = document.createElement("div");
-          row.className = "group flex items-center gap-3 px-4 py-3 rounded-xl bg-white/3 hover:bg-white/5 transition-colors cursor-pointer border border-transparent hover:border-white/10";
+          row.className =
+            "group flex items-center gap-3 px-4 py-3 rounded-xl bg-white/3 hover:bg-white/5 transition-colors cursor-pointer border border-transparent hover:border-white/10";
 
           const dot = document.createElement("div");
           dot.className = "w-2 h-2 rounded-full bg-emerald-500 shrink-0";
@@ -1187,7 +1345,8 @@
           nameRow.className = "flex items-center gap-2";
 
           const nameWrap = document.createElement("div");
-          nameWrap.className = "flex items-center gap-1.5 cursor-text hover:bg-white/5 rounded px-1 -ml-1 transition-colors";
+          nameWrap.className =
+            "flex items-center gap-1.5 cursor-text hover:bg-white/5 rounded px-1 -ml-1 transition-colors";
           nameWrap.title = "Click to rename";
 
           const nameEl = document.createElement("span");
@@ -1196,7 +1355,8 @@
 
           const pencilIcon = document.createElement("i");
           pencilIcon.setAttribute("data-lucide", "pencil");
-          pencilIcon.className = "w-3 h-3 text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity";
+          pencilIcon.className =
+            "w-3 h-3 text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity";
 
           nameWrap.appendChild(nameEl);
           nameWrap.appendChild(pencilIcon);
@@ -1208,7 +1368,7 @@
           const meta = document.createElement("span");
           meta.className = "text-[10px] text-slate-600";
           const relTime = getRelativeTime(cfg.lastModified);
-          meta.textContent = `${cfg.appCount} app${cfg.appCount !== 1 ? 's' : ''} · ${cfg.routeCount} route${cfg.routeCount !== 1 ? 's' : ''} · port ${cfg.port} · ${relTime}`;
+          meta.textContent = `${cfg.appCount} app${cfg.appCount !== 1 ? "s" : ""} · ${cfg.routeCount} route${cfg.routeCount !== 1 ? "s" : ""} · port ${cfg.port} · ${relTime}`;
 
           nameRow.appendChild(nameEl);
           nameRow.appendChild(meta);
@@ -1225,7 +1385,8 @@
           sizeEl.className = "text-[10px] text-slate-600";
 
           const actions = document.createElement("div");
-          actions.className = "flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0";
+          actions.className =
+            "flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0";
 
           const editBtn = createActionBtn("Edit JSON", "file-code", () => openFullPageEditor(cfg));
           const shareBtn = createActionBtn("Share", "share-2", null, true, cfg);
@@ -1300,8 +1461,14 @@
           return;
         }
 
-        if (!data || typeof data !== "object" || !Array.isArray(data.apps) || typeof data.port !== "number") {
-          importError.textContent = 'Invalid config format: expected { "apps": [...], "port": number }';
+        if (
+          !data ||
+          typeof data !== "object" ||
+          !Array.isArray(data.apps) ||
+          typeof data.port !== "number"
+        ) {
+          importError.textContent =
+            'Invalid config format: expected { "apps": [...], "port": number }';
           importError.classList.remove("hidden");
           return;
         }
@@ -1310,7 +1477,7 @@
         const appCount = data.apps.length;
         const routeCount = data.apps.reduce((sum, a) => sum + (a.rules || []).length, 0);
         importPreview.classList.remove("hidden");
-        importPreview.innerHTML = `<span class="text-slate-500">Preview:</span> <span class="text-slate-300">${appCount} app${appCount !== 1 ? 's' : ''}, ${routeCount} route${routeCount !== 1 ? 's' : ''}, port ${data.port}</span>`;
+        importPreview.innerHTML = `<span class="text-slate-500">Preview:</span> <span class="text-slate-300">${appCount} app${appCount !== 1 ? "s" : ""}, ${routeCount} route${routeCount !== 1 ? "s" : ""}, port ${data.port}</span>`;
         importConfirmBtn.disabled = false;
       });
 
@@ -1339,7 +1506,9 @@
       });
 
       importCancelBtn.addEventListener("click", closeImportOverlay);
-      importOverlay.addEventListener("click", (e) => { if (e.target === importOverlay) closeImportOverlay(); });
+      importOverlay.addEventListener("click", (e) => {
+        if (e.target === importOverlay) closeImportOverlay();
+      });
       importNameInput.addEventListener("keydown", (e) => {
         if (e.key === "Enter") importConfirmBtn.click();
         if (e.key === "Escape") closeImportOverlay();
@@ -1418,8 +1587,14 @@
           return;
         }
 
-        if (!data || typeof data !== "object" || !Array.isArray(data.apps) || typeof data.port !== "number") {
-          pasteJsonError.textContent = 'Invalid config format: expected { "apps": [...], "port": number }';
+        if (
+          !data ||
+          typeof data !== "object" ||
+          !Array.isArray(data.apps) ||
+          typeof data.port !== "number"
+        ) {
+          pasteJsonError.textContent =
+            'Invalid config format: expected { "apps": [...], "port": number }';
           pasteJsonError.classList.remove("hidden");
           return;
         }
@@ -1518,8 +1693,14 @@
           jsonEditorError.classList.remove("hidden");
           return;
         }
-        if (!data || typeof data !== "object" || !Array.isArray(data.apps) || typeof data.port !== "number") {
-          jsonEditorError.textContent = 'Invalid config format: expected { "apps": [...], "port": number }';
+        if (
+          !data ||
+          typeof data !== "object" ||
+          !Array.isArray(data.apps) ||
+          typeof data.port !== "number"
+        ) {
+          jsonEditorError.textContent =
+            'Invalid config format: expected { "apps": [...], "port": number }';
           jsonEditorError.classList.remove("hidden");
           return;
         }
@@ -1539,9 +1720,12 @@
       });
 
       // ── Config search ─────────────────────────────────────────────
-      document.getElementById("configs-search").addEventListener("input", debounce(() => {
-        if (!configsView.classList.contains("hidden")) renderConfigsList();
-      }, 150));
+      document.getElementById("configs-search").addEventListener(
+        "input",
+        debounce(() => {
+          if (!configsView.classList.contains("hidden")) renderConfigsList();
+        }, 150),
+      );
 
       // ── Delete confirmation ───────────────────────────────────────
       let deleteTimer = null;
@@ -1593,7 +1777,8 @@
         const input = document.createElement("input");
         input.type = "text";
         input.value = origName;
-        input.className = "bg-white/5 border border-white/10 rounded px-2 py-0.5 text-sm text-slate-300 focus:outline-none focus:border-white/25 transition-colors w-40";
+        input.className =
+          "bg-white/5 border border-white/10 rounded px-2 py-0.5 text-sm text-slate-300 focus:outline-none focus:border-white/25 transition-colors w-40";
         input.dataset.orig = origName;
 
         nameEl.replaceWith(input);
@@ -1622,8 +1807,14 @@
         }
 
         input.addEventListener("keydown", (e) => {
-          if (e.key === "Enter") { e.preventDefault(); commit(); }
-          if (e.key === "Escape") { e.preventDefault(); cancel(); }
+          if (e.key === "Enter") {
+            e.preventDefault();
+            commit();
+          }
+          if (e.key === "Escape") {
+            e.preventDefault();
+            cancel();
+          }
         });
         input.addEventListener("blur", commit);
       }
@@ -1635,11 +1826,14 @@
         if (activeShareMenu) activeShareMenu.remove();
 
         const menu = document.createElement("div");
-        menu.className = "bg-[#1a1d26] border border-white/10 rounded-lg py-1 shadow-xl flex flex-col min-w-[140px]";
+        menu.className =
+          "bg-[#1a1d26] border border-white/10 rounded-lg py-1 shadow-xl flex flex-col min-w-[140px]";
 
         const copyBtn = document.createElement("button");
-        copyBtn.className = "flex items-center gap-2 px-3 py-1.5 text-xs text-slate-300 hover:bg-white/5 transition-colors text-left";
-        copyBtn.innerHTML = '<i data-lucide="clipboard" class="w-3.5 h-3.5 shrink-0"></i> Copy JSON';
+        copyBtn.className =
+          "flex items-center gap-2 px-3 py-1.5 text-xs text-slate-300 hover:bg-white/5 transition-colors text-left";
+        copyBtn.innerHTML =
+          '<i data-lucide="clipboard" class="w-3.5 h-3.5 shrink-0"></i> Copy JSON';
         copyBtn.addEventListener("click", async (e) => {
           e.stopPropagation();
           try {
@@ -1654,8 +1848,10 @@
         });
 
         const saveBtn = document.createElement("button");
-        saveBtn.className = "flex items-center gap-2 px-3 py-1.5 text-xs text-slate-300 hover:bg-white/5 transition-colors text-left";
-        saveBtn.innerHTML = '<i data-lucide="download" class="w-3.5 h-3.5 shrink-0"></i> Save as file';
+        saveBtn.className =
+          "flex items-center gap-2 px-3 py-1.5 text-xs text-slate-300 hover:bg-white/5 transition-colors text-left";
+        saveBtn.innerHTML =
+          '<i data-lucide="download" class="w-3.5 h-3.5 shrink-0"></i> Save as file';
         saveBtn.addEventListener("click", async (e) => {
           e.stopPropagation();
           try {
@@ -1675,9 +1871,9 @@
         menu.appendChild(saveBtn);
 
         const rect = anchorEl.getBoundingClientRect();
-        menu.style.position = 'fixed';
-        menu.style.top = rect.top + 'px';
-        menu.style.left = (rect.left - 148) + 'px';
+        menu.style.position = "fixed";
+        menu.style.top = rect.top + "px";
+        menu.style.left = rect.left - 148 + "px";
 
         document.body.appendChild(menu);
         activeShareMenu = menu;
@@ -1686,16 +1882,17 @@
           if (!menu.contains(e.target) && e.target !== anchorEl) {
             menu.remove();
             activeShareMenu = null;
-            document.removeEventListener('click', closeMenu);
+            document.removeEventListener("click", closeMenu);
           }
         }
-        setTimeout(() => document.addEventListener('click', closeMenu), 0);
+        setTimeout(() => document.addEventListener("click", closeMenu), 0);
       }
 
       function createActionBtn(label, icon, onClick, isShare, cfg) {
         const btn = document.createElement("button");
         btn.title = label;
-        btn.className = "p-1.5 rounded text-slate-600 hover:text-slate-200 hover:bg-white/8 transition-colors";
+        btn.className =
+          "p-1.5 rounded text-slate-600 hover:text-slate-200 hover:bg-white/8 transition-colors";
         const i = document.createElement("i");
         i.setAttribute("data-lucide", icon);
         i.className = "w-3.5 h-3.5";
@@ -1718,23 +1915,24 @@
 
       // ── Toast system ──────────────────────────────────────────────
       function showToast(message, type, duration) {
-        type = type || 'success';
+        type = type || "success";
         duration = duration || 2500;
         const container = document.getElementById("toast-container");
         const toast = document.createElement("div");
-        const bg = type === 'error' ? 'bg-red-800' : type === 'info' ? 'bg-blue-800' : 'bg-emerald-800';
+        const bg =
+          type === "error" ? "bg-red-800" : type === "info" ? "bg-blue-800" : "bg-emerald-800";
         toast.className = `pointer-events-auto ${bg} text-white text-xs px-4 py-2.5 rounded-lg shadow-lg transition-all duration-300 flex items-center gap-2`;
         toast.textContent = message;
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateY(8px)';
+        toast.style.opacity = "0";
+        toast.style.transform = "translateY(8px)";
         container.appendChild(toast);
         requestAnimationFrame(() => {
-          toast.style.opacity = '1';
-          toast.style.transform = 'translateY(0)';
+          toast.style.opacity = "1";
+          toast.style.transform = "translateY(0)";
         });
         setTimeout(() => {
-          toast.style.opacity = '0';
-          toast.style.transform = 'translateY(8px)';
+          toast.style.opacity = "0";
+          toast.style.transform = "translateY(8px)";
           setTimeout(() => toast.remove(), 300);
         }, duration);
       }
