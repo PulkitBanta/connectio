@@ -1,5 +1,21 @@
 import { onMount, createEffect } from "solid-js";
 import { createIcons } from "lucide";
+import {
+  Zap,
+  PanelRightClose,
+  Pencil,
+  Trash2,
+  ArrowLeft,
+  ChevronRight,
+  Plus,
+  Search,
+  FileUp,
+  Clipboard,
+  FileJson,
+  FileCode,
+  Share2,
+  Download,
+} from "lucide";
 import { apps, setApps, currentView, selectedAppId, setCurrentView } from "./lib/state";
 import * as ipc from "./lib/ipc";
 import { Nav } from "./components/Nav";
@@ -9,6 +25,23 @@ import { ConfigsView } from "./components/ConfigsView";
 import { PasteJsonView } from "./components/PasteJsonView";
 import { JsonEditor } from "./components/JsonEditor";
 import { Toast } from "./components/Toast";
+
+const icons = {
+  zap: Zap,
+  "panel-right-close": PanelRightClose,
+  pencil: Pencil,
+  "trash-2": Trash2,
+  "arrow-left": ArrowLeft,
+  "chevron-right": ChevronRight,
+  plus: Plus,
+  search: Search,
+  "file-up": FileUp,
+  clipboard: Clipboard,
+  "file-json": FileJson,
+  "file-code": FileCode,
+  "share-2": Share2,
+  download: Download,
+};
 
 export function App() {
   onMount(() => {
@@ -24,7 +57,7 @@ export function App() {
 
   createEffect(() => {
     currentView();
-    setTimeout(() => createIcons(), 0);
+    setTimeout(() => createIcons({ icons }), 0);
   });
 
   const handleAddProxy = () => {
