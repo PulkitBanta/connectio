@@ -26,7 +26,7 @@ function createWindow() {
     win.loadFile(path.join(__dirname, "../renderer/index.html"));
   }
 
-  if (process.argv.includes("--dev")) {
+  if (process.env.ELECTRON_RENDERER_URL) {
     win.webContents.openDevTools();
   }
 }

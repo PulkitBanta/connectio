@@ -24,7 +24,7 @@ export function App() {
 
   createEffect(() => {
     currentView();
-    requestAnimationFrame(() => createIcons());
+    setTimeout(() => createIcons(), 0);
   });
 
   const handleAddProxy = () => {
