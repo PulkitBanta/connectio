@@ -1,4 +1,6 @@
 import { defineConfig } from "electron-vite";
+import tailwindcss from "@tailwindcss/vite";
+import solid from "vite-plugin-solid";
 
 export default defineConfig({
   main: {
@@ -23,6 +25,7 @@ export default defineConfig({
   },
   renderer: {
     root: "src/renderer",
+    plugins: [tailwindcss(), solid()],
     build: {
       rollupOptions: {
         input: "src/renderer/index.html",

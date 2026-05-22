@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+.squircle {
+  border-radius: 1rem;
+  transition:
+    border-radius 0.15s ease,
+    background-color 0.15s ease;
+}
+.squircle:hover {
+  border-radius: 0.6rem;
+}
+
+#nav {
+  transition: width 0.2s ease;
+}
+
+#nav-toggle i,
+#nav-toggle svg {
+  transition: transform 0.2s ease;
+}
+
+#app-toggle.active i,
+#app-toggle.active svg {
+  transform: rotate(180deg);
+}
