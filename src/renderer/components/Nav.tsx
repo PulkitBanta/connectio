@@ -22,7 +22,9 @@ function swapApps(i: number, j: number) {
 
 function syncRules() {
   const flat = apps.flatMap((app) =>
-    app.rules.filter((r) => r.enabled).map((r) => ({ matchPath: r.matchPath, targetUrl: app.targetUrl })),
+    app.rules
+      .filter((r) => r.enabled)
+      .map((r) => ({ matchPath: r.matchPath, targetUrl: app.targetUrl })),
   );
   ipc.rules.update(flat);
 }
@@ -47,9 +49,7 @@ export function Nav() {
             class="w-4 h-4 shrink-0"
             style={{ transform: navExpanded() ? "rotate(180deg)" : "" }}
           />
-          {navExpanded() && (
-            <span class="text-xs font-medium whitespace-nowrap">Collapse</span>
-          )}
+          {navExpanded() && <span class="text-xs font-medium whitespace-nowrap">Collapse</span>}
         </button>
       </div>
 
@@ -93,7 +93,9 @@ export function Nav() {
                         if (i() > 0) swapApps(i(), i() - 1);
                       }}
                       class={`text-[10px] leading-none py-0.5 px-0.5 transition-colors ${
-                        i() === 0 ? "text-slate-700 pointer-events-none" : "text-slate-500 hover:text-slate-200"
+                        i() === 0
+                          ? "text-slate-700 pointer-events-none"
+                          : "text-slate-500 hover:text-slate-200"
                       }`}
                     >
                       ↑
@@ -104,7 +106,9 @@ export function Nav() {
                         if (i() < apps.length - 1) swapApps(i(), i() + 1);
                       }}
                       class={`text-[10px] leading-none py-0.5 px-0.5 transition-colors ${
-                        i() === apps.length - 1 ? "text-slate-700 pointer-events-none" : "text-slate-500 hover:text-slate-200"
+                        i() === apps.length - 1
+                          ? "text-slate-700 pointer-events-none"
+                          : "text-slate-500 hover:text-slate-200"
                       }`}
                     >
                       ↓
@@ -133,9 +137,7 @@ export function Nav() {
         </For>
       </div>
 
-      <div
-        class={`flex ${navExpanded() ? "justify-start w-full px-3" : "justify-center px-3"}`}
-      >
+      <div class={`flex ${navExpanded() ? "justify-start w-full px-3" : "justify-center px-3"}`}>
         <button
           onClick={() => setCurrentView("configs")}
           title="Add a proxy app"
@@ -144,9 +146,7 @@ export function Nav() {
           }`}
         >
           <i data-lucide="plus" class="w-4 h-4 shrink-0" />
-          {navExpanded() && (
-            <span class="text-xs font-medium whitespace-nowrap">Add App</span>
-          )}
+          {navExpanded() && <span class="text-xs font-medium whitespace-nowrap">Add App</span>}
         </button>
       </div>
     </nav>

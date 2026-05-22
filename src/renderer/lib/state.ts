@@ -40,7 +40,9 @@ export const [editingConfigName, setEditingConfigName] = createSignal<string | n
 
 export function syncRules() {
   const flat = apps.flatMap((app) =>
-    app.rules.filter((r) => r.enabled).map((r) => ({ matchPath: r.matchPath, targetUrl: app.targetUrl })),
+    app.rules
+      .filter((r) => r.enabled)
+      .map((r) => ({ matchPath: r.matchPath, targetUrl: app.targetUrl })),
   );
   window.connectio.rules.update(flat);
 }

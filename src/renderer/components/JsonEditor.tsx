@@ -33,7 +33,12 @@ export function JsonEditor() {
       setError(`Invalid JSON: ${err instanceof Error ? err.message : "Parse error"}`);
       return;
     }
-    if (!data || typeof data !== "object" || !Array.isArray((data as Record<string, unknown>).apps) || typeof (data as Record<string, unknown>).port !== "number") {
+    if (
+      !data ||
+      typeof data !== "object" ||
+      !Array.isArray((data as Record<string, unknown>).apps) ||
+      typeof (data as Record<string, unknown>).port !== "number"
+    ) {
       setError('Invalid config format: expected { "apps": [...], "port": number }');
       return;
     }
