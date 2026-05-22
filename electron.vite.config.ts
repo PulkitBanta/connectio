@@ -3,19 +3,21 @@ import { defineConfig } from "electron-vite";
 export default defineConfig({
   main: {
     build: {
-      rollupOptions: {
-        input: {
+      lib: {
+        entry: {
           index: "src/main.js",
         },
+        formats: ["cjs"],
       },
     },
   },
   preload: {
     build: {
-      rollupOptions: {
-        input: {
+      lib: {
+        entry: {
           index: "src/preload.js",
         },
+        formats: ["cjs"],
       },
     },
   },
