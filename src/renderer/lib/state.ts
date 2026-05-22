@@ -1,4 +1,5 @@
-import { createSignal, createStore } from "solid-js";
+import { createSignal } from "solid-js";
+import { createStore } from "solid-js/store";
 
 export interface Rule {
   id: string;
@@ -35,3 +36,15 @@ export const [activeConfigName, setActiveConfigName] = createSignal<string | nul
 export const [asideCollapsed, setAsideCollapsed] = createSignal(false);
 export const [currentView, setCurrentView] = createSignal<View>("empty");
 export const [port, setPort] = createSignal(8080);
+export const [editingConfigName, setEditingConfigName] = createSignal<string | null>(null);
+
+export function syncRules() {
+  const flat = apps.flatMap((app) =>
+    app.rules.filter((r) => r.enabled).map((r) => ({ matchPath: r.matchPath, targetUrl: app.targetUrl })),
+  );
+  window.connectio.rules.update(flat);
+}
+
+export async function stopServer() {
+  await window.connectio.proxy.stop();
+}

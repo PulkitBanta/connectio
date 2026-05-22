@@ -2821,6 +2821,11 @@ lru-cache@^6.0.0:
   dependencies:
     yallist "^4.0.0"
 
+lucide@^1.16.0:
+  version "1.16.0"
+  resolved "https://registry.yarnpkg.com/lucide/-/lucide-1.16.0.tgz#830f9df4d703aab485b221591aec71edb243903f"
+  integrity sha512-20QvduCJTB7e7K9WVvoLBuKPsYZ8d6ptwe9PIdTFiZmjVTPdFWQreBNyNCM9QQtGnqHR0PLiEQdxyhYsL1LdoA==
+
 magic-string@^0.30.19, magic-string@^0.30.21:
   version "0.30.21"
   resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.30.21.tgz#56763ec09a0fa8091df27879fd94d19078c00d91"

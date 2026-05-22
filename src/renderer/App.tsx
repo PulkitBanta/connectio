@@ -1,5 +1,6 @@
-import { onMount } from "solid-js";
-import { apps, setApps, currentView, selectedAppId, setSelectedAppId, setCurrentView, setProxyRunning, setProxyStatusText, syncRules } from "./lib/state";
+import { onMount, createEffect } from "solid-js";
+import { createIcons } from "lucide";
+import { apps, setApps, currentView, selectedAppId, setCurrentView } from "./lib/state";
 import * as ipc from "./lib/ipc";
 import { Nav } from "./components/Nav";
 import { AsidePanel } from "./components/AsidePanel";
@@ -8,11 +9,8 @@ import { ConfigsView } from "./components/ConfigsView";
 import { PasteJsonView } from "./components/PasteJsonView";
 import { JsonEditor } from "./components/JsonEditor";
 import { Toast } from "./components/Toast";
-import { AddProxyModal } from "./components/AddProxyModal";
 
 export function App() {
-  let addProxyModalRef: { open: () => void; close: () => void } | undefined;
-
   onMount(() => {
     ipc.onLog((entry) => {
       const app = apps.find((a) => a.targetUrl === entry.targetUrl);
@@ -22,6 +20,11 @@ export function App() {
       const logEntry = { ...entry, ts: Date.now() };
       setApps(idx, "logs", (logs) => [logEntry, ...(logs || [])]);
     });
+  });
+
+  createEffect(() => {
+    currentView();
+    requestAnimationFrame(() => createIcons());
   });
 
   const handleAddProxy = () => {
@@ -58,10 +61,7 @@ export function App() {
 
 function EmptyState(props: { onAddProxy: () => void }) {
   return (
-    <div
-      id="empty-state"
-      class="flex-1 flex flex-col items-center justify-center gap-5 text-center px-8"
-    >
+    <div class="flex-1 flex flex-col items-center justify-center gap-5 text-center px-8">
       <div class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-emerald-400">
         <i data-lucide="zap" class="w-7 h-7" />
       </div>
