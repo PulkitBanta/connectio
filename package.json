@@ -7,7 +7,7 @@
     "email": "pulkitbanta@gmail.com"
   },
   "description": "A local proxy manager — connect and route between local servers with optional Cloudflare tunnel exposure",
-  "main": "src/main.js",
+  "main": "out/main/index.js",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@tailwindcss/cli": "^4.3.0",
@@ -25,10 +25,10 @@
     "vite-plugin-solid": "^2.11.12"
   },
   "scripts": {
-    "start": "yarn build:css && electron .",
-    "dev": "yarn build:css && electron . --dev",
+    "start": "electron-vite preview",
+    "dev": "electron-vite dev",
     "build:css": "tailwindcss -i src/renderer/styles/tailwind.css -o src/renderer/styles/output.css",
-    "build": "yarn build:css && electron-builder",
+    "build": "electron-vite build && electron-builder",
     "lint": "eslint src/",
     "format": "prettier --write src/"
   },

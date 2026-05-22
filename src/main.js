@@ -17,7 +17,7 @@ function createWindow() {
     height: 800,
     icon: path.join(__dirname, "../icons/icon.png"),
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
+      preload: path.join(__dirname, "../preload/index.js"),
       contextIsolation: true,
       nodeIntegration: false,
     },
@@ -26,7 +26,12 @@ function createWindow() {
   });
 
   mainWindow = win;
-  win.loadFile(path.join(__dirname, "renderer", "index.html"));
+
+  if (process.env.ELECTRON_RENDERER_URL) {
+    win.loadURL(process.env.ELECTRON_RENDERER_URL);
+  } else {
+    win.loadFile(path.join(__dirname, "../renderer/index.html"));
+  }
 
   if (process.argv.includes("--dev")) {
     win.webContents.openDevTools();
