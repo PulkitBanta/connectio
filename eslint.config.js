@@ -6,7 +6,7 @@ module.exports = [
   js.configs.recommended,
   prettier,
   {
-    files: ["src/**/*.js"],
+    files: ["src/main.js", "src/server.js", "src/main/**/*.js", "src/main/**/*.ts"],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: "commonjs",
@@ -17,11 +17,19 @@ module.exports = [
     },
   },
   {
-    files: ["src/renderer/**/*.js"],
+    files: ["src/preload.js", "src/preload/**/*.js", "src/preload/**/*.ts"],
     languageOptions: {
       ecmaVersion: 2022,
-      sourceType: "script",
-      globals: globals.browser,
+      sourceType: "commonjs",
+      globals: globals.node,
+    },
+  },
+  {
+    files: ["src/renderer/**/*.js", "src/renderer/**/*.ts", "src/renderer/**/*.tsx"],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: "module",
+      globals: { ...globals.browser },
     },
   },
 ];
