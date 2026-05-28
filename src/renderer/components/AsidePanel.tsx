@@ -1,4 +1,5 @@
 import * as ipc from "../lib/ipc";
+import { Icon } from "./Icon";
 import {
   proxyRunning,
   setProxyRunning,
@@ -57,7 +58,7 @@ export function AsidePanel() {
       <div class="flex-1 flex flex-col gap-6 px-4 py-4">
         <section>
           <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-emerald-400 mb-3">
-            <i data-lucide="zap" class="w-5 h-5" />
+            <Icon name="zap" class="w-5 h-5" />
           </div>
           <p class="text-sm font-semibold text-slate-300">Connectio</p>
           <p class="text-xs text-slate-600 mt-0.5 leading-relaxed">Local proxy manager</p>

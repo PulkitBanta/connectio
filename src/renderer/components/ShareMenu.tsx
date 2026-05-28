@@ -1,4 +1,5 @@
 import { createSignal, onCleanup, onMount } from "solid-js";
+import { Icon } from "./Icon";
 import * as ipc from "../lib/ipc";
 import { showToast } from "./Toast";
 
@@ -71,14 +72,14 @@ export function ShareMenu(props: ShareMenuProps) {
         onClick={handleCopy}
         class="flex items-center gap-2 px-3 py-1.5 text-xs text-slate-300 hover:bg-white/5 transition-colors text-left"
       >
-        <i data-lucide="clipboard" class="w-3.5 h-3.5 shrink-0" />
+        <Icon name="clipboard" class="w-3.5 h-3.5 shrink-0" />
         Copy JSON
       </button>
       <button
         onClick={handleSave}
         class="flex items-center gap-2 px-3 py-1.5 text-xs text-slate-300 hover:bg-white/5 transition-colors text-left"
       >
-        <i data-lucide="download" class="w-3.5 h-3.5 shrink-0" />
+        <Icon name="download" class="w-3.5 h-3.5 shrink-0" />
         Save as file
       </button>
     </div>

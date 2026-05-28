@@ -1,21 +1,4 @@
-import { onMount, createEffect } from "solid-js";
-import { createIcons } from "lucide";
-import {
-  Zap,
-  PanelRightClose,
-  Pencil,
-  Trash2,
-  ArrowLeft,
-  ChevronRight,
-  Plus,
-  Search,
-  FileUp,
-  Clipboard,
-  FileJson,
-  FileCode,
-  Share2,
-  Download,
-} from "lucide";
+import { onMount } from "solid-js";
 import { apps, setApps, currentView, selectedAppId, setCurrentView } from "./lib/state";
 import * as ipc from "./lib/ipc";
 import { Nav } from "./components/Nav";
@@ -25,23 +8,7 @@ import { ConfigsView } from "./components/ConfigsView";
 import { PasteJsonView } from "./components/PasteJsonView";
 import { JsonEditor } from "./components/JsonEditor";
 import { Toast } from "./components/Toast";
-
-const icons = {
-  zap: Zap,
-  "panel-right-close": PanelRightClose,
-  pencil: Pencil,
-  "trash-2": Trash2,
-  "arrow-left": ArrowLeft,
-  "chevron-right": ChevronRight,
-  plus: Plus,
-  search: Search,
-  "file-up": FileUp,
-  clipboard: Clipboard,
-  "file-json": FileJson,
-  "file-code": FileCode,
-  "share-2": Share2,
-  download: Download,
-};
+import { Icon } from "./components/Icon";
 
 export function App() {
   onMount(() => {
@@ -53,11 +20,6 @@ export function App() {
       const logEntry = { ...entry, ts: Date.now() };
       setApps(idx, "logs", (logs) => [logEntry, ...(logs || [])]);
     });
-  });
-
-  createEffect(() => {
-    currentView();
-    setTimeout(() => createIcons({ icons }), 0);
   });
 
   const handleAddProxy = () => {
@@ -82,7 +44,7 @@ export function App() {
           title="Collapse panel"
           class="absolute -left-3 top-4 w-6 h-6 rounded-full bg-[#16181f] border border-white/10 flex items-center justify-center text-slate-500 hover:text-slate-200 hover:bg-white/10 transition-colors z-10 shadow-lg"
         >
-          <i data-lucide="panel-right-close" class="w-3 h-3" />
+          <Icon name="panel-right-close" class="w-3 h-3" />
         </button>
       </div>
 
@@ -96,7 +58,7 @@ function EmptyState(props: { onAddProxy: () => void }) {
   return (
     <div class="flex-1 flex flex-col items-center justify-center gap-5 text-center px-8">
       <div class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-emerald-400">
-        <i data-lucide="zap" class="w-7 h-7" />
+        <Icon name="zap" class="w-7 h-7" />
       </div>
       <div>
         <p class="text-slate-300 font-medium mb-1">No proxy apps yet</p>

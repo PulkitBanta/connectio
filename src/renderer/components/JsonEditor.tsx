@@ -1,4 +1,5 @@
 import { createSignal, onMount } from "solid-js";
+import { Icon } from "./Icon";
 import { editingConfigName, setEditingConfigName, setCurrentView } from "../lib/state";
 import * as ipc from "../lib/ipc";
 import { showToast } from "./Toast";
@@ -70,7 +71,7 @@ export function JsonEditor() {
             }}
             class="p-1.5 rounded text-slate-500 hover:text-slate-200 hover:bg-white/8 transition-colors"
           >
-            <i data-lucide="arrow-left" class="w-4 h-4" />
+            <Icon name="arrow-left" class="w-4 h-4" />
           </button>
           <p class="text-sm font-semibold text-slate-300">
             Edit: <span class="text-emerald-400">{configName}</span>

@@ -1,4 +1,5 @@
 import { createSignal } from "solid-js";
+import { Icon } from "./Icon";
 import { editingConfigName, setEditingConfigName, setCurrentView } from "../lib/state";
 import * as ipc from "../lib/ipc";
 import { showToast } from "./Toast";
@@ -98,7 +99,7 @@ export function PasteJsonView() {
             }}
             class="p-1.5 rounded text-slate-500 hover:text-slate-200 hover:bg-white/8 transition-colors"
           >
-            <i data-lucide="arrow-left" class="w-4 h-4" />
+            <Icon name="arrow-left" class="w-4 h-4" />
           </button>
           <p class="text-sm font-semibold text-slate-300">Import Config from JSON</p>
         </div>

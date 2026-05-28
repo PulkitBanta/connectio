@@ -1,4 +1,5 @@
 import { For } from "solid-js";
+import { Icon } from "./Icon";
 import {
   apps,
   setApps,
@@ -44,8 +45,8 @@ export function Nav() {
           title={navExpanded() ? "Collapse" : "Expand"}
           class={`squircle h-10 flex items-center justify-center bg-white/5 hover:bg-white/10 text-slate-400 hover:text-slate-200 transition-colors ${navExpanded() ? "w-full justify-start gap-3 px-3" : "w-10"}`}
         >
-          <i
-            data-lucide="chevron-right"
+          <Icon
+            name="chevron-right"
             class="w-4 h-4 shrink-0"
             style={{ transform: navExpanded() ? "rotate(180deg)" : "" }}
           />
@@ -145,7 +146,7 @@ export function Nav() {
             navExpanded() ? "w-full justify-start gap-3 px-3" : "w-10"
           }`}
         >
-          <i data-lucide="plus" class="w-4 h-4 shrink-0" />
+          <Icon name="plus" class="w-4 h-4 shrink-0" />
           {navExpanded() && <span class="text-xs font-medium whitespace-nowrap">Add App</span>}
         </button>
       </div>

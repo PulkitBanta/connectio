@@ -1,4 +1,5 @@
 import { createSignal, For, Show } from "solid-js";
+import { Icon } from "./Icon";
 import {
   apps,
   setApps,
@@ -95,8 +96,8 @@ export function ConfigsView() {
         <div class="flex items-center gap-2 flex-1 min-w-0">
           <p class="text-xs md:text-sm font-semibold text-slate-300 shrink-0">Configs</p>
           <div class="relative flex-1 min-w-0 max-w-xs">
-            <i
-              data-lucide="search"
+            <Icon
+              name="search"
               class="w-3 h-3 absolute left-2 top-1/2 -translate-y-1/2 text-slate-600 pointer-events-none"
             />
             <input
@@ -114,21 +115,21 @@ export function ConfigsView() {
             title="New config"
             class="p-1.5 rounded text-slate-600 hover:text-slate-200 hover:bg-white/8 transition-colors"
           >
-            <i data-lucide="plus" class="w-3.5 h-3.5" />
+            <Icon name="plus" class="w-3.5 h-3.5" />
           </button>
           <button
             onClick={importFromFile}
             title="Import from file"
             class="p-1.5 rounded text-slate-600 hover:text-slate-200 hover:bg-white/8 transition-colors"
           >
-            <i data-lucide="file-up" class="w-3.5 h-3.5" />
+            <Icon name="file-up" class="w-3.5 h-3.5" />
           </button>
           <button
             onClick={() => setCurrentView("paste-json")}
             title="Paste JSON"
             class="p-1.5 rounded text-slate-600 hover:text-slate-200 hover:bg-white/8 transition-colors"
           >
-            <i data-lucide="clipboard" class="w-3.5 h-3.5" />
+            <Icon name="clipboard" class="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
@@ -137,7 +138,7 @@ export function ConfigsView() {
         <Show when={filtered().length === 0 && !search()}>
           <div class="flex flex-col items-center justify-center h-full text-center gap-4">
             <div class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-slate-500">
-              <i data-lucide="file-json" class="w-7 h-7" />
+              <Icon name="file-json" class="w-7 h-7" />
             </div>
             <p class="text-slate-400 font-medium">No configs yet</p>
             <p class="text-slate-600 text-sm max-w-xs">
@@ -182,7 +183,7 @@ export function ConfigsView() {
                     title="Edit JSON"
                     class="p-1.5 rounded text-slate-600 hover:text-slate-200 hover:bg-white/8 transition-colors"
                   >
-                    <i data-lucide="file-code" class="w-3.5 h-3.5" />
+                    <Icon name="file-code" class="w-3.5 h-3.5" />
                   </button>
                   <button
                     onClick={(e) => {
@@ -192,7 +193,7 @@ export function ConfigsView() {
                     title="Share"
                     class="p-1.5 rounded text-slate-600 hover:text-slate-200 hover:bg-white/8 transition-colors"
                   >
-                    <i data-lucide="share-2" class="w-3.5 h-3.5" />
+                    <Icon name="share-2" class="w-3.5 h-3.5" />
                   </button>
                   <button
                     onClick={(e) => {
@@ -202,7 +203,7 @@ export function ConfigsView() {
                     title="Delete"
                     class="p-1.5 rounded text-slate-600 hover:text-red-400 hover:bg-red-900/20 transition-colors"
                   >
-                    <i data-lucide="trash-2" class="w-3.5 h-3.5" />
+                    <Icon name="trash-2" class="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
@@ -251,8 +252,8 @@ function ConfigNameCell(props: {
           }}
         >
           <span class="text-sm font-medium text-slate-300">{props.cfg.name}</span>
-          <i
-            data-lucide="pencil"
+          <Icon
+            name="pencil"
             class="w-3 h-3 text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity"
           />
         </div>

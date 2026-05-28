@@ -1,4 +1,5 @@
 import { createSignal, For } from "solid-js";
+import { Icon } from "./Icon";
 import { apps, setApps, selectedAppId, setSelectedAppId } from "../lib/state";
 import { formatTime, getStatusColor } from "../lib/utils";
 import * as ipc from "../lib/ipc";
@@ -97,14 +98,14 @@ export function ProxyView() {
                 title="Edit app"
                 class="p-1.5 rounded text-slate-500 hover:text-slate-200 hover:bg-white/8 transition-colors"
               >
-                <i data-lucide="pencil" class="w-3.5 h-3.5" />
+                <Icon name="pencil" class="w-3.5 h-3.5" />
               </button>
               <button
                 onClick={deleteApp}
                 title="Delete app"
                 class="p-1.5 rounded text-slate-600 hover:text-red-400 hover:bg-red-900/20 transition-colors"
               >
-                <i data-lucide="trash-2" class="w-3.5 h-3.5" />
+                <Icon name="trash-2" class="w-3.5 h-3.5" />
               </button>
             </div>
           </>
