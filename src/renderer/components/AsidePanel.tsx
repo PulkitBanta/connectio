@@ -125,14 +125,14 @@ export function AsidePanel() {
 
       <Show when={showSaveDialog()}>
         <div
-          class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+          class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
           onClick={() => setShowSaveDialog(false)}
         >
           <div
-            class="bg-[#16181f] border border-white/10 rounded-xl p-4 w-72"
+            class="bg-[#1a1d27] border border-white/10 rounded-2xl p-6 w-80 shadow-2xl shadow-black/40"
             onClick={(e) => e.stopPropagation()}
           >
-            <p class="text-sm font-medium text-slate-300 mb-3">Save config as</p>
+            <p class="text-sm font-semibold text-slate-200 mb-4">Save config as</p>
             <input
               type="text"
               value={saveName()}
@@ -142,18 +142,19 @@ export function AsidePanel() {
                 if (e.key === "Escape") setShowSaveDialog(false);
               }}
               placeholder="Config name"
-              class="w-full bg-white/5 border border-white/10 rounded px-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-white/25 transition-colors mb-3"
+              class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-emerald-600/50 focus:ring-1 focus:ring-emerald-600/20 transition-all mb-5"
+              ref={(el) => setTimeout(() => el.focus(), 0)}
             />
             <div class="flex gap-2 justify-end">
               <button
                 onClick={() => setShowSaveDialog(false)}
-                class="px-3 py-1.5 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-slate-400 transition-colors"
+                class="px-4 py-2 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-slate-400 hover:text-slate-200 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmSave}
-                class="px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-700 hover:bg-emerald-600 text-white transition-colors"
+                class="px-4 py-2 rounded-lg text-xs font-medium bg-emerald-700 hover:bg-emerald-600 text-white transition-colors"
               >
                 Save
               </button>
