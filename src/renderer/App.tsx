@@ -1,5 +1,5 @@
 import { onMount } from "solid-js";
-import { apps, setApps, currentView, selectedAppId, setCurrentView } from "./lib/state";
+import { apps, setApps, currentView, selectedAppId, setCurrentView, asideCollapsed, setAsideCollapsed } from "./lib/state";
 import * as ipc from "./lib/ipc";
 import { Nav } from "./components/Nav";
 import { AsidePanel } from "./components/AsidePanel";
@@ -41,10 +41,11 @@ export function App() {
 
       <div id="aside-divider" class="w-px bg-white/5 shrink-0 relative">
         <button
-          title="Collapse panel"
+          onClick={() => setAsideCollapsed(!asideCollapsed())}
+          title={asideCollapsed() ? "Expand panel" : "Collapse panel"}
           class="absolute -left-3 top-4 w-6 h-6 rounded-full bg-[#16181f] border border-white/10 flex items-center justify-center text-slate-500 hover:text-slate-200 hover:bg-white/10 transition-colors z-10 shadow-lg"
         >
-          <Icon name="panel-right-close" class="w-3 h-3" />
+          <Icon name={asideCollapsed() ? "panel-right-open" : "panel-right-close"} class="w-3 h-3" />
         </button>
       </div>
 

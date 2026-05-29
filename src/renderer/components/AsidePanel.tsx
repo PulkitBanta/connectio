@@ -12,6 +12,7 @@ import {
   setActiveConfigName,
   apps,
   setCurrentView,
+  asideCollapsed,
 } from "../lib/state";
 import { showToast } from "./Toast";
 
@@ -63,7 +64,7 @@ export function AsidePanel() {
   return (
     <aside
       id="aside-panel"
-      class="w-64 shrink-0 flex flex-col bg-[#09090d] transition-all duration-200"
+      class={`shrink-0 flex flex-col bg-[#09090d] transition-all duration-200 ${asideCollapsed() ? "w-0 overflow-hidden" : "w-64"}`}
     >
       <div class="flex-1 flex flex-col gap-6 px-4 py-4">
         <section>

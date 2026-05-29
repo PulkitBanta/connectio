@@ -2,6 +2,7 @@ import { type JSX } from "solid-js";
 import {
   Zap,
   PanelRightClose,
+  PanelRightOpen,
   Pencil,
   Trash2,
   ArrowLeft,
@@ -25,6 +26,7 @@ type IconProps = {
 const iconMap: Record<string, unknown> = {
   zap: Zap,
   "panel-right-close": PanelRightClose,
+  "panel-right-open": PanelRightOpen,
   pencil: Pencil,
   "trash-2": Trash2,
   "arrow-left": ArrowLeft,
