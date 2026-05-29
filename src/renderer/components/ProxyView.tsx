@@ -238,7 +238,7 @@ function RuleSection(props: {
       </div>
 
       {adding() ? (
-        <div class="flex items-center gap-2 mt-2">
+        <div class="flex items-center gap-2 mt-3">
           <input
             type="text"
             placeholder="/api/*"
@@ -252,13 +252,13 @@ function RuleSection(props: {
           />
           <button
             onClick={addRule}
-            class="px-3 py-1.5 rounded text-xs bg-emerald-700 hover:bg-emerald-600 text-white transition-colors"
+            class="px-4 py-1.5 rounded-lg text-xs font-medium bg-emerald-700 hover:bg-emerald-600 text-white transition-colors shrink-0"
           >
             Add
           </button>
           <button
             onClick={() => setAdding(false)}
-            class="px-3 py-1.5 rounded text-xs text-slate-500 hover:text-slate-300 transition-colors"
+            class="px-4 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:text-slate-300 hover:bg-white/5 transition-colors shrink-0"
           >
             Cancel
           </button>
@@ -266,7 +266,7 @@ function RuleSection(props: {
       ) : (
         <button
           onClick={() => setAdding(true)}
-          class="text-xs text-emerald-500 hover:text-emerald-400 transition-colors mt-2"
+          class="mt-3 w-full py-2 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-emerald-400 hover:text-emerald-300 transition-colors"
         >
           + Add Rule
         </button>

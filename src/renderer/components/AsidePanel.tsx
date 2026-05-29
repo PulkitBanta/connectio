@@ -45,16 +45,9 @@ export function AsidePanel() {
     }
   };
 
-  const handleSave = async () => {
-    const name = activeConfigName();
-    if (name) {
-      const appsToSave = apps.map(({ logs: _, ...rest }) => rest);
-      await ipc.config.save(name, { apps: appsToSave, port: port() });
-      showToast(`Saved "${name}"`, "success");
-    } else {
-      setSaveName("");
-      setShowSaveDialog(true);
-    }
+  const handleSave = () => {
+    setSaveName(activeConfigName() ?? "");
+    setShowSaveDialog(true);
   };
 
   const confirmSave = async () => {
