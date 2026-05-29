@@ -1,11 +1,11 @@
 import { createSignal, For, Show } from "solid-js";
 import { Icon } from "./Icon";
 import {
-  apps,
   setApps,
   activeConfigName,
   setActiveConfigName,
   setCurrentView,
+  setSelectedAppId,
   setPort,
   setEditingConfigName,
   syncRules,
@@ -48,12 +48,14 @@ export function ConfigsView() {
     const data = await ipc.config.load(name);
     setActiveConfigName(name);
     if (data) {
-      setApps([]);
-      data.apps.forEach((a) => setApps([...apps, a]));
+      setApps(data.apps);
       if (data.port) setPort(data.port);
       syncRules();
+      if (data.apps.length > 0) {
+        setSelectedAppId(data.apps[0].id);
+      }
     }
-    setCurrentView(apps.length > 0 ? "proxy" : "empty");
+    setCurrentView(data && data.apps.length > 0 ? "proxy" : "empty");
   };
 
   const doDelete = async (name: string) => {

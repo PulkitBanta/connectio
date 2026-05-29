@@ -1,4 +1,5 @@
 import * as ipc from "../lib/ipc";
+import { createSignal, Show } from "solid-js";
 import { Icon } from "./Icon";
 import {
   proxyRunning,
@@ -8,7 +9,9 @@ import {
   port,
   setPort,
   activeConfigName,
+  setActiveConfigName,
   apps,
+  setCurrentView,
 } from "../lib/state";
 import { showToast } from "./Toast";
 
@@ -20,6 +23,9 @@ async function stopServer() {
 }
 
 export function AsidePanel() {
+  const [showSaveDialog, setShowSaveDialog] = createSignal(false);
+  const [saveName, setSaveName] = createSignal("");
+
   const handleToggle = async () => {
     if (proxyRunning()) {
       await stopServer();
@@ -41,13 +47,24 @@ export function AsidePanel() {
 
   const handleSave = async () => {
     const name = activeConfigName();
-    if (!name) {
-      showToast("No config loaded", "info");
-      return;
+    if (name) {
+      const appsToSave = apps.map(({ logs: _, ...rest }) => rest);
+      await ipc.config.save(name, { apps: appsToSave, port: port() });
+      showToast(`Saved "${name}"`, "success");
+    } else {
+      setSaveName("");
+      setShowSaveDialog(true);
     }
+  };
+
+  const confirmSave = async () => {
+    const name = saveName().trim();
+    if (!name) return;
     const appsToSave = apps.map(({ logs: _, ...rest }) => rest);
     await ipc.config.save(name, { apps: appsToSave, port: port() });
+    setActiveConfigName(name);
     showToast(`Saved "${name}"`, "success");
+    setShowSaveDialog(false);
   };
 
   return (
@@ -104,11 +121,53 @@ export function AsidePanel() {
           >
             Save
           </button>
-          <button class="flex-1 py-2 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-slate-300 transition-colors">
+          <button
+            onClick={() => setCurrentView("configs")}
+            class="flex-1 py-2 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-slate-300 transition-colors"
+          >
             Load
           </button>
         </div>
       </div>
+
+      <Show when={showSaveDialog()}>
+        <div
+          class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+          onClick={() => setShowSaveDialog(false)}
+        >
+          <div
+            class="bg-[#16181f] border border-white/10 rounded-xl p-4 w-72"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p class="text-sm font-medium text-slate-300 mb-3">Save config as</p>
+            <input
+              type="text"
+              value={saveName()}
+              onInput={(e) => setSaveName(e.currentTarget.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") confirmSave();
+                if (e.key === "Escape") setShowSaveDialog(false);
+              }}
+              placeholder="Config name"
+              class="w-full bg-white/5 border border-white/10 rounded px-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-white/25 transition-colors mb-3"
+            />
+            <div class="flex gap-2 justify-end">
+              <button
+                onClick={() => setShowSaveDialog(false)}
+                class="px-3 py-1.5 rounded-lg text-xs font-medium bg-white/5 hover:bg-white/10 text-slate-400 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmSave}
+                class="px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-700 hover:bg-emerald-600 text-white transition-colors"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      </Show>
     </aside>
   );
 }
