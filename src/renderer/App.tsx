@@ -27,7 +27,7 @@ export function App() {
   };
 
   return (
-    <div class="bg-[#0f1117] text-slate-200 h-screen flex overflow-hidden select-none">
+    <div class="bg-[#0f1117] text-slate-200 h-full flex overflow-hidden">
       <Nav />
       <div class="w-px bg-white/5 shrink-0" />
 
