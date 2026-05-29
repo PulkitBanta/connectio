@@ -1,5 +1,5 @@
 import { createSignal } from "solid-js";
-import { apps, setApps, setSelectedAppId } from "../lib/state";
+import { apps, setApps, setSelectedAppId, setCurrentView } from "../lib/state";
 
 interface AddProxyModalProps {
   open: boolean;
@@ -21,6 +21,7 @@ export function AddProxyModal(props: AddProxyModalProps) {
     const app = { id: crypto.randomUUID(), name: n, targetUrl: u, enabled: true, rules: [] };
     setApps([...apps, app]);
     setSelectedAppId(app.id);
+    setCurrentView("proxy");
     setName("");
     setTargetUrl("");
     setError("");

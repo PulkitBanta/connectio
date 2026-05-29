@@ -37,6 +37,7 @@ export const [asideCollapsed, setAsideCollapsed] = createSignal(false);
 export const [currentView, setCurrentView] = createSignal<View>("empty");
 export const [port, setPort] = createSignal(8080);
 export const [editingConfigName, setEditingConfigName] = createSignal<string | null>(null);
+export const [showAddProxyModal, setShowAddProxyModal] = createSignal(false);
 
 export function syncRules() {
   const flat = apps.flatMap((app) =>

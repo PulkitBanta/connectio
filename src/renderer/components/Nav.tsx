@@ -7,7 +7,7 @@ import {
   setNavExpanded,
   selectedAppId,
   setSelectedAppId,
-  setCurrentView,
+  setShowAddProxyModal,
 } from "../lib/state";
 import * as ipc from "../lib/ipc";
 
@@ -140,7 +140,7 @@ export function Nav() {
 
       <div class={`flex ${navExpanded() ? "justify-start w-full px-3" : "justify-center px-3"}`}>
         <button
-          onClick={() => setCurrentView("configs")}
+          onClick={() => setShowAddProxyModal(true)}
           title="Add a proxy app"
           class={`squircle h-10 flex items-center justify-center bg-white/5 hover:bg-white/10 text-slate-400 hover:text-slate-200 transition-colors ${
             navExpanded() ? "w-full justify-start gap-3 px-3" : "w-10"
