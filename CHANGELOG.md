@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/PulkitBanta/connectio/compare/v1.0.0...v1.1.0) (2026-05-31)
+
+
+### Features
+
+* add json input for configs and share options ([#8](https://github.com/PulkitBanta/connectio/issues/8)) ([8886b41](https://github.com/PulkitBanta/connectio/commit/8886b4155f73ad98160fb447f4b92a6dfbf30ff5))
+
 ## 1.0.0 (2026-04-17)
 
 
