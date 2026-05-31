@@ -34,4 +34,4 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Build
-        run: npx electron-builder --publish never
+        run: yarn electron-vite build && npx electron-builder --publish never
