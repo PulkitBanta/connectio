@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js";
 import { Icon } from "./Icon";
-import { editingConfigName, setEditingConfigName, setCurrentView } from "../lib/state";
+import { App, editingConfigName, setEditingConfigName, setCurrentView } from "../lib/state";
 import * as ipc from "../lib/ipc";
 import { showToast } from "./Toast";
 
@@ -55,19 +55,7 @@ export function PasteJsonView() {
       return;
     }
     try {
-      await ipc.config.save(
-        n,
-        validData() as {
-          apps: {
-            id: string;
-            name: string;
-            targetUrl: string;
-            enabled: boolean;
-            rules: unknown[];
-          }[];
-          port: number;
-        },
-      );
+      await ipc.config.save(n, validData() as { apps: App[]; port: number });
       showToast(`Imported "${n}"`, "success");
       setEditingConfigName(null);
       setCurrentView("configs");

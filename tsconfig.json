@@ -13,6 +13,6 @@
     "jsxImportSource": "solid-js",
     "types": ["node"]
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.js", "electron.vite.config.ts"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.js", "src/**/*.d.ts", "electron.vite.config.ts"],
   "references": []
 }

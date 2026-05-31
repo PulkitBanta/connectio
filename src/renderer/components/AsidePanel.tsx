@@ -54,7 +54,7 @@ export function AsidePanel() {
   const confirmSave = async () => {
     const name = saveName().trim();
     if (!name) return;
-    const appsToSave = apps.map(({ logs: _, ...rest }) => rest);
+    const appsToSave = apps().map(({ logs: _, ...rest }) => rest);
     await ipc.config.save(name, { apps: appsToSave, port: port() });
     setActiveConfigName(name);
     showToast(`Saved "${name}"`, "success");

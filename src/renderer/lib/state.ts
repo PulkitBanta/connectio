@@ -1,5 +1,4 @@
 import { createSignal } from "solid-js";
-import { createStore } from "solid-js/store";
 
 export interface Rule {
   id: string;
@@ -27,7 +26,7 @@ export interface App {
 
 export type View = "empty" | "proxy" | "configs" | "paste-json" | "json-editor";
 
-export const [apps, setApps] = createStore<App[]>([]);
+export const [apps, setApps] = createSignal<App[]>([]);
 export const [navExpanded, setNavExpanded] = createSignal(false);
 export const [selectedAppId, setSelectedAppId] = createSignal<string | null>(null);
 export const [proxyRunning, setProxyRunning] = createSignal(false);
@@ -40,7 +39,7 @@ export const [editingConfigName, setEditingConfigName] = createSignal<string | n
 export const [showAddProxyModal, setShowAddProxyModal] = createSignal(false);
 
 export function syncRules() {
-  const flat = apps.flatMap((app) =>
+  const flat = apps().flatMap((app) =>
     app.rules
       .filter((r) => r.enabled)
       .map((r) => ({ matchPath: r.matchPath, targetUrl: app.targetUrl })),

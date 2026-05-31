@@ -19,7 +19,7 @@ export function AddProxyModal(props: AddProxyModalProps) {
       return;
     }
     const app = { id: crypto.randomUUID(), name: n, targetUrl: u, enabled: true, rules: [] };
-    setApps([...apps, app]);
+    setApps([...apps(), app]);
     setSelectedAppId(app.id);
     setCurrentView("proxy");
     setName("");

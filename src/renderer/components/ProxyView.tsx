@@ -5,7 +5,7 @@ import { formatTime, getStatusColor } from "../lib/utils";
 import * as ipc from "../lib/ipc";
 
 function syncRules() {
-  const flat = apps.flatMap((app) =>
+  const flat = apps().flatMap((app) =>
     app.rules
       .filter((r) => r.enabled)
       .map((r) => ({ matchPath: r.matchPath, targetUrl: app.targetUrl })),
@@ -14,7 +14,7 @@ function syncRules() {
 }
 
 export function ProxyView() {
-  const app = () => apps.find((a) => a.id === selectedAppId());
+  const app = () => apps().find((a) => a.id === selectedAppId());
   const [editing, setEditing] = createSignal(false);
   const [editName, setEditName] = createSignal("");
   const [editUrl, setEditUrl] = createSignal("");
@@ -34,22 +34,19 @@ export function ProxyView() {
 
   const saveEdit = () => {
     const a = app()!;
-    const idx = apps.findIndex((x) => x.id === a.id);
+    const idx = apps().findIndex((x) => x.id === a.id);
     if (idx === -1) return;
     const name = editName().trim();
     const targetUrl = editUrl().trim();
     if (!name || !targetUrl) return;
-    setApps(idx, "name", name);
-    setApps(idx, "targetUrl", targetUrl);
+    setApps((prev) => prev.map((x, i) => (i === idx ? { ...x, name, targetUrl } : x)));
     syncRules();
     setEditing(false);
   };
 
   const deleteApp = () => {
     const a = app()!;
-    const idx = apps.findIndex((x) => x.id === a.id);
-    if (idx === -1) return;
-    setApps(apps.filter((x) => x.id !== a.id));
+    setApps((prev) => prev.filter((x) => x.id !== a.id));
     syncRules();
     setSelectedAppId(null);
   };
@@ -157,17 +154,23 @@ function RuleSection(props: {
   const [adding, setAdding] = createSignal(false);
   const [newPath, setNewPath] = createSignal("");
 
-  const appIdx = () => apps.findIndex((a) => a.id === props.app.id);
+  const appIdx = () => apps().findIndex((a) => a.id === props.app.id);
 
   const addRule = () => {
     const path = newPath().trim();
     if (!path) return;
     const idx = appIdx();
     if (idx === -1) return;
-    setApps(idx, "rules", (rules) => [
-      ...rules,
-      { id: crypto.randomUUID(), matchPath: path, enabled: true },
-    ]);
+    setApps((prev) =>
+      prev.map((a, i) =>
+        i === idx
+          ? {
+              ...a,
+              rules: [...a.rules, { id: crypto.randomUUID(), matchPath: path, enabled: true }],
+            }
+          : a,
+      ),
+    );
     setNewPath("");
     setAdding(false);
     syncRules();
@@ -176,25 +179,40 @@ function RuleSection(props: {
   const toggleRule = (ruleIdx: number) => {
     const idx = appIdx();
     if (idx === -1) return;
-    const rule = apps[idx].rules[ruleIdx];
-    if (rule) setApps(idx, "rules", ruleIdx, "enabled", !rule.enabled);
+    setApps((prev) =>
+      prev.map((a, i) =>
+        i === idx
+          ? {
+              ...a,
+              rules: a.rules.map((r, j) => (j === ruleIdx ? { ...r, enabled: !r.enabled } : r)),
+            }
+          : a,
+      ),
+    );
     syncRules();
   };
 
   const deleteRule = (ruleId: string) => {
     const idx = appIdx();
     if (idx === -1) return;
-    setApps(idx, "rules", (rules) => rules.filter((r) => r.id !== ruleId));
+    setApps((prev) =>
+      prev.map((a, i) => (i === idx ? { ...a, rules: a.rules.filter((r) => r.id !== ruleId) } : a)),
+    );
     syncRules();
   };
 
   const moveRule = (from: number, to: number) => {
     const idx = appIdx();
     if (idx === -1) return;
-    const rules = [...apps[idx].rules];
-    if (from < 0 || from >= rules.length || to < 0 || to >= rules.length) return;
-    [rules[from], rules[to]] = [rules[to], rules[from]];
-    setApps(idx, "rules", rules);
+    setApps((prev) =>
+      prev.map((a, i) => {
+        if (i !== idx) return a;
+        const rules = [...a.rules];
+        if (from < 0 || from >= rules.length || to < 0 || to >= rules.length) return a;
+        [rules[from], rules[to]] = [rules[to], rules[from]];
+        return { ...a, rules };
+      }),
+    );
     syncRules();
   };
 

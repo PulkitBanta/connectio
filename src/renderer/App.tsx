@@ -23,12 +23,14 @@ import { Icon } from "./components/Icon";
 export function App() {
   onMount(() => {
     ipc.onLog((entry) => {
-      const app = apps.find((a) => a.targetUrl === entry.targetUrl);
-      if (!app) return;
-      const idx = apps.indexOf(app);
+      const a = apps().find((x) => x.targetUrl === entry.targetUrl);
+      if (!a) return;
+      const idx = apps().indexOf(a);
       if (idx === -1) return;
       const logEntry = { ...entry, ts: Date.now() };
-      setApps(idx, "logs", (logs) => [logEntry, ...(logs || [])]);
+      setApps((prev) =>
+        prev.map((app, i) => (i === idx ? { ...app, logs: [logEntry, ...(app.logs || [])] } : app)),
+      );
     });
   });
 
@@ -51,7 +53,10 @@ export function App() {
           title={asideCollapsed() ? "Expand panel" : "Collapse panel"}
           class="absolute -left-3 top-4 w-6 h-6 rounded-full bg-[#16181f] border border-white/10 flex items-center justify-center text-slate-500 hover:text-slate-200 hover:bg-white/10 transition-colors z-10 shadow-lg"
         >
-          <Icon name={asideCollapsed() ? "panel-right-open" : "panel-right-close"} class="w-3 h-3" />
+          <Icon
+            name={asideCollapsed() ? "panel-right-open" : "panel-right-close"}
+            class="w-3 h-3"
+          />
         </button>
       </div>
 

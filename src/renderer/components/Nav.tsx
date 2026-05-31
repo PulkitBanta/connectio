@@ -8,21 +8,27 @@ import {
   selectedAppId,
   setSelectedAppId,
   setShowAddProxyModal,
+  setCurrentView,
 } from "../lib/state";
 import * as ipc from "../lib/ipc";
 
 function swapApps(i: number, j: number) {
-  const a = apps[i];
-  const b = apps[j];
+  const current = apps();
+  const a = current[i];
+  const b = current[j];
   if (a && b) {
-    setApps(i, b);
-    setApps(j, a);
+    setApps((prev) => {
+      const next = [...prev];
+      next[i] = b;
+      next[j] = a;
+      return next;
+    });
     syncRules();
   }
 }
 
 function syncRules() {
-  const flat = apps.flatMap((app) =>
+  const flat = apps().flatMap((app) =>
     app.rules
       .filter((r) => r.enabled)
       .map((r) => ({ matchPath: r.matchPath, targetUrl: app.targetUrl })),
@@ -58,7 +64,7 @@ export function Nav() {
         id="proxy-list"
         class={`flex flex-col gap-2 px-3 flex-1 ${navExpanded() ? "" : "items-center"}`}
       >
-        <For each={apps}>
+        <For each={apps()}>
           {(app, i) => {
             const isSelected = app.id === selectedAppId();
             if (navExpanded()) {
@@ -104,10 +110,10 @@ export function Nav() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        if (i() < apps.length - 1) swapApps(i(), i() + 1);
+                        if (i() < apps().length - 1) swapApps(i(), i() + 1);
                       }}
                       class={`text-[10px] leading-none py-0.5 px-0.5 transition-colors ${
-                        i() === apps.length - 1
+                        i() === apps().length - 1
                           ? "text-slate-700 pointer-events-none"
                           : "text-slate-500 hover:text-slate-200"
                       }`}
