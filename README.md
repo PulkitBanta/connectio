@@ -33,6 +33,21 @@
 </p>
 <p align="center"><em>Save and load named configurations to switch between project setups</em></p>
 
+<p align="center">
+  <img src="screenshots/connectio-configs-list.png" alt="Configs list view" width="800" />
+</p>
+<p align="center"><em>Browse, search, and manage all saved configs from a dedicated view — each card shows app count, route count, port, and last modified time</em></p>
+
+<p align="center">
+  <img src="screenshots/connectio-share-menu.png" alt="Share config menu" width="800" />
+</p>
+<p align="center"><em>Export any config as JSON — copy to clipboard or save as a <code>.json</code> file</em></p>
+
+<p align="center">
+  <img src="screenshots/connectio-paste-json.png" alt="Paste JSON import" width="800" />
+</p>
+<p align="center"><em>Import configs by pasting raw JSON — validates the shape before importing</em></p>
+
 ---
 
 ## Features
@@ -41,7 +56,10 @@
 - **Wildcard Route Rules** — Define path-based routing rules with glob-style wildcards (`/api/*`, `/auth/login`). Rules are matched in order, giving you full control over priority.
 - **Real-Time Request Logs** — See every proxied request as it happens: method, path, status code, and response time, streamed live into the UI.
 - **App Ordering** — Reorder proxy apps with up/down controls. Order determines rule priority — if the first app catches `/*`, it takes precedence.
-- **Config Management** — Save and load named configurations as JSON files. Quickly switch between different project setups without reconfiguring from scratch.
+- **Config Manager** — Browse, search, rename, and delete saved configurations from a dedicated configs list view.
+- **JSON Import / Export** — Import configs by pasting raw JSON or selecting a file via the native dialog. Export any config as clipboard text or save as a `.json` file.
+- **JSON Editor** — Edit any config's raw JSON directly in-app with validation and save.
+- **Save & Load** — Quickly save the current state to a named config or load a previously saved one from the sidebar panel.
 - **Collapsible Sidebar** — Expand the left nav for full app names or collapse it to icon-only mode for more screen space.
 - **Cross-Platform** — Runs on macOS, Windows, and Linux. Configs are stored in the OS-native user data directory.
 
@@ -129,12 +147,37 @@ Configs are saved as JSON files in the OS user data directory:
 
 ## Tech Stack
 
-- **[Electron](https://www.electronjs.org/)** — Desktop shell
-- **[Express 5](https://expressjs.com/)** — Proxy server
-- **[http-proxy-middleware](https://github.com/chimurai/http-proxy-middleware)** — Request proxying
-- **[Tailwind CSS](https://tailwindcss.com/)** — UI styling
-- **[Lucide Icons](https://lucide.dev/)** — Icon set
-- **[electron-builder](https://www.electron.build/)** — Packaging and distribution
+- **Desktop Shell** — [Electron](https://www.electronjs.org/) with context isolation
+- **UI Framework** — [Solid.js](https://www.solidjs.com/) with TypeScript — signals-based reactivity for fast, predictable renders
+- **Styling** — [Tailwind CSS v4](https://tailwindcss.com/) via `@tailwindcss/vite` plugin
+- **Icons** — [Lucide](https://lucide.dev/) rendered as native Solid SVG components
+- **Build Tool** — [electron-vite](https://github.com/alex8088/electron-vite/) — fast HMR for main, preload, and renderer
+- **Packaging** — [electron-builder](https://www.electron.build/) — produces `.dmg`, `.AppImage`, `.deb`, `.nsis`
+- **Proxy Server** — [Express 5](https://expressjs.com/) — incoming request handling
+- **Proxying** — [http-proxy-middleware](https://github.com/chimurai/http-proxy-middleware) — route matching and reverse proxying
+- **Linting** — ESLint v10 with `typescript-eslint`
+- **Formatting** — Prettier
+
+## Project Structure
+
+```
+src/
+├── main/               # Electron main process
+│   ├── index.ts        # App lifecycle, window creation
+│   ├── server.ts       # Express proxy server, rule management, request logging
+│   ├── configs.ts      # Config CRUD — list, load, save, delete, rename, export, import
+│   └── ipc.ts          # Registers all IPC handlers
+├── preload/
+│   └── index.ts        # Context bridge — exposes window.connectio to the renderer
+└── renderer/           # Solid.js UI
+    ├── index.html      # Shell HTML
+    ├── index.tsx       # Solid entry point
+    ├── App.tsx         # Root component — view router, layout
+    ├── components/     # 10 UI components (Nav, ProxyView, ConfigsView, etc.)
+    ├── lib/            # State (signals), IPC client, utilities, constants
+    └── styles/
+        └── index.css   # Tailwind entry
+```
 
 ## License
 
