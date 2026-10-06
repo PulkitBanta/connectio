@@ -36,11 +36,9 @@ Connectio puts all of them behind **one local address**. Define path rules like 
 
 ## See it in action
 
-A 60-second tour of the happy path — add apps, route rules, start the server, inspect requests, share through a tunnel, and save configs as JSON.
+A 60-second tour of the application — add apps, route rules, start the server, inspect requests, share through a tunnel, and save configs as JSON.
 
-<p align="center">
-  <a href="screenshots/connectio-launch.mp4"><img src="screenshots/connectio-launch-poster.jpg" alt="Watch the 60-second Connectio tour" width="800" /></a>
-</p>
+https://github.com/user-attachments/assets/135a87b2-cb7d-44ca-9f95-c2c23b52a32a
 
 ## Download
 
