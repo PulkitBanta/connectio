@@ -27,7 +27,7 @@ export function App() {
       if (!a) return;
       const idx = apps().indexOf(a);
       if (idx === -1) return;
-      const logEntry = { ...entry, ts: Date.now() };
+      const logEntry = { ...entry, id: crypto.randomUUID(), ts: Date.now() };
       setApps((prev) =>
         prev.map((app, i) => (i === idx ? { ...app, logs: [logEntry, ...(app.logs || [])] } : app)),
       );

@@ -52,10 +52,16 @@ app.use((req, res, next) => {
   res.on("finish", () => {
     logHandler?.({
       method: req.method,
-      path: req.path,
+      path: req.originalUrl || req.url,
       status: res.statusCode,
+      statusText: res.statusMessage,
       ms: Date.now() - start,
       targetUrl: rule.targetUrl,
+      matchPath: rule.matchPath,
+      httpVersion: req.httpVersion,
+      remoteAddress: req.socket.remoteAddress,
+      requestHeaders: req.headers,
+      responseHeaders: res.getHeaders(),
     });
   });
   getProxy(rule.targetUrl)(req, res, next);

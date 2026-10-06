@@ -1,6 +1,6 @@
-import { createSignal, For } from "solid-js";
+import { createSignal, For, Show } from "solid-js";
 import { Icon } from "./Icon";
-import { apps, setApps, selectedAppId, setSelectedAppId } from "../lib/state";
+import { apps, setApps, selectedAppId, setSelectedAppId, type LogEntry } from "../lib/state";
 import { formatTime, getStatusColor } from "../lib/utils";
 import * as ipc from "../lib/ipc";
 
@@ -18,6 +18,7 @@ export function ProxyView() {
   const [editing, setEditing] = createSignal(false);
   const [editName, setEditName] = createSignal("");
   const [editUrl, setEditUrl] = createSignal("");
+  const [expandedLogId, setExpandedLogId] = createSignal<string | null>(null);
 
   const logs = () => app()?.logs ?? [];
 
@@ -129,20 +130,114 @@ export function ProxyView() {
             ) : (
               <For each={logs()}>
                 {(entry) => (
-                  <div class="flex items-center gap-3 py-1.5 border-b border-white/3 font-mono text-xs">
-                    <span class="text-slate-600 shrink-0">
-                      {formatTime(entry.ts || Date.now())}
-                    </span>
-                    <span class="text-slate-400 shrink-0 w-10">{entry.method}</span>
-                    <span class="text-slate-300 flex-1 truncate">{entry.path}</span>
-                    <span class={`${getStatusColor(entry.status)} shrink-0`}>{entry.status}</span>
-                    <span class="text-slate-600 shrink-0">{entry.ms}ms</span>
+                  <div class="border-b border-white/3">
+                    <button
+                      type="button"
+                      aria-expanded={expandedLogId() === entry.id}
+                      onClick={() =>
+                        setExpandedLogId((current) => (current === entry.id ? null : entry.id))
+                      }
+                      class="w-full flex items-center gap-3 py-1.5 font-mono text-xs text-left rounded hover:bg-white/3 transition-colors"
+                    >
+                      <Icon
+                        name="chevron-down"
+                        class="w-3 h-3 text-slate-600 shrink-0 transition-transform"
+                        style={{
+                          transform:
+                            expandedLogId() === entry.id ? "rotate(0deg)" : "rotate(-90deg)",
+                        }}
+                      />
+                      <span class="text-slate-600 shrink-0">
+                        {formatTime(entry.ts || Date.now())}
+                      </span>
+                      <span class="text-slate-400 shrink-0 w-10">{entry.method}</span>
+                      <span class="text-slate-300 flex-1 truncate">{entry.path}</span>
+                      <span class={`${getStatusColor(entry.status)} shrink-0`}>{entry.status}</span>
+                      <span class="text-slate-600 shrink-0">{entry.ms}ms</span>
+                    </button>
+                    <Show when={expandedLogId() === entry.id}>
+                      <LogDetails entry={entry} />
+                    </Show>
                   </div>
                 )}
               </For>
             )}
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function LogDetails(props: { entry: LogEntry }) {
+  const requestHeaders = () => Object.entries(props.entry.requestHeaders ?? {});
+  const responseHeaders = () => Object.entries(props.entry.responseHeaders ?? {});
+
+  return (
+    <div class="mx-4 mb-3 rounded-lg border border-white/8 bg-black/20 px-4 py-3 text-xs">
+      <div class="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-1.5 font-mono">
+        <DetailLabel>Status</DetailLabel>
+        <span class={getStatusColor(props.entry.status)}>
+          {props.entry.status} {props.entry.statusText ?? ""}
+        </span>
+        <DetailLabel>Request</DetailLabel>
+        <span class="text-slate-300 break-all">
+          {props.entry.method} {props.entry.path}
+        </span>
+        <DetailLabel>Target</DetailLabel>
+        <span class="text-slate-300 break-all">{props.entry.targetUrl}</span>
+        <DetailLabel>Matched rule</DetailLabel>
+        <span class="text-slate-400">{props.entry.matchPath ?? "—"}</span>
+        <DetailLabel>Duration</DetailLabel>
+        <span class="text-slate-400">{props.entry.ms}ms</span>
+        <DetailLabel>Received</DetailLabel>
+        <span class="text-slate-400">
+          {props.entry.ts ? new Date(props.entry.ts).toLocaleString() : "—"}
+        </span>
+        <DetailLabel>Connection</DetailLabel>
+        <span class="text-slate-400">
+          HTTP/{props.entry.httpVersion ?? "—"}
+          {props.entry.remoteAddress ? ` · ${props.entry.remoteAddress}` : ""}
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 mt-4">
+        <HeaderList title="Request headers" headers={requestHeaders()} />
+        <HeaderList title="Response headers" headers={responseHeaders()} />
+      </div>
+    </div>
+  );
+}
+
+function DetailLabel(props: { children: string }) {
+  return <span class="text-slate-600">{props.children}</span>;
+}
+
+function HeaderList(props: {
+  title: string;
+  headers: [string, string | string[] | number | undefined][];
+}) {
+  return (
+    <div class="min-w-0">
+      <p class="text-[10px] font-semibold uppercase tracking-widest text-slate-600 mb-2">
+        {props.title}
+      </p>
+      <div class="rounded bg-white/3 px-3 py-2 font-mono overflow-x-auto">
+        <Show
+          when={props.headers.length > 0}
+          fallback={<span class="text-slate-700">No headers captured.</span>}
+        >
+          <For each={props.headers}>
+            {([name, value]) => (
+              <div class="flex gap-2 leading-5 whitespace-nowrap">
+                <span class="text-slate-500">{name}:</span>
+                <span class="text-slate-300">
+                  {Array.isArray(value) ? value.join(", ") : String(value ?? "")}
+                </span>
+              </div>
+            )}
+          </For>
+        </Show>
       </div>
     </div>
   );

@@ -1,5 +1,19 @@
 import type { App } from "./state";
 
+interface RequestLog {
+  method: string;
+  path: string;
+  status: number;
+  statusText?: string;
+  ms: number;
+  targetUrl: string;
+  matchPath?: string;
+  httpVersion?: string;
+  remoteAddress?: string;
+  requestHeaders?: Record<string, string | string[] | undefined>;
+  responseHeaders?: Record<string, string | string[] | number | undefined>;
+}
+
 declare global {
   interface Window {
     connectio: {
@@ -37,15 +51,7 @@ declare global {
         ) => Promise<{ ok: boolean; filePath?: string }>;
         importFile: () => Promise<{ name: string; json: string } | null>;
       };
-      onLog: (
-        cb: (entry: {
-          method: string;
-          path: string;
-          status: number;
-          ms: number;
-          targetUrl: string;
-        }) => void,
-      ) => void;
+      onLog: (cb: (entry: RequestLog) => void) => void;
     };
   }
 }
@@ -63,15 +69,7 @@ export const rules = {
     window.connectio.rules.update(flatRules),
 };
 
-export const onLog = (
-  cb: (entry: {
-    method: string;
-    path: string;
-    status: number;
-    ms: number;
-    targetUrl: string;
-  }) => void,
-): void => window.connectio.onLog(cb);
+export const onLog = (cb: (entry: RequestLog) => void): void => window.connectio.onLog(cb);
 
 export const config = {
   dir: (): Promise<string> => window.connectio.config.dir(),

@@ -7,11 +7,18 @@ export interface Rule {
 }
 
 export interface LogEntry {
+  id: string;
   method: string;
   path: string;
   status: number;
+  statusText?: string;
   ms: number;
   targetUrl: string;
+  matchPath?: string;
+  httpVersion?: string;
+  remoteAddress?: string;
+  requestHeaders?: Record<string, string | string[] | undefined>;
+  responseHeaders?: Record<string, string | string[] | number | undefined>;
   ts?: number;
 }
 
