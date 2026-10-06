@@ -42,6 +42,8 @@ export const [activeConfigName, setActiveConfigName] = createSignal<string | nul
 export const [asideCollapsed, setAsideCollapsed] = createSignal(false);
 export const [currentView, setCurrentView] = createSignal<View>("empty");
 export const [port, setPort] = createSignal(8080);
+export const [cloudflareTunnelEnabled, setCloudflareTunnelEnabled] = createSignal(false);
+export const [tunnelUrl, setTunnelUrl] = createSignal<string | null>(null);
 export const [editingConfigName, setEditingConfigName] = createSignal<string | null>(null);
 export const [showAddProxyModal, setShowAddProxyModal] = createSignal(false);
 
@@ -56,4 +58,7 @@ export function syncRules() {
 
 export async function stopServer() {
   await window.connectio.proxy.stop();
+  setProxyRunning(false);
+  setProxyStatusText("Offline");
+  setTunnelUrl(null);
 }

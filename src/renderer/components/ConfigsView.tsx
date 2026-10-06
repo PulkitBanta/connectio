@@ -10,6 +10,8 @@ import {
   setEditingConfigName,
   syncRules,
   stopServer,
+  setCloudflareTunnelEnabled,
+  setTunnelUrl,
 } from "../lib/state";
 import { getRelativeTime } from "../lib/utils";
 import * as ipc from "../lib/ipc";
@@ -25,6 +27,7 @@ export function ConfigsView() {
       lastModified: number;
       size: number;
       port: number;
+      cloudflareTunnel: boolean;
       note: string;
     }[]
   >([]);
@@ -50,6 +53,8 @@ export function ConfigsView() {
     if (data) {
       setApps(data.apps);
       if (data.port) setPort(data.port);
+      setCloudflareTunnelEnabled(data.cloudflareTunnel === true);
+      setTunnelUrl(null);
       syncRules();
       if (data.apps.length > 0) {
         setSelectedAppId(data.apps[0].id);
@@ -169,6 +174,7 @@ export function ConfigsView() {
                     <span class="text-[10px] text-slate-600">
                       {cfg.appCount} app{cfg.appCount !== 1 ? "s" : ""} · {cfg.routeCount} route
                       {cfg.routeCount !== 1 ? "s" : ""} · port {cfg.port} ·{" "}
+                      {cfg.cloudflareTunnel ? "tunnel on · " : ""}
                       {getRelativeTime(cfg.lastModified)}
                     </span>
                   </div>

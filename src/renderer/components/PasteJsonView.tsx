@@ -22,7 +22,7 @@ export function PasteJsonView() {
       return;
     }
 
-    let data: { apps?: unknown[]; port?: number };
+    let data: { apps?: unknown[]; port?: number; cloudflareTunnel?: boolean };
     try {
       data = JSON.parse(str);
     } catch (err) {
@@ -34,14 +34,19 @@ export function PasteJsonView() {
       !data ||
       typeof data !== "object" ||
       !Array.isArray(data.apps) ||
-      typeof data.port !== "number"
+      typeof data.port !== "number" ||
+      (data.cloudflareTunnel !== undefined && typeof data.cloudflareTunnel !== "boolean")
     ) {
-      setError('Invalid config format: expected { "apps": [...], "port": number }');
+      setError(
+        'Invalid config format: expected { "apps": [...], "port": number, "cloudflareTunnel"?: boolean }',
+      );
       return;
     }
 
     setValidData(data as object);
-    setPreview(`${data.apps.length} app(s), port ${data.port}`);
+    setPreview(
+      `${data.apps.length} app(s), port ${data.port}${data.cloudflareTunnel ? ", Cloudflare tunnel enabled" : ""}`,
+    );
   };
 
   const doImport = async () => {

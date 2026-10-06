@@ -13,6 +13,10 @@ import {
   apps,
   setCurrentView,
   asideCollapsed,
+  cloudflareTunnelEnabled,
+  setCloudflareTunnelEnabled,
+  tunnelUrl,
+  setTunnelUrl,
 } from "../lib/state";
 import { showToast } from "./Toast";
 
@@ -21,11 +25,13 @@ async function stopServer() {
   await ipc.proxy.stop();
   setProxyRunning(false);
   setProxyStatusText("Offline");
+  setTunnelUrl(null);
 }
 
 export function AsidePanel() {
   const [showSaveDialog, setShowSaveDialog] = createSignal(false);
   const [saveName, setSaveName] = createSignal("");
+  const [starting, setStarting] = createSignal(false);
 
   const handleToggle = async () => {
     if (proxyRunning()) {
@@ -37,12 +43,24 @@ export function AsidePanel() {
       setProxyStatusText("Invalid port (1024–65535)");
       return;
     }
-    const result = await ipc.proxy.start(p);
-    if (result.ok) {
-      setProxyRunning(true);
-      setProxyStatusText(`Online — :${result.port}`);
-    } else {
-      setProxyStatusText(`Error: ${result.error}`);
+    setStarting(true);
+    setProxyStatusText(cloudflareTunnelEnabled() ? "Starting tunnel…" : "Starting…");
+    try {
+      const result = await ipc.proxy.start(p, {
+        cloudflareTunnel: cloudflareTunnelEnabled(),
+      });
+      if (result.ok) {
+        setProxyRunning(true);
+        setTunnelUrl(result.tunnelUrl ?? null);
+        setProxyStatusText(
+          result.tunnelUrl ? `Online — :${result.port} + tunnel` : `Online — :${result.port}`,
+        );
+      } else {
+        setProxyStatusText(`Error: ${result.error}`);
+        setTunnelUrl(null);
+      }
+    } finally {
+      setStarting(false);
     }
   };
 
@@ -55,7 +73,11 @@ export function AsidePanel() {
     const name = saveName().trim();
     if (!name) return;
     const appsToSave = apps().map(({ logs: _, ...rest }) => rest);
-    await ipc.config.save(name, { apps: appsToSave, port: port() });
+    await ipc.config.save(name, {
+      apps: appsToSave,
+      port: port(),
+      cloudflareTunnel: cloudflareTunnelEnabled(),
+    });
     setActiveConfigName(name);
     showToast(`Saved "${name}"`, "success");
     setShowSaveDialog(false);
@@ -96,11 +118,45 @@ export function AsidePanel() {
                 class={`flex-1 min-w-0 bg-white/5 border border-white/10 rounded px-2 py-1 text-xs text-slate-300 focus:outline-none focus:border-white/25 transition-colors ${proxyRunning() ? "opacity-40 cursor-not-allowed" : ""}`}
               />
             </div>
+            <label
+              class={`flex items-start gap-2 rounded-lg border border-white/8 bg-white/3 px-3 py-2.5 ${proxyRunning() || starting() ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-white/5"}`}
+            >
+              <input
+                type="checkbox"
+                checked={cloudflareTunnelEnabled()}
+                onChange={(e) => setCloudflareTunnelEnabled(e.currentTarget.checked)}
+                disabled={proxyRunning() || starting()}
+                class="mt-0.5 accent-emerald-600"
+              />
+              <span class="min-w-0">
+                <span class="block text-xs text-slate-300">Cloudflare tunnel</span>
+                <span class="block text-[10px] text-slate-600 leading-relaxed mt-0.5">
+                  Expose this server at a temporary public URL.
+                </span>
+              </span>
+            </label>
+            <Show when={tunnelUrl()}>
+              <div class="rounded-lg border border-emerald-700/20 bg-emerald-900/10 px-3 py-2">
+                <p class="text-[10px] text-emerald-500 mb-1">Temporary public URL</p>
+                <button
+                  type="button"
+                  title="Copy tunnel URL"
+                  onClick={async () => {
+                    await navigator.clipboard.writeText(tunnelUrl()!);
+                    showToast("Tunnel URL copied", "success");
+                  }}
+                  class="block w-full text-left text-[10px] font-mono text-emerald-300 hover:text-emerald-200 break-all"
+                >
+                  {tunnelUrl()}
+                </button>
+              </div>
+            </Show>
             <button
               onClick={handleToggle}
-              class={`w-full py-2 rounded-lg text-sm font-medium text-white transition-colors ${proxyRunning() ? "bg-red-800 hover:bg-red-700" : "bg-emerald-700 hover:bg-emerald-600"}`}
+              disabled={starting()}
+              class={`w-full py-2 rounded-lg text-sm font-medium text-white transition-colors disabled:opacity-50 disabled:cursor-wait ${proxyRunning() ? "bg-red-800 hover:bg-red-700" : "bg-emerald-700 hover:bg-emerald-600"}`}
             >
-              {proxyRunning() ? "Stop Server" : "Start Server"}
+              {starting() ? "Starting…" : proxyRunning() ? "Stop Server" : "Start Server"}
             </button>
           </div>
         </section>

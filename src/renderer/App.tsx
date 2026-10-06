@@ -8,6 +8,9 @@ import {
   setAsideCollapsed,
   showAddProxyModal,
   setShowAddProxyModal,
+  proxyRunning,
+  setProxyStatusText,
+  setTunnelUrl,
 } from "./lib/state";
 import * as ipc from "./lib/ipc";
 import { Nav } from "./components/Nav";
@@ -31,6 +34,10 @@ export function App() {
       setApps((prev) =>
         prev.map((app, i) => (i === idx ? { ...app, logs: [logEntry, ...(app.logs || [])] } : app)),
       );
+    });
+    ipc.onTunnelStatus((status) => {
+      setTunnelUrl(status.url ?? null);
+      if (status.error && proxyRunning()) setProxyStatusText(`Tunnel error: ${status.error}`);
     });
   });
 

@@ -1,5 +1,11 @@
 import type { App } from "./state";
 
+export interface ConfigData {
+  apps: App[];
+  port: number;
+  cloudflareTunnel?: boolean;
+}
+
 interface RequestLog {
   method: string;
   path: string;
@@ -14,13 +20,26 @@ interface RequestLog {
   responseHeaders?: Record<string, string | string[] | number | undefined>;
 }
 
+interface TunnelStatus {
+  running: boolean;
+  url?: string;
+  error?: string;
+}
+
 declare global {
   interface Window {
     connectio: {
       proxy: {
-        start: (port: number) => Promise<{ ok: boolean; port?: number; error?: string }>;
+        start: (
+          port: number,
+          options?: { cloudflareTunnel?: boolean },
+        ) => Promise<{ ok: boolean; port?: number; tunnelUrl?: string; error?: string }>;
         stop: () => Promise<{ ok: boolean }>;
-        getStatus: () => Promise<{ running: boolean; port: number | null }>;
+        getStatus: () => Promise<{
+          running: boolean;
+          port: number | null;
+          tunnel: { running: boolean; url: string | null };
+        }>;
       };
       rules: {
         update: (rules: { matchPath: string; targetUrl: string }[]) => Promise<void>;
@@ -36,11 +55,12 @@ declare global {
             lastModified: number;
             size: number;
             port: number;
+            cloudflareTunnel: boolean;
             note: string;
           }[]
         >;
-        load: (name: string) => Promise<{ apps: App[]; port: number } | null>;
-        save: (name: string, data: { apps: App[]; port: number }) => Promise<{ ok: boolean }>;
+        load: (name: string) => Promise<ConfigData | null>;
+        save: (name: string, data: ConfigData) => Promise<{ ok: boolean }>;
         delete: (name: string) => Promise<{ ok: boolean }>;
         rename: (oldName: string, newName: string) => Promise<{ ok: boolean }>;
         import: (jsonString: string, name: string) => Promise<{ ok: boolean }>;
@@ -52,16 +72,23 @@ declare global {
         importFile: () => Promise<{ name: string; json: string } | null>;
       };
       onLog: (cb: (entry: RequestLog) => void) => void;
+      onTunnelStatus: (cb: (status: TunnelStatus) => void) => void;
     };
   }
 }
 
 export const proxy = {
-  start: (port: number): Promise<{ ok: boolean; port?: number; error?: string }> =>
-    window.connectio.proxy.start(port),
+  start: (
+    port: number,
+    options?: { cloudflareTunnel?: boolean },
+  ): Promise<{ ok: boolean; port?: number; tunnelUrl?: string; error?: string }> =>
+    window.connectio.proxy.start(port, options),
   stop: (): Promise<{ ok: boolean }> => window.connectio.proxy.stop(),
-  getStatus: (): Promise<{ running: boolean; port: number | null }> =>
-    window.connectio.proxy.getStatus(),
+  getStatus: (): Promise<{
+    running: boolean;
+    port: number | null;
+    tunnel: { running: boolean; url: string | null };
+  }> => window.connectio.proxy.getStatus(),
 };
 
 export const rules = {
@@ -70,6 +97,9 @@ export const rules = {
 };
 
 export const onLog = (cb: (entry: RequestLog) => void): void => window.connectio.onLog(cb);
+
+export const onTunnelStatus = (cb: (status: TunnelStatus) => void): void =>
+  window.connectio.onTunnelStatus(cb);
 
 export const config = {
   dir: (): Promise<string> => window.connectio.config.dir(),
@@ -82,12 +112,12 @@ export const config = {
       lastModified: number;
       size: number;
       port: number;
+      cloudflareTunnel: boolean;
       note: string;
     }[]
   > => window.connectio.config.listDetailed(),
-  load: (name: string): Promise<{ apps: App[]; port: number } | null> =>
-    window.connectio.config.load(name),
-  save: (name: string, data: { apps: App[]; port: number }): Promise<{ ok: boolean }> =>
+  load: (name: string): Promise<ConfigData | null> => window.connectio.config.load(name),
+  save: (name: string, data: ConfigData): Promise<{ ok: boolean }> =>
     window.connectio.config.save(name, data),
   delete: (name: string): Promise<{ ok: boolean }> => window.connectio.config.delete(name),
   rename: (oldName: string, newName: string): Promise<{ ok: boolean }> =>

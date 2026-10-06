@@ -38,9 +38,13 @@ export function JsonEditor() {
       !data ||
       typeof data !== "object" ||
       !Array.isArray((data as Record<string, unknown>).apps) ||
-      typeof (data as Record<string, unknown>).port !== "number"
+      typeof (data as Record<string, unknown>).port !== "number" ||
+      ((data as Record<string, unknown>).cloudflareTunnel !== undefined &&
+        typeof (data as Record<string, unknown>).cloudflareTunnel !== "boolean")
     ) {
-      setError('Invalid config format: expected { "apps": [...], "port": number }');
+      setError(
+        'Invalid config format: expected { "apps": [...], "port": number, "cloudflareTunnel"?: boolean }',
+      );
       return;
     }
     try {
