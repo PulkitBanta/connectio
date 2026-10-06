@@ -54,7 +54,8 @@
 
 - **Proxy Apps** — Create multiple proxy apps, each pointing to a different local server (e.g. `localhost:3001`, `localhost:4000`).
 - **Wildcard Route Rules** — Define path-based routing rules with glob-style wildcards (`/api/*`, `/auth/login`). Rules are matched in order, giving you full control over priority.
-- **Real-Time Request Logs** — See every proxied request as it happens: method, path, status code, and response time, streamed live into the UI.
+- **Detailed Request Logs** — See every proxied request as it happens, then click a log to inspect its matched rule, target, connection metadata, and request/response headers.
+- **Temporary Cloudflare Tunnels** — Opt in per config to expose the proxy at a temporary public `trycloudflare.com` URL while the server is running.
 - **App Ordering** — Reorder proxy apps with up/down controls. Order determines rule priority — if the first app catches `/*`, it takes precedence.
 - **Config Manager** — Browse, search, rename, and delete saved configurations from a dedicated configs list view.
 - **JSON Import / Export** — Import configs by pasting raw JSON or selecting a file via the native dialog. Export any config as clipboard text or save as a `.json` file.
@@ -87,6 +88,7 @@ Browser / cURL                      Your local servers
 
 - [Node.js](https://nodejs.org/) v22 or later
 - [Yarn](https://classic.yarnpkg.com/) v1
+- Optional: [`cloudflared`](https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/downloads/) on your `PATH` to use temporary public tunnels
 
 ### Install & Run
 
@@ -105,6 +107,8 @@ yarn start
 4. Set your port in the right sidebar and hit **Start Server**.
 5. Send requests to `http://localhost:8080` and watch them get routed and logged in real time.
 
+To expose the proxy temporarily, enable **Cloudflare tunnel** before starting the server. Connectio runs a [Cloudflare Quick Tunnel](https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/do-more-with-tunnels/trycloudflare/), displays the generated public URL, and closes it when you stop the server. Quick Tunnels are intended for development and testing, not production.
+
 ## Build & Release
 
 ### Local Build
@@ -115,10 +119,10 @@ yarn build
 
 Produces platform-specific distributables in the `dist/` directory:
 
-| Platform | Outputs        |
-| -------- | -------------- |
-| macOS    | `.dmg`, `.zip` |
-| Windows  | `.nsis`, `.zip`|
+| Platform | Outputs             |
+| -------- | ------------------- |
+| macOS    | `.dmg`, `.zip`      |
+| Windows  | `.nsis`, `.zip`     |
 | Linux    | `.AppImage`, `.deb` |
 
 ### CI / CD
@@ -139,11 +143,21 @@ yarn format     # Run Prettier
 
 Configs are saved as JSON files in the OS user data directory:
 
-| OS      | Path                                              |
-| ------- | ------------------------------------------------- |
+| OS      | Path                                               |
+| ------- | -------------------------------------------------- |
 | macOS   | `~/Library/Application Support/connectio/configs/` |
 | Windows | `%APPDATA%/connectio/configs/`                     |
 | Linux   | `~/.config/connectio/configs/`                     |
+
+Tunnel preference is stored with the rest of the config and defaults to off for existing files:
+
+```json
+{
+  "apps": [],
+  "port": 8080,
+  "cloudflareTunnel": false
+}
+```
 
 ## Tech Stack
 
