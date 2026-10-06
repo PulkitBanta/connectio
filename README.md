@@ -43,11 +43,73 @@ Grab the latest build from the [**Releases page**](https://github.com/PulkitBant
 | Windows               | `Connectio.Setup.<version>.exe`          |
 | Linux                 | `Connectio-<version>.AppImage` or `.deb` |
 
-> [!NOTE]
-> Builds are not code-signed yet.
->
-> - **macOS:** if you see _"Connectio is damaged and can't be opened"_, move the app to `/Applications` and run `xattr -cr /Applications/Connectio.app`.
-> - **Windows:** SmartScreen may warn about an unknown publisher — click **More info → Run anyway**.
+### First launch
+
+Connectio isn't code-signed yet, so your OS asks you to confirm the first time you open it. You only need to do this once per install.
+
+<details open>
+<summary><strong>macOS</strong></summary>
+<br />
+
+1. Open the `.dmg`, drag **Connectio** into **Applications**, and open it. macOS shows _"Connectio" Not Opened_ — click **Done** (not _Move to Bin_).
+2. Open **System Settings → Privacy & Security**, scroll down to **Security**, and click **Open Anyway** next to _"Connectio" was blocked to protect your Mac_.
+3. Click **Open Anyway** again in the confirmation dialog and enter your password or use Touch ID. Connectio opens normally from now on.
+
+<table>
+  <tr>
+    <td width="36%" align="center"><img src="screenshots/macos-not-opened.png" alt="macOS dialog: Connectio Not Opened" width="260" /></td>
+    <td width="64%" align="center"><img src="screenshots/macos-open-anyway.png" alt="System Settings, Privacy & Security: Open Anyway button" width="470" /></td>
+  </tr>
+  <tr>
+    <td align="center"><em>Step 1 — click <strong>Done</strong></em></td>
+    <td align="center"><em>Step 2 — click <strong>Open Anyway</strong></em></td>
+  </tr>
+</table>
+
+If macOS instead says _"Connectio is damaged and can't be opened"_, run `xattr -cr /Applications/Connectio.app` in Terminal and open it again.
+
+</details>
+
+<details>
+<summary><strong>Windows</strong></summary>
+<br />
+
+When you run the installer, SmartScreen may show _"Windows protected your PC"_. Click **More info**, then **Run anyway**.
+
+</details>
+
+<details>
+<summary><strong>Linux</strong></summary>
+<br />
+
+- **`.deb`** — install with `sudo apt install ./connectio_<version>_amd64.deb`.
+- **AppImage** — mark it executable (`chmod +x Connectio-<version>.AppImage`, or _Properties → Allow executing file as program_) and run it. AppImages need FUSE 2 (`libfuse2` on Ubuntu/Debian).
+
+</details>
+
+### Install from the terminal
+
+Prefer a one-liner? These scripts download the latest release for your OS and install it without the first-launch prompts above.
+
+**macOS / Linux**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/PulkitBanta/connectio/main/scripts/install.sh | sh
+```
+
+**Windows (PowerShell)**
+
+```powershell
+irm https://raw.githubusercontent.com/PulkitBanta/connectio/main/scripts/install.ps1 | iex
+```
+
+| OS      | What the script does                                                                                                    |
+| ------- | ----------------------------------------------------------------------------------------------------------------------- |
+| macOS   | Installs `Connectio.app` to `/Applications` (or `~/Applications` if that isn't writable). Apple Silicon only.           |
+| Linux   | Installs the `.deb` via `apt` on Debian/Ubuntu; otherwise installs the AppImage to `~/.local/bin` with a desktop entry. |
+| Windows | Downloads and runs the installer silently (per-user, no admin rights needed).                                           |
+
+Set `CONNECTIO_VERSION=1.1.0` to install a specific version. Re-run the script to update. Read the scripts first if you like: [`install.sh`](scripts/install.sh), [`install.ps1`](scripts/install.ps1).
 
 Prefer building it yourself? See [Build from source](#build-from-source).
 
