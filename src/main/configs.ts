@@ -10,7 +10,11 @@ function ensureConfigDir() {
 
 function isValidConfigShape(data) {
   return (
-    data && typeof data === "object" && Array.isArray(data.apps) && typeof data.port === "number"
+    data &&
+    typeof data === "object" &&
+    Array.isArray(data.apps) &&
+    typeof data.port === "number" &&
+    (data.cloudflareTunnel === undefined || typeof data.cloudflareTunnel === "boolean")
   );
 }
 
@@ -67,7 +71,9 @@ function registerConfigHandlers() {
       throw new Error(`Invalid JSON: ${err.message}`, { cause: err });
     }
     if (!isValidConfigShape(data)) {
-      throw new Error("Invalid config format: expected { apps: [], port: number }");
+      throw new Error(
+        "Invalid config format: expected { apps: [], port: number, cloudflareTunnel?: boolean }",
+      );
     }
     ensureConfigDir();
     const file = path.join(configDir, `${name}.json`);
@@ -79,7 +85,9 @@ function registerConfigHandlers() {
   ipcMain.handle("config:save", (_e, name, data) => {
     ensureConfigDir();
     if (!isValidConfigShape(data)) {
-      throw new Error("Invalid config format: expected { apps: [], port: number }");
+      throw new Error(
+        "Invalid config format: expected { apps: [], port: number, cloudflareTunnel?: boolean }",
+      );
     }
     fs.writeFileSync(path.join(configDir, `${name}.json`), JSON.stringify(data, null, 2));
     return { ok: true };
@@ -110,7 +118,9 @@ function registerConfigHandlers() {
       throw new Error(`Invalid JSON: ${err.message}`, { cause: err });
     }
     if (!isValidConfigShape(data)) {
-      throw new Error("Invalid config format: expected { apps: [], port: number }");
+      throw new Error(
+        "Invalid config format: expected { apps: [], port: number, cloudflareTunnel?: boolean }",
+      );
     }
     const name = path.basename(filePath, ".json");
     return { name, json: jsonString };
@@ -140,6 +150,7 @@ function registerConfigHandlers() {
           lastModified: stat.mtimeMs,
           size: stat.size,
           port: data.port || 8080,
+          cloudflareTunnel: data.cloudflareTunnel === true,
           note: data.note || "",
         };
       })
