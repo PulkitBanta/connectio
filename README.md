@@ -17,6 +17,7 @@
 </p>
 
 <p align="center">
+  <a href="#see-it-in-action">Watch the tour</a> ·
   <a href="#download">Download</a> ·
   <a href="#features">Features</a> ·
   <a href="#quick-start">Quick Start</a> ·
@@ -32,6 +33,14 @@
 Modern local development rarely runs on a single server. Your frontend is on `:3000`, the API on `:3001`, an auth service on `:4000` — and suddenly you're fighting CORS, cookies that won't cross ports, and webhooks that need one public URL.
 
 Connectio puts all of them behind **one local address**. Define path rules like `/api/*` → `localhost:3001` and `/*` → `localhost:3000`, hit **Start**, and every request is routed, logged, and inspectable — no nginx config to write, no reverse-proxy to restart. When you need to share it, flip on a temporary Cloudflare tunnel.
+
+## See it in action
+
+A 60-second tour of the happy path — add apps, route rules, start the server, inspect requests, share through a tunnel, and save configs as JSON.
+
+<p align="center">
+  <a href="screenshots/connectio-launch.mp4"><img src="screenshots/connectio-launch-poster.jpg" alt="Watch the 60-second Connectio tour" width="800" /></a>
+</p>
 
 ## Download
 
