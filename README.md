@@ -35,21 +35,22 @@ Connectio puts all of them behind **one local address**. Define path rules like 
 
 ## Download
 
-Grab the latest build from the [**Releases page**](https://github.com/PulkitBanta/connectio/releases/latest):
+Grab the latest build for your OS from the [**Releases page**](https://github.com/PulkitBanta/connectio/releases/latest) — `.dmg` for macOS (Apple Silicon), `.exe` for Windows, `.AppImage` or `.deb` for Linux.
 
-| Platform              | File                                     |
-| --------------------- | ---------------------------------------- |
-| macOS (Apple Silicon) | `Connectio-<version>-arm64.dmg`          |
-| Windows               | `Connectio.Setup.<version>.exe`          |
-| Linux                 | `Connectio-<version>.AppImage` or `.deb` |
+Or install from the terminal:
+
+```bash
+# macOS / Linux
+curl -fsSL https://raw.githubusercontent.com/PulkitBanta/connectio/main/scripts/install.sh | sh
+```
+
+```powershell
+# Windows (PowerShell)
+irm https://raw.githubusercontent.com/PulkitBanta/connectio/main/scripts/install.ps1 | iex
+```
 
 > [!NOTE]
-> Builds are not code-signed yet.
->
-> - **macOS:** if you see _"Connectio is damaged and can't be opened"_, move the app to `/Applications` and run `xattr -cr /Applications/Connectio.app`.
-> - **Windows:** SmartScreen may warn about an unknown publisher — click **More info → Run anyway**.
-
-Prefer building it yourself? See [Build from source](#build-from-source).
+> Connectio isn't code-signed yet, so macOS and Windows ask you to confirm the first time you open a downloaded build. See the [**installation guide**](INSTALL.md#first-launch) for step-by-step instructions, plus updating and uninstalling.
 
 ## Features
 
