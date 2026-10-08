@@ -46,7 +46,7 @@ export function App() {
       <Nav />
       <div class="w-px bg-white/5 shrink-0" />
 
-      <main class="flex-1 flex flex-col overflow-hidden">
+      <main class="flex-1 min-w-0 flex flex-col overflow-hidden">
         {currentView() === "empty" && <EmptyState />}
         {currentView() === "proxy" && selectedAppId() && <ProxyView />}
         {currentView() === "configs" && <ConfigsView />}

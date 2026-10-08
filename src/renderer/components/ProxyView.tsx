@@ -86,9 +86,13 @@ export function ProxyView() {
           </div>
         ) : (
           <>
-            <div>
-              <p class="text-sm font-semibold text-slate-300">{app()!.name}</p>
-              <p class="text-xs text-slate-500 mt-0.5">{app()!.targetUrl}</p>
+            <div class="min-w-0">
+              <p class="text-sm font-semibold text-slate-300 truncate" title={app()!.name}>
+                {app()!.name}
+              </p>
+              <p class="text-xs text-slate-500 mt-0.5 truncate" title={app()!.targetUrl}>
+                {app()!.targetUrl}
+              </p>
             </div>
             <div class="flex items-center gap-1 shrink-0 mt-0.5">
               <button
@@ -151,7 +155,9 @@ export function ProxyView() {
                         {formatTime(entry.ts || Date.now())}
                       </span>
                       <span class="text-slate-400 shrink-0 w-10">{entry.method}</span>
-                      <span class="text-slate-300 flex-1 truncate">{entry.path}</span>
+                      <span class="text-slate-300 flex-1 min-w-0 truncate" title={entry.path}>
+                        {entry.path}
+                      </span>
                       <span class={`${getStatusColor(entry.status)} shrink-0`}>{entry.status}</span>
                       <span class="text-slate-600 shrink-0">{entry.ms}ms</span>
                     </button>
@@ -335,7 +341,8 @@ function RuleSection(props: {
                 title={rule.enabled ? "Click to disable rule" : "Click to enable rule"}
               />
               <span
-                class={`text-xs font-mono flex-1 ${rule.enabled ? "text-slate-300" : "text-slate-600 line-through"}`}
+                class={`text-xs font-mono flex-1 min-w-0 truncate ${rule.enabled ? "text-slate-300" : "text-slate-600 line-through"}`}
+                title={rule.matchPath}
               >
                 {rule.matchPath}
               </span>
