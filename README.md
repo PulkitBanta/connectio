@@ -43,9 +43,7 @@ Connectio puts all of these servers behind **one local address**. Write path rul
 
 This 60-second video shows the primary workflow: add apps, add route rules, start the server, examine requests, share through a tunnel, and save configs as JSON.
 
-<p align="center">
-  <a href="screenshots/connectio-launch.mp4"><img src="screenshots/connectio-launch-poster.jpg" alt="Watch the 60-second Connectio tour" width="800" /></a>
-</p>
+https://github.com/user-attachments/assets/135a87b2-cb7d-44ca-9f95-c2c23b52a32a
 
 ## Download
 
