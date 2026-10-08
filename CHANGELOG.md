@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.2.0](https://github.com/PulkitBanta/connectio/compare/v1.1.0...v1.2.0) (2026-10-08)
+
+
+### Features
+
+* add cloudflare tunnel toggle to the UI ([dcdcb0d](https://github.com/PulkitBanta/connectio/commit/dcdcb0dc233ef148b3690a1c608c7f0846b758b2))
+* add expandable request log details ([93d48a5](https://github.com/PulkitBanta/connectio/commit/93d48a5b190c9231096691d127f6c5bb2e66d673))
+* add install scripts and first-launch guide ([#15](https://github.com/PulkitBanta/connectio/issues/15)) ([ef6dd94](https://github.com/PulkitBanta/connectio/commit/ef6dd944abb0d84ef65343059eaf40478a96080d))
+* support cloudflare quick tunnel in proxy server ([72c639c](https://github.com/PulkitBanta/connectio/commit/72c639ca60f6985f0518ee04f7ff8e5495ac6207))
+
+
+### Bug Fixes
+
+* **deps:** upgrade dependencies to patch security vulnerabilities ([#18](https://github.com/PulkitBanta/connectio/issues/18)) ([2eb3295](https://github.com/PulkitBanta/connectio/commit/2eb32959dd3c96616626bee73b3e981bfc85c438))
+* truncate long request paths instead of overflowing the layout ([#19](https://github.com/PulkitBanta/connectio/issues/19)) ([3660faa](https://github.com/PulkitBanta/connectio/commit/3660faa212ee1be27b3ea52c9c07ee02bc5af089))
+
 ## [1.1.0](https://github.com/PulkitBanta/connectio/compare/v1.0.0...v1.1.0) (2026-05-31)
 
 
