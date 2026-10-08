@@ -5,7 +5,7 @@
 <h1 align="center">Connectio</h1>
 
 <p align="center">
-  A local proxy manager — connect and route HTTP requests between your local servers from a single dashboard.
+  Connectio is a local proxy manager. Use one dashboard to send HTTP requests to your local servers through one address.
 </p>
 
 <p align="center">
@@ -18,26 +18,30 @@
 
 <p align="center">
   <a href="https://pulkitbanta.com/connectio/">Website</a> ·
-  <a href="#see-it-in-action">Watch the tour</a> ·
+  <a href="#video-tour">Video tour</a> ·
   <a href="#download">Download</a> ·
   <a href="#features">Features</a> ·
   <a href="#quick-start">Quick Start</a> ·
-  <a href="#contributing">Contributing</a>
+  <a href="#how-to-contribute">How to contribute</a>
 </p>
 
 <p align="center">
   <img src="screenshots/connectio-request-details.png" alt="Connectio routing requests, showing request details and a Cloudflare tunnel URL" width="800" />
 </p>
 
-## Why Connectio?
+## Purpose of Connectio
 
-Modern local development rarely runs on a single server. Your frontend is on `:3000`, the API on `:3001`, an auth service on `:4000` — and suddenly you're fighting CORS, cookies that won't cross ports, and webhooks that need one public URL.
+Usually, local development uses more than one server. For example, the frontend is on `:3000`, the API is on `:3001`, and an auth service is on `:4000`. This causes these problems:
 
-Connectio puts all of them behind **one local address**. Define path rules like `/api/*` → `localhost:3001` and `/*` → `localhost:3000`, hit **Start**, and every request is routed, logged, and inspectable — no nginx config to write, no reverse-proxy to restart. When you need to share it, flip on a temporary Cloudflare tunnel.
+- The browser blocks requests between the ports (CORS errors).
+- Cookies do not go from one port to a different port.
+- Webhooks must have one public URL.
 
-## See it in action
+Connectio puts all of these servers behind **one local address**. Write path rules, for example `/api/*` → `localhost:3001` and `/*` → `localhost:3000`. Then click **Start**. Connectio sends each request to the correct server and records it in a log. You do not write an nginx config, and you do not restart a reverse proxy. To share your servers, start a temporary Cloudflare tunnel.
 
-A 60-second tour of the happy path — add apps, route rules, start the server, inspect requests, share through a tunnel, and save configs as JSON.
+## Video tour
+
+This 60-second video shows the primary workflow: add apps, add route rules, start the server, examine requests, share through a tunnel, and save configs as JSON.
 
 <p align="center">
   <a href="screenshots/connectio-launch.mp4"><img src="screenshots/connectio-launch-poster.jpg" alt="Watch the 60-second Connectio tour" width="800" /></a>
@@ -45,9 +49,13 @@ A 60-second tour of the happy path — add apps, route rules, start the server, 
 
 ## Download
 
-Grab the latest build for your OS from the [**Releases page**](https://github.com/PulkitBanta/connectio/releases/latest) — `.dmg` for macOS (Apple Silicon), `.exe` for Windows, `.AppImage` or `.deb` for Linux.
+Download the latest build for your operating system from the [**Releases page**](https://github.com/PulkitBanta/connectio/releases/latest):
 
-Or install from the terminal:
+- macOS (Apple Silicon): `.dmg`
+- Windows: `.exe`
+- Linux: `.AppImage` or `.deb`
+
+You can also install Connectio from the terminal:
 
 ```bash
 # macOS / Linux
@@ -60,21 +68,21 @@ irm https://raw.githubusercontent.com/PulkitBanta/connectio/main/scripts/install
 ```
 
 > [!NOTE]
-> Connectio isn't code-signed yet, so macOS and Windows ask you to confirm the first time you open a downloaded build. See the [**installation guide**](INSTALL.md#first-launch) for step-by-step instructions, plus updating and uninstalling.
+> Connectio does not have a code signature yet. Thus, macOS and Windows ask you to confirm when you open a downloaded build for the first time. For the procedure, see the [**installation guide**](INSTALL.md#first-launch). The guide also tells you how to update and remove Connectio.
 
 ## Features
 
-- **Proxy Apps** — Create multiple proxy apps, each pointing to a different local server (e.g. `localhost:3001`, `localhost:4000`).
-- **Wildcard Route Rules** — Define path-based routing rules with glob-style wildcards (`/api/*`, `/auth/login`). Rules are matched in order, giving you full control over priority.
-- **Detailed Request Logs** — See every proxied request as it happens, then click a log to inspect its matched rule, target, connection metadata, and request/response headers.
-- **Temporary Cloudflare Tunnels** — Opt in per config to expose the proxy at a temporary public `trycloudflare.com` URL while the server is running.
-- **App Ordering** — Reorder proxy apps with up/down controls. Order determines rule priority — if the first app catches `/*`, it takes precedence.
-- **Config Manager** — Browse, search, rename, and delete saved configurations from a dedicated configs list view.
-- **JSON Import / Export** — Import configs by pasting raw JSON or selecting a file via the native dialog. Export any config as clipboard text or save as a `.json` file.
-- **JSON Editor** — Edit any config's raw JSON directly in-app with validation and save.
-- **Save & Load** — Quickly save the current state to a named config or load a previously saved one from the sidebar panel.
-- **Collapsible Sidebar** — Expand the left nav for full app names or collapse it to icon-only mode for more screen space.
-- **Cross-Platform** — Runs on macOS, Windows, and Linux. Configs are stored in the OS-native user data directory.
+- **Proxy apps** — Make many proxy apps. Each app sends requests to a different local server, for example `localhost:3001` or `localhost:4000`.
+- **Wildcard route rules** — Write path rules with glob wildcards, for example `/api/*` or `/auth/login`. Connectio compares the rules in sequence, so you control the priority.
+- **Detailed request logs** — See each request when it occurs. Click a log entry to see the matched rule, the target, the connection data, and the request and response headers.
+- **Temporary Cloudflare tunnels** — Enable a tunnel for each config. While the server runs, the tunnel gives the proxy a temporary public `trycloudflare.com` URL.
+- **App sequence** — Move proxy apps up or down. The sequence sets the rule priority. If the first app matches `/*`, that app receives the request.
+- **Config manager** — Find, rename, and delete saved configs in the configs list.
+- **JSON import and export** — To import a config, paste raw JSON or select a file in the native dialog. To export a config, copy it to the clipboard or save it as a `.json` file.
+- **JSON editor** — Edit the raw JSON of a config in the app. Connectio validates the JSON before it saves the config.
+- **Save and load** — Save the current state as a named config. Load a saved config from the sidebar panel.
+- **Collapsible sidebar** — Expand the left navigation to see the full app names. Collapse it to show only icons and make more screen area available.
+- **Cross-platform** — Connectio operates on macOS, Windows, and Linux. It keeps configs in the user data directory of the operating system.
 
 <details>
 <summary><strong>More screenshots</strong></summary>
@@ -87,15 +95,15 @@ irm https://raw.githubusercontent.com/PulkitBanta/connectio/main/scripts/install
   </tr>
   <tr>
     <td align="center"><em>Home screen with server controls in the right sidebar</em></td>
-    <td align="center"><em>Reorder apps and route rules to control matching priority</em></td>
+    <td align="center"><em>Move apps and route rules to change the match priority</em></td>
   </tr>
   <tr>
     <td><img src="screenshots/connectio-load-config.png" alt="Load config dialog" /></td>
     <td><img src="screenshots/connectio-configs-list.png" alt="Configs list view" /></td>
   </tr>
   <tr>
-    <td align="center"><em>Save and load named configurations</em></td>
-    <td align="center"><em>Browse, search, and manage saved configs</em></td>
+    <td align="center"><em>Save and load named configs</em></td>
+    <td align="center"><em>Find and manage saved configs</em></td>
   </tr>
   <tr>
     <td><img src="screenshots/connectio-share-menu.png" alt="Share config menu" /></td>
@@ -103,7 +111,7 @@ irm https://raw.githubusercontent.com/PulkitBanta/connectio/main/scripts/install
   </tr>
   <tr>
     <td align="center"><em>Export a config to the clipboard or a <code>.json</code> file</em></td>
-    <td align="center"><em>Import a config by pasting raw JSON</em></td>
+    <td align="center"><em>Paste raw JSON to import a config</em></td>
   </tr>
 </table>
 
@@ -111,7 +119,7 @@ irm https://raw.githubusercontent.com/PulkitBanta/connectio/main/scripts/install
 
 ## How It Works
 
-Connectio runs an Express proxy server on a port you choose (default `8080`). When a request comes in, it walks your route rules in order, finds the first match, and proxies the request to the target server using `http-proxy-middleware`. Each response is logged back to the UI in real time.
+Connectio runs an Express proxy server on a port that you select. The default port is `8080`. When the server receives a request, Connectio compares the request path with your route rules in sequence. It uses the first rule that matches. Then it sends the request to the target server through `http-proxy-middleware`. The UI shows each response in the log immediately.
 
 ```
 Browser / cURL                      Your local servers
@@ -129,23 +137,31 @@ Browser / cURL                      Your local servers
 
 ## Quick Start
 
-1. Click **+** in the left sidebar to add a proxy app.
-2. Give it a name (e.g. "API Server") and a target URL (e.g. `http://localhost:3001`).
-3. Click the app, then **+ Add Rule** to define a route pattern like `/api/*`.
-4. Set your port in the right sidebar and hit **Start Server**.
-5. Send requests to `http://localhost:8080` and watch them get routed and logged in real time.
-6. Click any request in **Recent Requests** to inspect its matched rule, target, and headers.
+1. In the left sidebar, click **+** to add a proxy app.
+2. Type a name, for example "API Server".
+3. Type a target URL, for example `http://localhost:3001`.
+4. Click the app.
+5. Click **+ Add Rule**.
+6. Type a route pattern, for example `/api/*`.
+7. In the right sidebar, set the port.
+8. Click **Start Server**.
+9. Send requests to `http://localhost:8080`. Connectio sends each request to the correct server and shows it in the log.
+10. To see the details of a request, click it in **Recent Requests**. The details include the matched rule, the target, and the headers.
 
-### Sharing with a Cloudflare tunnel
+### Share through a Cloudflare tunnel
 
-Enable **Cloudflare tunnel** before starting the server. Connectio runs a [Cloudflare Quick Tunnel](https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/do-more-with-tunnels/trycloudflare/), shows the generated public URL (click to copy), and closes it when you stop the server. This requires [`cloudflared`](https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/downloads/) on your `PATH` (or set `CLOUDFLARED_PATH`).
+1. Make sure that [`cloudflared`](https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/downloads/) is in a directory on your `PATH`. Alternatively, set the `CLOUDFLARED_PATH` variable.
+2. Before you start the server, enable **Cloudflare tunnel**.
+3. Start the server. Connectio starts a [Cloudflare Quick Tunnel](https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/do-more-with-tunnels/trycloudflare/) and shows the public URL.
+4. Click the URL to copy it.
+5. When you stop the server, Connectio closes the tunnel.
 
 > [!WARNING]
-> A tunnel makes **every route** in your proxy reachable by anyone on the internet who has the URL — there is no authentication in front of it. Only enable it for servers you're comfortable exposing, and stop the server when you're done. Quick Tunnels are intended for development and testing, not production.
+> Enable a tunnel only for servers that you can safely make public. All persons on the internet who have the URL can access **every route** in your proxy. The tunnel has no authentication. Stop the server when you complete your work. Quick Tunnels are for development and tests only. Do not use them in production.
 
 ## Config Storage
 
-Configs are saved as JSON files in the OS user data directory:
+Connectio saves configs as JSON files in the user data directory of the operating system:
 
 | OS      | Path                                               |
 | ------- | -------------------------------------------------- |
@@ -153,7 +169,7 @@ Configs are saved as JSON files in the OS user data directory:
 | Windows | `%APPDATA%/connectio/configs/`                     |
 | Linux   | `~/.config/connectio/configs/`                     |
 
-A config looks like this (`cloudflareTunnel` is optional and defaults to off):
+This is an example config. The `cloudflareTunnel` field is optional. Its default value is `false`.
 
 ```json
 {
@@ -171,13 +187,13 @@ A config looks like this (`cloudflareTunnel` is optional and defaults to off):
 }
 ```
 
-## Contributing
+## How to contribute
 
-Contributions are welcome! Bug reports and feature ideas go in [Issues](https://github.com/PulkitBanta/connectio/issues); for code changes, open a pull request against `main`.
+Contributions are welcome. Report bugs and send feature ideas in [Issues](https://github.com/PulkitBanta/connectio/issues). To change the code, open a pull request to the `main` branch.
 
 ### Build from source
 
-Requires [Node.js](https://nodejs.org/) v22+ and [Yarn](https://classic.yarnpkg.com/) v1.
+You must have [Node.js](https://nodejs.org/) v22 or later and [Yarn](https://classic.yarnpkg.com/) v1.
 
 ```bash
 git clone https://github.com/PulkitBanta/connectio.git
@@ -189,33 +205,33 @@ yarn dev        # Start with DevTools open
 | Command       | What it does                                  |
 | ------------- | --------------------------------------------- |
 | `yarn dev`    | Start the app with hot reload and DevTools    |
-| `yarn start`  | Preview the production build without DevTools |
+| `yarn start`  | Run the production build without DevTools     |
 | `yarn lint`   | Run ESLint                                    |
 | `yarn format` | Run Prettier                                  |
-| `yarn build`  | Build and package distributables into `dist/` |
+| `yarn build`  | Build the app and put the packages in `dist/` |
 
 ### Guidelines
 
-- Run `yarn lint` and `yarn format` before pushing.
-- Use [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `docs:`, `chore:`, …) — release notes and version bumps are generated from them.
-- Keep PRs focused; include a screenshot for UI changes.
+- Run `yarn lint` and `yarn format` before you push.
+- Use [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `docs:`, `chore:`, …). The release notes and version numbers come from these commit messages.
+- Keep each PR on one topic. For UI changes, include a screenshot.
 
 ### Build & Release
 
-- **Build** — Every push to `main` and every PR runs the [build workflow](.github/workflows/build.yml) on macOS, Windows, and Linux.
-- **Release** — [release-please](https://github.com/googleapis/release-please) watches `main` and keeps a release PR open with the next version and [changelog](CHANGELOG.md). Merging that PR tags the release, and the [release workflow](.github/workflows/release.yml) builds all three platforms and attaches the installers to the GitHub Release.
+- **Build** — For each push to `main` and each PR, the [build workflow](.github/workflows/build.yml) runs on macOS, Windows, and Linux.
+- **Release** — [release-please](https://github.com/googleapis/release-please) monitors `main`. It keeps a release PR open with the next version and the [changelog](CHANGELOG.md). When you merge that PR, release-please tags the release. Then the [release workflow](.github/workflows/release.yml) builds the three platforms and attaches the installers to the GitHub Release.
 
 <details>
 <summary><strong>Tech stack</strong></summary>
 
 - **Desktop Shell** — [Electron](https://www.electronjs.org/) with context isolation
-- **UI Framework** — [Solid.js](https://www.solidjs.com/) with TypeScript — signals-based reactivity for fast, predictable renders
-- **Styling** — [Tailwind CSS v4](https://tailwindcss.com/) via `@tailwindcss/vite` plugin
+- **UI Framework** — [Solid.js](https://www.solidjs.com/) with TypeScript. Signals update the UI quickly and predictably.
+- **Styling** — [Tailwind CSS v4](https://tailwindcss.com/) through the `@tailwindcss/vite` plugin
 - **Icons** — [Lucide](https://lucide.dev/) rendered as native Solid SVG components
-- **Build Tool** — [electron-vite](https://github.com/alex8088/electron-vite/) — fast HMR for main, preload, and renderer
-- **Packaging** — [electron-builder](https://www.electron.build/) — produces `.dmg`, `.AppImage`, `.deb`, `.exe`
-- **Proxy Server** — [Express 5](https://expressjs.com/) — incoming request handling
-- **Proxying** — [http-proxy-middleware](https://github.com/chimurai/http-proxy-middleware) — route matching and reverse proxying
+- **Build Tool** — [electron-vite](https://github.com/alex8088/electron-vite/) — hot module replacement for the main, preload, and renderer code
+- **Packaging** — [electron-builder](https://www.electron.build/) — makes `.dmg`, `.AppImage`, `.deb`, `.exe`
+- **Proxy Server** — [Express 5](https://expressjs.com/) — receives the requests
+- **Proxying** — [http-proxy-middleware](https://github.com/chimurai/http-proxy-middleware) — matches routes and sends requests to the targets
 - **Linting** — ESLint v10 with `typescript-eslint`
 - **Formatting** — Prettier
 
