@@ -1,0 +1,57 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: var(--font-instrument-sans), ui-sans-serif, system-ui, sans-serif;
+  --color-paper: #f6f3ec;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    @apply text-stone-800;
+  }
+  ::selection {
+    @apply bg-teal-800 text-white;
+  }
+  :focus-visible {
+    @apply rounded-sm outline-2 outline-offset-4 outline-teal-700;
+  }
+  p {
+    @apply text-lg leading-normal font-normal md:text-xl;
+  }
+}
+
+/* Scroll reveal: fade + lift, staggered with --d. Only armed once the Reveal script has run. */
+html[data-motion] [data-reveal] {
+  opacity: 0;
+  translate: 0 18px;
+  transition:
+    opacity 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0ms),
+    translate 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) var(--d, 0ms);
+}
+html[data-motion] [data-reveal].is-in {
+  opacity: 1;
+  translate: 0 0;
+}
+
+/* Underline that wipes in from the left on hover. */
+.link-wipe {
+  background: linear-gradient(currentColor, currentColor) right bottom / 0 1px no-repeat;
+  padding-bottom: 1px;
+  transition: background-size 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.link-wipe:hover,
+.group:hover .link-wipe {
+  background-position: left bottom;
+  background-size: 100% 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

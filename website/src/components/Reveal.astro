@@ -1,0 +1,24 @@
+<script>
+  // Reveals [data-reveal] elements as they scroll into view. Styles live in global.css.
+  // Anything already on screen when the script runs is shown immediately, so content that's
+  // been painted never blinks out and back in (and never delays LCP).
+  function initReveal() {
+    const pending = [...document.querySelectorAll<HTMLElement>('[data-reveal]:not(.is-in)')];
+    for (const el of pending) {
+      if (el.getBoundingClientRect().top < window.innerHeight) el.classList.add('is-in');
+    }
+    document.documentElement.dataset.motion = '';
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          entry.target.classList.add('is-in');
+          io.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -5% 0px' }
+    );
+    pending.filter((el) => !el.classList.contains('is-in')).forEach((el) => io.observe(el));
+  }
+  document.addEventListener('astro:page-load', initReveal);
+</script>

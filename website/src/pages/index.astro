@@ -1,0 +1,311 @@
+---
+// Connectio landing page: autoplaying tour, the problem, a scroll story with a pinned app window,
+// features, downloads and FAQ. Copy lives in src/data/connectio.ts, shared with /index.md.
+import { Image } from 'astro:assets';
+import { ClientRouter } from 'astro:transitions';
+import { slide } from 'astro:transitions';
+import GTMNoScript from '../components/GTMNoScript.astro';
+import Reveal from '../components/Reveal.astro';
+import Schema from '../components/Schema.astro';
+import SiteMeta from '../components/SiteMeta.astro';
+import { connectio as c } from '../data/connectio';
+import icon from '../../../icons/icon.png';
+import home from '../../../screenshots/connectio-home.png';
+import highlights from '../../../screenshots/connectio-feature-highlights.png';
+import details from '../../../screenshots/connectio-request-details.png';
+import loadConfig from '../../../screenshots/connectio-load-config.png';
+import share from '../../../screenshots/connectio-share-menu.png';
+import '../styles/global.css';
+
+// One screenshot per "How it works" step, shown in the pinned window.
+const shots = [home, highlights, home, details, details];
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <SiteMeta title={`Connectio: ${c.tagline}`} description={c.description} markdownPath="/index.md" />
+    <Schema />
+    <ClientRouter />
+  </head>
+  <body class="bg-paper overflow-x-clip text-stone-700" transition:animate={slide({ duration: '0.2s' })}>
+    <GTMNoScript />
+
+    <header class="mx-auto flex max-w-6xl items-center justify-between px-6 pt-8 text-sm font-medium">
+      <a href="https://pulkitbanta.com/" class="link-wipe text-stone-500">
+        ← Pulkit Banta
+      </a>
+      <nav class="flex gap-6 text-stone-900">
+        <a href="#how" class="link-wipe hidden sm:inline">
+          How it works
+        </a>
+        <a href="#faq" class="link-wipe hidden sm:inline">
+          FAQ
+        </a>
+        <a href={c.repo} class="link-wipe">
+          GitHub
+        </a>
+      </nav>
+    </header>
+
+    <section class="mx-auto max-w-6xl px-6 pt-20 text-center md:pt-28">
+      <div class="intro inline-flex items-center gap-3" style="--i:0">
+        <Image src={icon} alt="" width={56} height={56} class="rounded-xl" />
+        <span class="text-2xl font-semibold tracking-tight text-stone-900">{c.name}</span>
+      </div>
+      <h1
+        class="intro mx-auto mt-8 max-w-4xl text-5xl font-semibold leading-[1.04] tracking-tight text-stone-900 md:text-7xl"
+        style="--i:1"
+      >
+        One local address for <span class="text-teal-700">all your development servers.</span>
+      </h1>
+      <p class="intro mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-stone-600" style="--i:2">
+        {c.summary}
+      </p>
+      <div class="intro mt-10 flex flex-wrap items-center justify-center gap-3" style="--i:3">
+        <a
+          data-os-download
+          href={c.latest}
+          class="rounded-full bg-stone-900 px-6 py-3.5 text-base font-semibold text-white transition hover:-translate-y-0.5 hover:bg-teal-800"
+        >
+          Download for <span data-os-name>your OS</span>
+        </a>
+        <a
+          href={c.repo}
+          class="rounded-full border border-stone-300 bg-white/60 px-6 py-3.5 text-base font-semibold text-stone-900 transition hover:-translate-y-0.5 hover:border-teal-600"
+        >
+          View source
+        </a>
+      </div>
+      <p class="intro mt-4 text-sm text-stone-500" style="--i:4">
+        Free and open source · v{c.version} · macOS, Windows, Linux
+      </p>
+
+      <div
+        class="intro mx-auto mt-16 max-w-5xl overflow-hidden rounded-3xl shadow-[0_40px_120px_-40px_rgb(68_64_60/0.45)] ring-1 ring-stone-900/10"
+        style="--i:5"
+      >
+        <video
+          src={c.video.src}
+          poster={c.video.poster}
+          autoplay
+          muted
+          loop
+          playsinline
+          controls
+          preload="metadata"
+          class="block aspect-video w-full bg-stone-900"
+          aria-label="60-second tour of Connectio"
+        ></video>
+      </div>
+    </section>
+
+    <section class="mx-auto mt-32 max-w-6xl px-6">
+      <h2 data-reveal class="text-sm font-medium uppercase tracking-widest text-teal-700">
+        The problem
+      </h2>
+      <p
+        data-reveal
+        class="mt-4 max-w-3xl text-3xl font-semibold leading-tight tracking-tight text-stone-900 md:text-4xl"
+      >
+        Your frontend is on <span class="text-teal-700">:3000</span>, the API is on{' '}
+        <span class="text-teal-700">:3001</span>, and auth is on <span class="text-teal-700">:4000</span>. The browser
+        thinks that they are three different sites.
+      </p>
+      <div class="mt-14 grid gap-x-16 gap-y-10 md:grid-cols-2">
+        {c.problems.map((p, i) => (
+          <div data-reveal style={`--d:${i * 70}ms`} class="border-t border-stone-300 pt-6">
+            <h3 class="text-lg font-semibold text-stone-900">{p.title}</h3>
+            <p class="mt-2 text-base leading-relaxed text-stone-600">{p.body}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section id="how" class="mx-auto mt-32 grid max-w-6xl scroll-mt-10 gap-12 px-6 lg:grid-cols-[0.8fr_1.2fr]">
+      <div>
+        <h2 class="text-sm font-medium uppercase tracking-widest text-teal-700">How it works</h2>
+        <ol class="mt-6">
+          {c.steps.map((s, i) => (
+            <li
+              data-step={i}
+              class="story-step flex flex-col justify-center border-l-2 border-stone-200 py-8 pl-8 lg:min-h-[55vh] lg:py-0"
+            >
+              <span class="text-sm font-semibold text-stone-400">0{i + 1}</span>
+              <h3 class="mt-2 text-3xl font-semibold tracking-tight text-stone-900">{s.title}</h3>
+              <p class="mt-3 max-w-sm text-base leading-relaxed text-stone-600">{s.body}</p>
+              <Image src={shots[i]} alt={s.title} width={900} class="mt-6 rounded-xl lg:hidden" />
+            </li>
+          ))}
+        </ol>
+      </div>
+      <div class="hidden lg:block">
+        <div class="sticky top-[12vh] h-[76vh]">
+          <div class="relative h-full">
+            {shots.map((shot, i) => (
+              <Image
+                src={shot}
+                alt={c.steps[i].title}
+                width={1400}
+                data-shot={i}
+                loading="eager"
+                class="story-shot absolute inset-0 m-auto w-full rounded-2xl object-contain"
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="mx-auto mt-24 max-w-6xl px-6">
+      <h2 data-reveal class="text-sm font-medium uppercase tracking-widest text-teal-700">
+        More features
+      </h2>
+      <div class="mt-8 grid gap-6 md:grid-cols-3">
+        {c.features.map((f, i) => (
+          <div
+            data-reveal
+            style={`--d:${(i % 3) * 70}ms`}
+            class="rounded-2xl bg-white p-6 shadow-[0_10px_40px_-20px_rgb(68_64_60/0.3)]"
+          >
+            <h3 class="font-semibold text-stone-900">{f.title}</h3>
+            <p class="mt-2 text-base leading-relaxed text-stone-600">{f.body}</p>
+          </div>
+        ))}
+      </div>
+      <div class="mt-10 grid gap-6 md:grid-cols-2">
+        <Image data-reveal src={loadConfig} alt="Load a saved config" width={1200} class="rounded-2xl" />
+        <Image data-reveal src={share} alt="Share a config as JSON" width={1200} class="rounded-2xl" />
+      </div>
+    </section>
+
+    <section id="download" class="mx-auto mt-32 max-w-4xl scroll-mt-10 px-6 text-center">
+      <h2 data-reveal class="text-4xl font-semibold tracking-tight text-stone-900 md:text-5xl">
+        Get Connectio
+      </h2>
+      <p data-reveal class="mx-auto mt-4 max-w-xl text-base text-stone-600">
+        Connectio is free under the MIT license. Select your operating system, or install Connectio from the terminal.
+      </p>
+      <ul
+        data-reveal
+        class="mt-10 divide-y divide-stone-200 rounded-2xl bg-white text-left shadow-[0_10px_40px_-20px_rgb(68_64_60/0.3)]"
+      >
+        {c.downloads.map((d) => (
+          <li data-os-row={d.key}>
+            <a href={d.url} class="group flex items-center justify-between gap-4 px-6 py-5">
+              <span>
+                <span class="font-semibold text-stone-900">{d.os}</span>
+                <span class="ml-2 text-sm text-stone-500">{d.detail}</span>
+              </span>
+              <span class="text-sm text-stone-500 group-hover:text-teal-700">{d.file} ↓</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <div data-reveal class="mt-6 break-all rounded-2xl bg-stone-900 p-5 text-left font-mono text-sm text-stone-100">
+        <span class="text-stone-500">$</span>
+        {c.install.unix}
+      </div>
+      <p data-reveal class="mt-4 text-sm text-stone-500">
+        Connectio does not have a code signature yet. Thus, you must confirm the first launch.{' '}
+        <a href={c.installGuide} class="link-wipe text-stone-900">
+          Install guide →
+        </a>
+      </p>
+    </section>
+
+    <section id="faq" class="mx-auto mt-32 max-w-3xl scroll-mt-10 px-6">
+      <h2 data-reveal class="text-sm font-medium uppercase tracking-widest text-teal-700">
+        FAQ
+      </h2>
+      <div class="mt-6 divide-y divide-stone-300 border-y border-stone-300">
+        {c.faqs.map((f) => (
+          <details class="group py-5">
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-6 text-lg font-semibold text-stone-900">
+              {f.q}
+              <span class="text-stone-400 transition group-open:rotate-45">+</span>
+            </summary>
+            <p class="mt-3 text-base leading-relaxed text-stone-600">{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <footer class="mx-auto mt-32 max-w-6xl px-6 pb-16 text-center text-sm text-stone-400">
+      <span>
+        Built by{' '}
+        <a href="https://pulkitbanta.com/" class="link-wipe text-stone-600">
+          Pulkit Banta
+        </a>
+      </span>
+    </footer>
+
+    <Reveal />
+    <style>
+      .intro {
+        animation: intro-in 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+        animation-delay: calc(var(--i) * 70ms);
+      }
+      @keyframes intro-in {
+        from {
+          opacity: 0;
+          translate: 0 14px;
+        }
+      }
+      .story-shot {
+        opacity: 0;
+        scale: 0.97;
+        transition:
+          opacity 0.5s,
+          scale 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+      }
+      .story-shot[data-on] {
+        opacity: 1;
+        scale: 1;
+      }
+      .story-step {
+        transition: border-color 0.3s;
+      }
+      .story-step[data-on] {
+        border-color: var(--color-teal-700);
+      }
+    </style>
+
+    <script>
+      function initPage() {
+        // Pin the app window and swap its screenshot as each step scrolls through the middle of the viewport.
+        const steps = document.querySelectorAll<HTMLElement>('.story-step');
+        const shots = document.querySelectorAll<HTMLElement>('.story-shot');
+        const show = (i: string) => {
+          steps.forEach((s) => s.toggleAttribute('data-on', s.dataset.step === i));
+          shots.forEach((s) => s.toggleAttribute('data-on', s.dataset.shot === i));
+        };
+        show('0');
+        const io = new IntersectionObserver(
+          (entries) => entries.forEach((e) => e.isIntersecting && show((e.target as HTMLElement).dataset.step!)),
+          { rootMargin: '-45% 0px -45% 0px' }
+        );
+        steps.forEach((s) => io.observe(s));
+
+        // Point the hero Download button at the visitor's installer.
+        const ua = `${navigator.platform} ${navigator.userAgent}`;
+        const os = /Win/.test(ua)
+          ? ['win', 'Windows']
+          : /Mac/.test(ua)
+            ? ['mac', 'macOS']
+            : /Linux/.test(ua)
+              ? ['linux', 'Linux']
+              : null;
+        const row = os && document.querySelector<HTMLAnchorElement>(`[data-os-row="${os[0]}"] a`);
+        const button = document.querySelector<HTMLAnchorElement>('[data-os-download]');
+        if (os && row && button) {
+          button.href = row.href;
+          button.querySelector('[data-os-name]')!.textContent = os[1];
+        }
+      }
+      document.addEventListener('astro:page-load', initPage);
+    </script>
+  </body>
+</html>

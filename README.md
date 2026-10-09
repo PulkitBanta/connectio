@@ -17,7 +17,7 @@
 </p>
 
 <p align="center">
-  <a href="https://pulkitbanta.com/connectio/">Website</a> ·
+  <a href="https://connectio.pulkitbanta.com/">Website</a> ·
   <a href="#video-tour">Video tour</a> ·
   <a href="#download">Download</a> ·
   <a href="#features">Features</a> ·

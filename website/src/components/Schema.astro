@@ -1,0 +1,51 @@
+---
+// JSON-LD for the landing page: the app, its tour video and its FAQ.
+import { connectio as c } from '../data/connectio';
+import { absoluteUrl } from '../utils/markdown';
+
+const pageUrl = absoluteUrl('/');
+const author = { '@type': 'Person', name: 'Pulkit Banta', url: 'https://pulkitbanta.com/' };
+
+const graph = [
+  {
+    '@type': 'SoftwareApplication',
+    '@id': `${pageUrl}#app`,
+    name: c.name,
+    description: c.description,
+    url: pageUrl,
+    image: absoluteUrl('/favicon.png'),
+    applicationCategory: 'DeveloperApplication',
+    operatingSystem: 'macOS, Windows, Linux',
+    softwareVersion: c.version,
+    downloadUrl: c.latest,
+    installUrl: c.installGuide,
+    license: 'https://opensource.org/licenses/MIT',
+    isAccessibleForFree: true,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    author,
+    sameAs: [c.repo],
+    featureList: c.features.map((f) => f.title),
+  },
+  {
+    '@type': 'VideoObject',
+    name: 'Connectio in 60 seconds',
+    description:
+      'A tour of Connectio: add apps, add route rules, start the server, examine requests, share through a tunnel, and save configs as JSON.',
+    thumbnailUrl: absoluteUrl(c.video.poster),
+    contentUrl: absoluteUrl(c.video.src),
+    uploadDate: '2026-10-06',
+    duration: c.video.duration,
+  },
+  {
+    '@type': 'FAQPage',
+    '@id': `${pageUrl}#faq`,
+    mainEntity: c.faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  },
+];
+---
+
+<script type="application/ld+json" set:html={JSON.stringify({ '@context': 'https://schema.org', '@graph': graph })} />
