@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.3.0](https://github.com/PulkitBanta/connectio/compare/v1.2.0...v1.3.0) (2026-10-09)
+
+
+### Features
+
+* add connectio landing site ([ccd0be5](https://github.com/PulkitBanta/connectio/commit/ccd0be5fd7f56bfbf2ca47ff4c3e6f48bdc0c5ff))
+
+
+### Bug Fixes
+
+* **website:** pin yarn 1 for cloudflare builds ([1a3c74e](https://github.com/PulkitBanta/connectio/commit/1a3c74e682b3303df97ff5d3cd854ef98db58e92))
+
 ## [1.2.0](https://github.com/PulkitBanta/connectio/compare/v1.1.0...v1.2.0) (2026-10-08)
 
 
