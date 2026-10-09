@@ -9,6 +9,7 @@
     "preview": "astro preview",
     "format": "prettier --write ."
   },
+  "packageManager": "yarn@1.22.22",
   "engines": {
     "node": ">=22.12.0"
   },
